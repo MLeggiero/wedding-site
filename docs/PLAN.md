@@ -4,7 +4,8 @@
 
 > Status: plan, written 2026-11-10, with every decision below confirmed in Q&A. Updated the same day to simplify security.
 > **v1 built (2026-11-10):** Home, Our Story, Travel (with field guide), Registry teaser, FAQ, Details (courtesy-password placeholder) and 404, plus save-the-date QR files in `print/`. See the v1 checklist in §15.
-> **Direction revised (2026-11-10, from your feedback):** cozy *maximalist* Southern conservatory, plants native to the southeastern US only, four photos in all, short copy, fancier type. Guests can now send a favorite photo and request songs. §3 describes the new design system; the house rules (and the 100-point rubric every design must clear) live in `CLAUDE.md`. The home hero, guest pages and "Join in" band use it; the other pages switch over next.
+> **Direction revised (2026-11-10, from your feedback):** cozy *maximalist* Southern conservatory, plants native to the southeastern US only, four photos in all, short copy, fancier type. Guests can now send a favorite photo and request songs. §3 describes the new design system; the house rules (and the 100-point rubric every design must clear) live in `CLAUDE.md`. Every page now uses it.
+> **Robot room built (2026-11-10):** After Hours is live behind a brass duck on the Registry page (your request: that's the only way in). Built as stylized three.js portraits with a steerable Microduck. The official meshes and the live MuJoCo duck remain follow-ups; see §10.6.
 > A **GitHub Pages** site published straight from this repo. Security isn't a goal (it's a wedding website). Everything lives here except RSVP answers and the guest list, which stay in a Google Sheet.
 
 ---
@@ -356,9 +357,9 @@ Once the guests have gone home, the robots have the run of the place. Every robo
 
 ### 10.2 The secret door
 
-- **The duck.** A tiny **brass duck figurine** hides among the footer foliage on every page.
+- **The duck.** A tiny **brass duck figurine** hides in the flower bed at the bottom of the **Registry (Gifts) page**, and nowhere else.
   - On hover or focus it waddles.
-  - Clicking it swings open a glass door (a view transition) into `/after-hours/`.
+  - Clicking it opens `/after-hours/`.
 - **Accessible.** The duck is a real link with a playful label ("A small brass duck. What's it doing here?"), so keyboard and screen-reader users can find it too.
 - **Unlisted.** The page is `noindex` and appears in neither the navigation nor the sitemap. You can still send the link straight to robot friends.
 
@@ -439,7 +440,21 @@ Tapping a robot slides up a brass-framed plant-tag panel with:
 
 ### 10.6 3D approach: animated robots plus a live duck
 
-#### Layer 1: everyone, on any phone
+#### What's built (v1, Nov 10)
+
+- **Stack:** plain three.js 0.186 (no React), loaded only on `/after-hours/`. That's about 155 KB gzipped, plus the site's cached plant drawings.
+- **Robots:** stylized low-poly portraits built from simple shapes, with each robot's real proportions and joints, rather than the official meshes. That means no mesh pipeline and no license questions.
+  - The ducks walk the brick loop with a procedural waddle; the duckling follows its parent.
+  - The arm runs a small IK solver to repot a fern seedling between two pots, with the leader arm mirroring it.
+- **Scene:**
+  - The night glasshouse: glazed iron bays with the moon behind them, lanterns, string lights and fireflies.
+  - A brass armillary sphere stands in the middle of the loop.
+  - The site's native-plant drawings stand around the room as painted flats.
+- **"Take the controls":** steers Microduck kinematically (joystick, arrow keys or WASD), then it walks itself home. The MuJoCo-physics duck below is the upgrade path.
+- **Cards and claims:** HTML cards (keyboard and screen-reader friendly), with claims through the Apps Script `claim` action and chip-in through Venmo/PayPal links.
+- **Fallbacks:** a list without WebGL, and a still life under reduced motion.
+
+#### Layer 1: everyone, on any phone (original plan)
 
 - **Stack.** three.js r187, React Three Fiber 9 and drei, in a single Astro island that only loads on `/after-hours/`.
 - **Models.** Each robot is built from its official model:
@@ -648,7 +663,10 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [x] Guest pages: Share a photo and Request a song (graded 92 desktop, 91 phone), plus the home "Join in" band (91)
 - [ ] **You:** switch on Pages (Settings → Pages → Source: GitHub Actions)
 - [ ] **You:** set up the Apps Script web app (`apps-script/README.md`) and paste its URL into `guestEndpoint`
-- [ ] Restyle Our Story, Travel, Registry, FAQ, Details, header and footer in the new direction
+- [x] Restyle Our Story, Travel, Registry, FAQ, Details, 404, header and footer in the new direction (each graded 91–92)
+- [x] After Hours robot room (graded 92): stylized 3D robots, gift cards, claims, chip-in, steerable Microduck, list fallback
+- [ ] **You:** Venmo/PayPal handles for robot chip-ins (`venmoHandle`, `paypalHandle`)
+- [ ] Later: official robot meshes and the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two
 

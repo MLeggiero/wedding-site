@@ -1,21 +1,23 @@
 ---
+// The footer: a gilded evergreen band with the names in gold script.
 import { nav, guestLinks, site } from '../config';
 import { withBase } from '../lib/url';
 import Monogram from './Monogram.astro';
-import IronworkDivider from './IronworkDivider.astro';
-import Foliage from './Foliage.astro';
+import Flourish from './Flourish.astro';
+import Flora from './Flora.astro';
 ---
 
-<footer class="site-footer band-dark">
-  <Foliage kind="fern-b" tone="fern" class="ff ff--left" style="left:-2.5rem; bottom:-1rem; width:clamp(7rem,16vw,13rem);" />
-  <Foliage kind="fern-a" tone="fern" class="ff ff--right" style="right:-2rem; bottom:-1.5rem; width:clamp(7.5rem,17vw,14rem); --sway-delay:-3s;" />
-
+<footer class="site-footer">
+  <div class="site-footer__flora" aria-hidden="true">
+    <Flora name="bed" class="site-footer__plant site-footer__plant--bl" />
+    <Flora name="bed" mirror class="site-footer__plant site-footer__plant--br" />
+  </div>
   <div class="container site-footer__inner">
-    <IronworkDivider class="site-footer__iron" />
     <Monogram class="site-footer__mono" label="Ally and Mark" />
     <p class="site-footer__names">Ally <span class="amp">&amp;</span> Mark</p>
-    <p class="kicker">{site.dateKicker}</p>
-    <p class="site-footer__place">{site.venue} · {site.city}</p>
+    <Flourish class="site-footer__flourish" />
+    <p class="site-footer__date">{site.dateKicker}</p>
+    <p class="site-footer__place">{site.venue}<br />{site.city}</p>
 
     <nav aria-label="Footer">
       <ul>
@@ -46,68 +48,120 @@ import Foliage from './Foliage.astro';
     position: relative;
     overflow: hidden;
     margin-top: clamp(3rem, 8vw, 6rem);
-    padding-block: 3.5rem 4.5rem;
+    padding-block: 3.2rem 4.5rem;
     text-align: center;
+    color: #f3e8cf;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgb(224 168 79 / 0.16), transparent 60%),
+      linear-gradient(180deg, #11241a, #0b1812);
+    border-top: 1px solid rgb(201 162 79 / 0.9);
+    box-shadow:
+      inset 0 3px 0 -1px #0b1812,
+      inset 0 4px 0 -1px rgb(201 162 79 / 0.4);
   }
   /* a page that ends in a dark conservatory room runs straight into the footer */
   :global(body:has(main > .room:last-child)) .site-footer {
     margin-top: 0;
   }
+  .site-footer__flora {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  .site-footer :global(.site-footer__plant) {
+    --flora-w: clamp(110px, 17vw, 260px);
+    bottom: 0;
+  }
+  .site-footer :global(.site-footer__plant--bl) {
+    left: 0;
+  }
+  .site-footer :global(.site-footer__plant--br) {
+    right: 0;
+  }
   .site-footer__inner {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     display: grid;
     justify-items: center;
-    gap: 0.6rem;
-  }
-  .site-footer__iron {
-    color: var(--sand-500);
-    margin-bottom: 1rem;
+    gap: 0.45rem;
   }
   .site-footer :global(.site-footer__mono) {
-    width: 3.4rem;
-    color: var(--sand-300);
+    width: 2.6rem;
+    color: #e9cf85;
   }
   .site-footer__names {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 2.3rem;
+    margin-top: 0.2rem;
+    padding: 0.05em 0.4em 0.2em;
+    font-family: 'Ballet', 'Playfair Display Variable', cursive;
+    font-size: clamp(2.8rem, 2.2rem + 2.4vw, 3.8rem);
     line-height: 1.1;
-    color: var(--linen-50);
+    background: linear-gradient(172deg, #fff0bf 6%, #d9ab4e 38%, #f7dc90 56%, #a8772a 86%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.45));
   }
   .site-footer__names .amp {
-    color: var(--sand-500);
+    font-family: inherit;
+    font-style: normal;
+    color: inherit;
+  }
+  .site-footer :global(.site-footer__flourish) {
+    width: min(15rem, 70%);
+    margin-top: -1.2rem;
+    color: #d9ab4e;
+  }
+  .site-footer__date {
+    font-family: 'Playfair Display Variable', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.22em;
+    font-variant-numeric: lining-nums;
   }
   .site-footer__place {
-    color: var(--glass-100);
+    font-family: 'EB Garamond Variable', Georgia, serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: #e3d3ad;
   }
   .site-footer ul {
     list-style: none;
-    margin: 1.2rem 0 0;
+    margin: 1rem 0 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.4rem 1.4rem;
+    gap: 0 1.3rem;
+    max-width: 44rem;
   }
   .site-footer nav a {
-    font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-size: 0.98rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.08rem;
+    letter-spacing: 0.04em;
+    color: #e9cf85;
     text-decoration: none;
   }
   .site-footer nav a:hover {
+    color: #fff1c4;
     text-decoration: underline;
+    text-decoration-color: rgb(233 207 133 / 0.6);
+    text-underline-offset: 0.25em;
+  }
+  .site-footer a:focus-visible {
+    outline: 2px solid #f2d27e;
+    outline-offset: 3px;
   }
   .site-footer__small {
-    margin-top: 0.6rem;
-    font-size: var(--step--1);
-    color: var(--glass-100);
+    margin-top: 0.4rem;
+    font-size: 0.98rem;
+    color: #d9cfb6;
   }
-  .site-footer :global(.ff) {
-    opacity: 0.55;
-    z-index: 1;
+  .site-footer__small a {
+    color: #e9cf85;
   }
 </style>

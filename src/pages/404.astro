@@ -1,28 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
-import IronworkDivider from '../components/IronworkDivider.astro';
+import CozyRoom from '../components/CozyRoom.astro';
+import RoomHeading from '../components/RoomHeading.astro';
 import { withBase } from '../lib/url';
 ---
 
 <Base title="Off the path">
-  <section class="container lost">
-    <p class="kicker">Page not found</p>
-    <h1>You’ve wandered off the path</h1>
-    <IronworkDivider />
-    <p class="lead">This corner of the garden hasn’t been planted yet.</p>
-    <a class="btn" href={withBase('/')}>Back to the garden</a>
-  </section>
+  <CozyRoom flora="full" label="Page not found" class="lost">
+    <RoomHeading eyebrow="Page not found" title="Off the path" lead="This corner of the garden hasn’t been planted yet." />
+    <p class="lost__home"><a class="btn-plate" href={withBase('/')}>Back to the garden</a></p>
+  </CozyRoom>
 </Base>
 
 <style>
   .lost {
+    --room-pad: clamp(6rem, 12vw, 8rem) clamp(10rem, 18vw, 13rem);
     display: grid;
-    justify-items: center;
-    gap: 1rem;
-    padding-block: clamp(4rem, 10vw, 7rem) 2rem;
-    text-align: center;
+    align-content: center;
+    min-height: min(52rem, 88svh);
   }
-  .lost h1 {
-    font-size: var(--step-4);
+  .lost__home {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.2rem;
   }
 </style>

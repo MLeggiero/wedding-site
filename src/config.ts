@@ -35,6 +35,13 @@ export const site = {
   /** Your Spotify playlist link (https://open.spotify.com/playlist/…), shown on the Songs page. */
   spotifyPlaylistUrl: '',
 
+  /**
+   * Chip-in handles for the robot room (After Hours). Leave '' to hide that
+   * button. Venmo: your username without "@"; PayPal: your paypal.me name.
+   */
+  venmoHandle: '',
+  paypalHandle: '',
+
   /** Footer credit for the engagement photos, e.g. 'Engagement photos by …'. */
   photoCredit: '',
 

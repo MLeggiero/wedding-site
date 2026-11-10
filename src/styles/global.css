@@ -537,6 +537,48 @@ a:hover {
 .guest-form__status:empty {
   display: none;
 }
+/* inside a conservatory room, keep cards clear of the room's gilt border */
+.room .container {
+  width: min(100% - 2 * max(var(--gutter), 1.75rem), var(--max));
+}
+
+/* ---------- type inside cream cards (GiltCard) ---------- */
+.cc-kicker {
+  font-family: 'IM Fell English SC', Georgia, serif;
+  font-size: 1.12rem;
+  letter-spacing: 0.12em;
+  color: #7a5416;
+}
+.cc-title {
+  font-family: 'Playfair Display Variable', Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.55rem, 1.35rem + 0.7vw, 1.95rem);
+  line-height: 1.15;
+  color: #18301f;
+}
+.cc-text {
+  font-family: 'EB Garamond Variable', Georgia, serif;
+  font-size: 1.18rem;
+  line-height: 1.55;
+  color: #1d2a20;
+}
+.cc-text a,
+.cc-link {
+  color: #5e1a29;
+  text-decoration-color: rgb(138 97 25 / 0.7);
+}
+.cc-text a:hover,
+.cc-link:hover {
+  color: #18301f;
+}
+.btn-plate--small {
+  min-height: 2.75rem;
+  padding: 0.4rem 1.2rem 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* the oxblood tag that says "Opening soon", "Opening in December" … */
+.plate-tag,
 .guest-form__soon {
   justify-self: center;
   width: fit-content;

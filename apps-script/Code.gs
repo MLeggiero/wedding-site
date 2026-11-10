@@ -1,14 +1,17 @@
 /**
- * Ally & Mark — guest photo uploads and song requests.
+ * Ally & Mark — guest photo uploads, song requests and robot gift claims.
  *
  * Lives in a Google Sheet (Extensions → Apps Script). Photos are saved to a
  * private Drive folder and logged on the "Photos" tab; song requests go to the
- * "Songs" tab with a ready-made Spotify search link. Setup: apps-script/README.md
+ * "Songs" tab with a ready-made Spotify search link; "I'm getting this" taps in
+ * the robot room go to the "RobotClaims" tab. Setup: apps-script/README.md
  */
 
 const MAX_BYTES = 15 * 1024 * 1024;
 
-function doGet() {
+function doGet(e) {
+  // ?claims=1 → the item ids already claimed in the robot room (no names or emails)
+  if (e && e.parameter && e.parameter.claims) return json({ ok: true, claimed: claimedIds() });
   return json({ ok: true, service: 'ally-and-mark-guests' });
 }
 
@@ -18,6 +21,7 @@ function doPost(e) {
     if (body.hp) return json({ ok: true }); // honeypot field filled → quietly ignore bots
     if (body.action === 'photo') return json(savePhoto(body));
     if (body.action === 'song') return json(saveSong(body));
+    if (body.action === 'claim') return json(saveClaim(body));
     return json({ ok: false, error: 'Unknown request.' });
   } catch (err) {
     return json({ ok: false, error: String(err && err.message ? err.message : err) });
@@ -51,6 +55,25 @@ function saveSong(b) {
     [new Date(), clean(b.name, 80), title, artist, clean(b.note, 200), search].map(cell),
   );
   return { ok: true };
+}
+
+const CLAIMS_HEADER = ['Time', 'Robot', 'Item', 'Item id', 'Name', 'Email'];
+
+function saveClaim(b) {
+  const id = clean(b.item, 60);
+  if (!/^[a-z0-9-]+$/.test(id)) throw new Error('Unknown gift.');
+  sheet('RobotClaims', CLAIMS_HEADER).appendRow(
+    [new Date(), clean(b.robot, 60), clean(b.label, 120), id, clean(b.name, 80), clean(b.email, 120)].map(cell),
+  );
+  return { ok: true };
+}
+
+/** Delete a row on the RobotClaims tab to un-claim a gift. */
+function claimedIds() {
+  const sh = sheet('RobotClaims', CLAIMS_HEADER);
+  if (sh.getLastRow() < 2) return [];
+  const ids = sh.getRange(2, 4, sh.getLastRow() - 1, 1).getValues().map((r) => String(r[0]));
+  return ids.filter((v, i) => v && ids.indexOf(v) === i);
 }
 
 // ---------- helpers

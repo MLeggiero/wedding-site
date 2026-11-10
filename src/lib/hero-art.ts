@@ -150,10 +150,55 @@ const GOLD =
   `<stop offset=".34" stop-color="#b98a33"/><stop offset=".5" stop-color="#efd07c"/><stop offset=".62" stop-color="#9c6f22"/>` +
   `<stop offset=".78" stop-color="#e3be66"/><stop offset=".9" stop-color="#8a6119"/><stop offset="1" stop-color="#d8aa4d"/></linearGradient>`;
 
+// --- the lighter "arch" frame for inner pages: the same gilt arch, a jessamine
+// garland over the top and two clusters at opposite corners
+const R2 = rng(91);
+const archBackArt = [
+  place(christmasFern(420, 0.4, 71), 230, 1215, -40, 1),
+  place(christmasFern(330, 0.3, 72), 300, 1235, -12, 1),
+  place(christmasFern(420, 0.4, 73), 770, 1215, 40, 1, true),
+  place(maidenhair(160, 74), 140, 1150, -24, 1),
+  ...[-150, -128, -104, -80, -60].map((a, i) => place(magnoliaLeaf(150 + R2() * 70, i === 2), 230, 330, a + (R2() - 0.5) * 12, 1)),
+  ...[40, 62, 84].map((a, i) => place(magnoliaLeaf(135 + R2() * 50, i === 1), 770, 960, a + 60, 1)),
+  ...[200, 230, 260, 290].map((a) => place(magnoliaLeaf(120 + R2() * 50), 790, 1010, a - 120, 1)),
+].join('');
+const archFrontArt = [
+  // jessamine garland over the arch
+  place(jessamine(230, 81), 290, 268, -36, 1),
+  place(jessamine(220, 82), 500, 200, 26, 1),
+  place(jessamine(170, 83), 690, 250, 52, 1),
+  // top-left: Southern magnolia, dogwood, maidenhair
+  place(maidenhair(110, 84), 150, 405, -38, 1),
+  place(magnoliaLeaf(145), 205, 360, -112, 1),
+  place(magnoliaLeaf(128, true), 300, 270, -14, 1),
+  place(magnoliaFlower(100, 85), 248, 318, 14, 1),
+  place(dogwoodFlower(48, 86), 172, 400, -8, 1),
+  place(dogwoodFlower(40, 87), 322, 246, 20, 1),
+  place(spanishMoss(260, 44, 88), 168, 340, 0, 1),
+  // top-right: a swallowtail on the garland
+  place(swallowtail(54, 'arch-sw'), 830, 300, 16, 1),
+  // bottom-right: Piedmont azalea, trillium, dogwood, coral honeysuckle
+  place(magnoliaLeaf(170), 640, 1092, 104, 1),
+  place(azalea(82, 'pink', 89), 800, 1040, 0, 1),
+  place(honeysuckle(62, 90), 846, 920, -14, 1),
+  place(dogwoodFlower(58, 92), 690, 1060, 18, 1),
+  place(trillium(46, 93), 880, 1110, 6, 1),
+  place(azalea(56, 'flame', 94), 610, 1130, 0, 1),
+  place(christmasFern(240, 0.25, 95), 900, 1290, 18, 1, true),
+].join('');
+
 // Each layer's file covers a little more than the 1000×1300 drawing, because
 // leaves and ferns reach past it; HeroFrame positions the files to match.
 export function heroBack(): Arrangement {
   return { w: 1000, h: 1300, view: [-190, -64, 1390, 1400], lift: false, markup: `<g filter="url(#nv-lift)">${back}</g>` };
+}
+/** The arch frame's view is symmetric about the window, so HeroFrame can mirror it. */
+const ARCH_VIEW: [number, number, number, number] = [-200, -64, 1400, 1400];
+export function archBack(): Arrangement {
+  return { w: 1000, h: 1300, view: ARCH_VIEW, lift: false, markup: `<g filter="url(#nv-lift)">${archBackArt}</g>` };
+}
+export function archFront(): Arrangement {
+  return { w: 1000, h: 1300, view: ARCH_VIEW, lift: false, defs: GOLD, markup: `<g>${frame}</g><g filter="url(#nv-lift)">${archFrontArt}</g>` };
 }
 export function heroFront(): Arrangement {
   return {

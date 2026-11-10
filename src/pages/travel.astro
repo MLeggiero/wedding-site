@@ -1,19 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
-import ArchFrame from '../components/ArchFrame.astro';
-import PlantTag from '../components/PlantTag.astro';
-import Foliage from '../components/Foliage.astro';
+import CozyRoom from '../components/CozyRoom.astro';
+import RoomHeading from '../components/RoomHeading.astro';
+import GiltCard from '../components/GiltCard.astro';
+import HeroFrame from '../components/HeroFrame.astro';
 import { photo } from '../lib/photos';
 import { site } from '../config';
 
 const places = (await getCollection('places')).map((p) => p.data);
 const order = ['Wander', 'Saturday', 'Coffee', 'Eat', 'Drink', 'Music', 'Shop'] as const;
-const groups = order
-  .map((category) => ({ category, items: places.filter((p) => p.category === category) }))
-  .filter((g) => g.items.length);
-const mapsUrl = (query: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 const labels: Record<string, string> = {
   Wander: 'Wander',
   Saturday: 'Saturday morning',
@@ -23,200 +19,182 @@ const labels: Record<string, string> = {
   Music: 'Music',
   Shop: 'Shop',
 };
+const groups = order
+  .map((category) => ({ category, items: places.filter((p) => p.category === category) }))
+  .filter((g) => g.items.length);
+const mapsUrl = (query: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+const tips = [
+  { kicker: 'Flying in', title: 'Atlanta (ATL)', text: 'About ninety minutes from Athens by car.' },
+  { kicker: 'Where to stay', title: 'Hotel blocks', text: 'Rooms in town, with any discount codes, posted here soon.', soon: `In ${site.registryOpens}` },
+  { kicker: 'Weather', title: 'Late-April spring', text: 'Warm days, cool evenings. Bring a layer.' },
+];
 ---
 
 <Base title="Travel" description="How to get to Athens, Georgia for Ally & Mark’s wedding — and what to do while you’re in town.">
-  <PageHeader
-    kicker="Travel"
-    title="Getting to Athens"
-    lead="Athens is a leafy college town about an hour and a half northeast of Atlanta. Here’s how to get here, and what to do once you arrive."
-  />
+  <CozyRoom flora="full" label="Travel">
+    <RoomHeading eyebrow="Travel" title="Getting to Athens" lead="A leafy college town, ninety minutes from Atlanta." />
 
-  <section class="container banner">
-    <ArchFrame
-      photo={photo('62')}
-      shape="segmental"
-      aspect={2.1}
-      bars="frame"
-      sizes="(min-width: 74rem) 74rem, 92vw"
-      alt="Ally and Mark smiling together on a stone bridge"
-    />
-  </section>
+    <div class="trip container">
+      <div class="trip__photo">
+        <HeroFrame photo={photo('62')} art="arch" priority sizes="(min-width: 60rem) 26rem, 80vw" />
+      </div>
+      <GiltCard sprigs="two" width="fill" as="section" class="venue">
+        <p class="cc-kicker">The venue</p>
+        <h2 class="cc-title">{site.venue}</h2>
+        <p class="cc-text venue__address">{site.address}</p>
+        <p class="cc-text">Free parking. Downtown is ten minutes away.</p>
+        <a class="btn-plate btn-plate--small venue__map" href={site.mapsUrl} target="_blank" rel="noopener">Open in Maps</a>
+      </GiltCard>
+    </div>
 
-  <section class="section container info-grid">
-    <article class="info glass info--venue reveal">
-      <p class="kicker">The venue</p>
-      <h2>{site.venue}</h2>
-      <p class="info__address">{site.address}</p>
-      <p>Parking at the garden is free. Downtown Athens is about ten minutes away.</p>
-      <a class="btn" href={site.mapsUrl} target="_blank" rel="noopener">Open in Maps</a>
-    </article>
-
-    <article class="info glass reveal">
-      <p class="kicker">Flying in</p>
-      <h3>Hartsfield–Jackson Atlanta (ATL)</h3>
-      <p>Most guests will fly into Atlanta. Athens is about an hour and a half away by car.</p>
-    </article>
-
-    <article class="info glass reveal">
-      <p class="kicker">Where to stay</p>
-      <h3>Hotel blocks, coming soon</h3>
-      <p>We’re reserving rooms in town and will post the details (and any discount codes) here.</p>
-      <PlantTag>Check back in December</PlantTag>
-    </article>
-
-    <article class="info glass reveal">
-      <p class="kicker">Weather</p>
-      <h3>Late-April spring</h3>
-      <p>Usually warm by day and cool in the evening — bring a layer for after sunset.</p>
-    </article>
-  </section>
-
-  <section class="section field-guide band-dark">
-    <Foliage kind="fern-a" tone="fern" class="fg-fern" style="--sway-delay:-2s;" />
-    <div class="container">
-      <header class="fg-head reveal">
-        <p class="kicker">Field guide</p>
-        <h2>Around Athens</h2>
-        <p>A few places worth a visit while you’re in town. We’ll keep adding our favorites.</p>
-      </header>
-
+    <div class="tips container">
       {
-        groups.map((g) => (
-          <div class="fg-group">
-            <h3 class="fg-cat">{labels[g.category]}</h3>
-            <ul class="fg-list">
-              {g.items.map((p) => (
-                <li class="fg-place reveal">
-                  <h4>{p.name}</h4>
-                  {p.area && <p class="fg-area">{p.area}</p>}
-                  <p>{p.note}</p>
-                  <a class="arrow-link" href={mapsUrl(p.map ?? `${p.name}, Athens, GA`)} target="_blank" rel="noopener">
-                    Map
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+        tips.map((t) => (
+          <GiltCard sprigs="none" width="fill" as="article" class="tip">
+            <p class="cc-kicker">{t.kicker}</p>
+            <h3 class="cc-title">{t.title}</h3>
+            <p class="cc-text">{t.text}</p>
+            {t.soon && <p class="plate-tag tip__soon">{t.soon}</p>}
+          </GiltCard>
         ))
       }
     </div>
-  </section>
+
+    <RoomHeading level={2} size="section" eyebrow="Field guide" title="Around Athens" lead="A few favorites while you’re in town." class="guide-head" />
+    <div class="guide container">
+      {
+        groups.map((g) => (
+          <GiltCard sprigs="none" width="fill" as="section" class="guide__group">
+            <h3 class="cc-kicker guide__cat">{labels[g.category]}</h3>
+            <ul class="guide__list">
+              {g.items.map((p) => (
+                <li class="place">
+                  <a class="place__name" href={mapsUrl(p.map ?? `${p.name}, Athens, GA`)} target="_blank" rel="noopener">
+                    {p.name}
+                    <span class="visually-hidden"> (map)</span>
+                  </a>
+                  {p.area && <span class="place__area">{p.area}</span>}
+                  <p class="place__note">{p.note}</p>
+                </li>
+              ))}
+            </ul>
+          </GiltCard>
+        ))
+      }
+    </div>
+  </CozyRoom>
 </Base>
 
 <style>
-  .banner {
-    padding-bottom: 1rem;
-  }
-  .info-grid {
+  .trip {
     display: grid;
-    gap: clamp(1rem, 2.5vw, 1.5rem);
+    gap: clamp(3rem, 6vw, 4rem);
+    align-items: center;
+    max-width: 64rem;
+    margin-top: clamp(3.5rem, 7vw, 5rem);
   }
-  .info {
-    display: grid;
-    align-content: start;
-    gap: 0.6rem;
-    padding: clamp(1.3rem, 3vw, 1.8rem);
+  .trip__photo {
+    width: min(100%, 28rem);
+    margin-inline: auto;
   }
-  .info h2 {
-    font-size: var(--step-3);
+  .trip :global(.venue) {
+    width: min(100%, 30rem);
+    margin-inline: auto;
   }
-  .info h3 {
-    font-size: 1.75rem;
-  }
-  .info .btn,
-  .info :global(.plant-tag) {
-    justify-self: start;
-    margin-top: 0.4rem;
-  }
-  .info__address {
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    color: var(--walnut-700);
-  }
-  @media (min-width: 52rem) {
-    .info-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .info--venue {
-      grid-column: 1 / -1;
-    }
-  }
-
-  .field-guide {
-    position: relative;
-    overflow: hidden;
-    margin-bottom: calc(-1 * clamp(3rem, 8vw, 6rem));
-  }
-  .field-guide :global(.fg-fern) {
-    width: clamp(10rem, 22vw, 18rem);
-    right: -3rem;
-    bottom: -2rem;
-    opacity: 0.35;
-  }
-  .fg-head {
-    position: relative;
+  .trip :global(.venue .gilt-card__body),
+  .tips :global(.tip .gilt-card__body) {
     display: grid;
     justify-items: center;
-    gap: 0.7rem;
-    max-width: 36rem;
-    margin: 0 auto 2.5rem;
+    gap: 0.35rem;
     text-align: center;
   }
-  .fg-head h2 {
-    font-size: var(--step-4);
+  .venue__address {
+    font-style: italic;
   }
-  .fg-head p:last-child {
-    color: var(--glass-100);
+  .venue__map {
+    margin-top: 0.7rem;
   }
-  .fg-group + .fg-group {
-    margin-top: 2.2rem;
+  .tips {
+    display: grid;
+    gap: 2rem;
+    max-width: 62rem;
+    margin-top: clamp(3.5rem, 7vw, 4.5rem);
   }
-  .fg-cat {
-    font-size: 1.15rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--sand-300);
-    border-bottom: 1px solid rgb(220 199 158 / 0.3);
+  .tips :global(.tip .gilt-card__body) {
+    height: 100%;
+    align-content: start;
+    padding: 1.8rem 1.5rem 1.7rem;
+  }
+  .tip__soon {
+    margin: 0.6rem 0 0;
+  }
+  :global(.guide-head) {
+    margin-top: clamp(4.5rem, 9vw, 6rem);
+  }
+  .guide {
+    max-width: 62rem;
+    margin-top: 2rem;
+    margin-bottom: clamp(5rem, 10vw, 6rem);
+    column-gap: 2rem;
+  }
+  .guide :global(.guide__group) {
+    break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+  .guide :global(.guide__group .gilt-card__body) {
+    padding: 1.7rem 1.6rem 1.5rem;
+  }
+  .guide__cat {
     padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    border-bottom: 1px solid rgb(168 130 58 / 0.5);
+    text-align: center;
   }
-  .fg-list {
+  .guide__list {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   }
-  .fg-place {
-    display: grid;
-    align-content: start;
-    gap: 0.35rem;
-    padding: 1.2rem 1.3rem;
-    border: 1px solid rgb(220 199 158 / 0.28);
-    border-radius: var(--radius);
-    background: rgb(246 241 230 / 0.05);
+  .place {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgb(168 130 58 / 0.3);
   }
-  .fg-place h4 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.55rem;
+  .place:last-child {
+    border-bottom: 0;
+  }
+  .place__name {
+    font-family: 'Playfair Display Variable', Georgia, serif;
     font-weight: 600;
-    color: var(--linen-50);
+    font-size: 1.18rem;
+    color: #18301f;
+    text-decoration-color: rgb(138 97 25 / 0.7);
   }
-  .fg-area {
-    font-size: var(--step--1);
-    letter-spacing: 0.06em;
-    color: var(--sand-500);
+  .place__name:hover {
+    color: #5e1a29;
   }
-  .fg-place p:not(.fg-area) {
-    color: var(--glass-100);
+  .place__area {
+    display: block;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 0.98rem;
+    color: #7a5416;
   }
-  .fg-place .arrow-link {
-    justify-self: start;
-    margin-top: 0.3rem;
-    font-size: 1rem;
+  .place__note {
+    margin-top: 0.15rem;
+    font-family: 'EB Garamond Variable', Georgia, serif;
+    font-size: 1.1rem;
+    line-height: 1.45;
+    color: #1d2a20;
+  }
+  @media (min-width: 52rem) {
+    .tips {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .guide {
+      columns: 2;
+    }
+  }
+  @media (min-width: 60rem) {
+    .trip {
+      grid-template-columns: 28rem 1fr;
+    }
   }
 </style>

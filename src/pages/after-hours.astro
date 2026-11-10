@@ -1,0 +1,646 @@
+---
+// After Hours: the secret robot room. Unlisted — the only way in is the brass
+// duck hiding on the Gifts page. The robots' gift lists live in src/content/robots/.
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { site } from '../config';
+import { withBase } from '../lib/url';
+
+const robots = (await getCollection('robots')).sort((a, b) => a.id.localeCompare(b.id));
+const money = (n: number) => (Number.isInteger(n) ? `$${n.toLocaleString('en-US')}` : `$${n.toFixed(2)}`);
+const short: Record<string, string> = { microduck: 'Microduck', 'open-duck-mini': 'Open Duck Mini', 'rebot-arm': 'reBot Arm' };
+const checked = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+
+<Base title="After Hours" description="The glasshouse after dark." bare>
+  <div class="ah" data-after-hours data-endpoint={site.guestEndpoint}>
+    <div class="ah__stage">
+      <div class="ah__loading" role="status">
+        <span class="ah__loading-lantern" aria-hidden="true"></span>
+        <p>Lighting the lanterns…</p>
+        <span class="ah__loading-bar" aria-hidden="true"><span></span></span>
+      </div>
+    </div>
+
+    <header class="ah__head">
+      <a class="ah__back" href={withBase('/registry/')}><span aria-hidden="true">←</span> Back to the gifts</a>
+      <p class="ah__eyebrow">The glasshouse, after dark</p>
+      <h1 class="ah__title">After Hours</h1>
+      <p class="ah__lead">When the guests go home, the robots come out.</p>
+    </header>
+
+    <nav class="ah__picker" aria-label="The robots">
+      {
+        robots.map((r) => (
+          <button type="button" class="ah-pick" data-pick={r.data.scene} aria-pressed="false">
+            {short[r.data.scene]}
+          </button>
+        ))
+      }
+    </nav>
+
+    <div class="ah__cards">
+      {
+        robots.map((r) => {
+          const d = r.data;
+          return (
+            <article class="ah-card" data-robot={d.scene} data-name={d.name} aria-labelledby={`ah-${d.scene}`} hidden>
+              <button type="button" class="ah-card__close" aria-label={`Close ${d.name}`}>
+                ×
+              </button>
+              <p class="ah-card__species">{d.species}</p>
+              <h2 id={`ah-${d.scene}`} tabindex="-1">
+                {d.name}
+              </h2>
+              <p class="ah-card__blurb">{d.blurb}</p>
+              {d.scene === 'microduck' && (
+                <button type="button" class="btn-plate ah-card__steer" data-steer>
+                  Take the controls
+                </button>
+              )}
+              <ul class="ah-items">
+                {d.items.map((it) => (
+                  <li class="ah-item" data-item={it.id} data-label={it.label}>
+                    <div class="ah-item__main">
+                      <a class="ah-item__name" href={it.url} target="_blank" rel="noopener">
+                        {it.label}
+                        <span class="visually-hidden"> (opens the store)</span>
+                      </a>
+                      {it.note && <span class="ah-item__note">{it.note}</span>}
+                    </div>
+                    {it.price && <span class="ah-item__price">{it.qty ? `${it.qty} × ${money(it.price)}` : money(it.price)}</span>}
+                    <button type="button" class="ah-claim" hidden>
+                      I’m getting this
+                    </button>
+                    <span class="ah-claimed" hidden>
+                      Claimed ✓
+                    </span>
+                    <form class="ah-claim-form" hidden>
+                      <label>
+                        <span class="visually-hidden">Your name (optional)</span>
+                        <input name="name" maxlength="80" autocomplete="name" placeholder="Your name (optional)" />
+                      </label>
+                      <input class="guest-form__hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                      <button type="submit">Mark it claimed</button>
+                      <span class="ah-claim-status" role="status" />
+                    </form>
+                  </li>
+                ))}
+              </ul>
+              {(site.venmoHandle || site.paypalHandle) && (
+                <div class="ah-chip" data-note={d.chipIn.note}>
+                  <p class="ah-chip__label">Chip in</p>
+                  <div class="ah-chip__amounts" role="group" aria-label="Amount">
+                    {d.chipIn.suggested.map((a) => (
+                      <button type="button" data-amount={a} aria-pressed="false">
+                        {money(a)}
+                      </button>
+                    ))}
+                  </div>
+                  <div class="ah-chip__pay">
+                    {site.venmoHandle && (
+                      <a class="ah-chip__btn" data-venmo={site.venmoHandle} href={`https://venmo.com/${site.venmoHandle}`} target="_blank" rel="noopener">
+                        Venmo
+                      </a>
+                    )}
+                    {site.paypalHandle && (
+                      <a class="ah-chip__btn" data-paypal={site.paypalHandle} href={`https://paypal.me/${site.paypalHandle}`} target="_blank" rel="noopener">
+                        PayPal
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+              <p class="ah-card__credit">
+                {d.credit} <a href={d.project.url} target="_blank" rel="noopener">{d.project.label}</a>. Prices checked {checked(d.checked)}.
+              </p>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <div class="ah__steer" hidden>
+      <div class="ah-pad" aria-hidden="true"><span class="ah-pad__knob"></span></div>
+      <p class="ah__steer-hint">
+        <span class="ah__steer-keys">Arrow keys or WASD to walk</span>
+        <span class="ah__steer-touch">Drag the pad to walk</span>
+      </p>
+      <button type="button" class="btn-plate ah__steer-done">Done</button>
+    </div>
+  </div>
+  <noscript><style>.ah-card { display: block !important; } .ah__loading, .ah__picker { display: none !important; }</style></noscript>
+</Base>
+
+<script>
+  import '../scripts/after-hours/main';
+</script>
+
+<style>
+  :global(body) {
+    background: #0b1611;
+  }
+  .ah {
+    position: relative;
+    height: 100svh;
+    min-height: 32rem;
+    overflow: hidden;
+    color: #f3e8cf;
+    background: radial-gradient(ellipse at 50% 30%, #17302a, #0b1611 70%);
+  }
+  .ah__stage {
+    position: absolute;
+    inset: 0;
+  }
+  .ah__stage :global(canvas) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+
+  /* loading */
+  .ah__loading {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.9rem;
+    background: #0b1611;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    color: #e2b66b;
+    transition: opacity 600ms ease;
+  }
+  .ah__loading.is-done {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ah__loading-lantern {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff1c4 0 18%, #f2b54d 32%, rgb(242 181 77 / 0) 70%);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ah__loading-lantern {
+      animation: ah-flicker 1.6s ease-in-out infinite alternate;
+    }
+    @keyframes ah-flicker {
+      to {
+        opacity: 0.6;
+        transform: scale(0.92);
+      }
+    }
+  }
+  .ah__loading-bar {
+    width: 10rem;
+    height: 3px;
+    border-radius: 2px;
+    background: rgb(226 182 107 / 0.25);
+    overflow: hidden;
+  }
+  .ah__loading-bar span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #e2b66b;
+    transition: width 200ms ease;
+  }
+
+  /* heading: a dark glass plaque with a gilt rule */
+  .ah__head {
+    position: absolute;
+    z-index: 3;
+    top: clamp(0.75rem, 2vw, 1.4rem);
+    left: clamp(0.75rem, 2vw, 1.4rem);
+    display: grid;
+    justify-items: start;
+    gap: 0.2rem;
+    max-width: min(26rem, calc(100% - 1.5rem));
+    padding: 1rem 1.4rem 1.1rem;
+    border-radius: 4px;
+    background: rgb(9 18 13 / 0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow:
+      inset 0 0 0 1px rgb(201 162 79 / 0.85),
+      inset 0 0 0 5px rgb(9 18 13 / 0.6),
+      inset 0 0 0 6px rgb(201 162 79 / 0.35),
+      0 18px 40px -16px rgb(0 0 0 / 0.8);
+  }
+  .ah__back {
+    margin-bottom: 0.45rem;
+    padding: 0.35rem 0.85rem 0.45rem;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid rgb(201 162 79 / 0.7);
+    border-radius: 999px;
+    background: rgb(10 20 15 / 0.6);
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.05rem;
+    color: #f0d48e;
+    text-decoration: none;
+  }
+  .ah__back:hover {
+    background: rgb(201 162 79 / 0.18);
+    color: #fff1c4;
+  }
+  .ah__eyebrow {
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+    letter-spacing: 0.24em;
+    color: #e2b66b;
+  }
+  .ah__title {
+    margin: -0.1em 0 -0.05em -0.08em;
+    padding: 0.05em 0.25em 0.2em 0.05em;
+    font-family: 'Ballet', 'Playfair Display Variable', cursive;
+    font-weight: 400;
+    font-size: clamp(2.6rem, 2rem + 2.6vw, 4.3rem);
+    line-height: 1.1;
+    white-space: nowrap;
+    background: linear-gradient(172deg, #fff0bf 6%, #d9ab4e 38%, #f7dc90 56%, #a8772a 86%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 2px rgb(0 0 0 / 0.6));
+  }
+  .ah__lead {
+    font-family: 'EB Garamond Variable', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.08rem, 1rem + 0.3vw, 1.3rem);
+    line-height: 1.35;
+    color: #dfe5d8;
+  }
+
+  /* robot picker */
+  .ah__picker {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: max(0.9rem, env(safe-area-inset-bottom));
+    translate: -50% 0;
+    display: flex;
+    gap: 0.55rem;
+    padding: 0.45rem;
+    border-radius: 6px;
+    background: rgb(8 16 12 / 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .ah-pick {
+    min-height: 2.9rem;
+    padding: 0.4rem 1rem 0.5rem;
+    border: 0;
+    border-radius: 3px;
+    background: rgb(14 28 21 / 0.9);
+    box-shadow:
+      inset 0 0 0 1px #c9a24f,
+      inset 0 0 0 3px rgb(14 28 21 / 0.9),
+      inset 0 0 0 4px rgb(201 162 79 / 0.45);
+    color: #f3e8cf;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .ah-pick:hover {
+    background: rgb(40 56 38 / 0.95);
+  }
+  .ah-pick[aria-pressed='true'] {
+    background: linear-gradient(180deg, #f1d58e, #c99a42);
+    box-shadow:
+      inset 0 0 0 1px #6e4a12,
+      0 0 18px rgb(242 200 107 / 0.45);
+    color: #1d1a10;
+  }
+  .ah-pick:focus-visible,
+  .ah-card :focus-visible,
+  .ah__steer :focus-visible {
+    outline: 2px solid #f2d27e;
+    outline-offset: 3px;
+  }
+
+  /* gift cards */
+  .ah-card {
+    position: absolute;
+    z-index: 4;
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    top: clamp(0.75rem, 2vw, 1.5rem);
+    max-height: calc(100% - 7rem);
+    width: min(27rem, 42vw);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.6rem 1.5rem 1.4rem;
+    border-radius: 3px;
+    background:
+      radial-gradient(ellipse at 50% 20%, rgb(255 251 240 / 0.9), transparent 70%),
+      linear-gradient(180deg, #f8efdc, #efe0bf);
+    color: #1d2a20;
+    box-shadow:
+      0 0 0 2px #c79d40,
+      0 0 0 6px #10221a,
+      0 0 0 7.5px #e9cf85,
+      0 30px 60px -18px rgb(0 0 0 / 0.8);
+    font-family: 'EB Garamond Variable', Georgia, serif;
+    font-size: 1.1rem;
+  }
+  .ah-card h2 {
+    font-family: 'Playfair Display Variable', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.85rem;
+    line-height: 1.1;
+    color: #18301f;
+    outline: none;
+  }
+  .ah-card__species {
+    font-style: italic;
+    color: #6b4a2e;
+  }
+  .ah-card__blurb {
+    margin-top: 0.4rem;
+  }
+  .ah-card__close {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.45rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #5e1a29;
+    font-size: 1.9rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .ah-card__close:hover {
+    background: rgb(122 38 55 / 0.1);
+  }
+  .ah-card__steer {
+    margin-top: 1rem;
+  }
+  .ah-items {
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    border-top: 1px solid rgb(168 130 58 / 0.55);
+  }
+  .ah-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 0.8rem;
+    align-items: baseline;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgb(168 130 58 / 0.35);
+  }
+  .ah-item__name {
+    font-family: 'Playfair Display Variable', Georgia, serif;
+    font-weight: 600;
+    font-size: 1.08rem;
+    color: #18301f;
+    text-decoration-color: rgb(168 130 58 / 0.8);
+  }
+  .ah-item__name:hover {
+    color: #5e1a29;
+  }
+  .ah-item__note {
+    display: block;
+    font-size: 0.98rem;
+    font-style: italic;
+    color: #6b4a2e;
+  }
+  .ah-item__price {
+    font-family: 'Playfair Display Variable', Georgia, serif;
+    font-variant-numeric: lining-nums;
+    color: #5e1a29;
+    white-space: nowrap;
+  }
+  .ah-claim,
+  .ah-claim-form button,
+  .ah-chip button,
+  .ah-chip__btn {
+    min-height: 2.5rem;
+    padding: 0.3rem 0.85rem 0.4rem;
+    border: 1px solid #8a6119;
+    border-radius: 3px;
+    background: #fffaf0;
+    color: #5e1a29;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .ah-claim {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: 0.3rem;
+  }
+  .ah-claim:hover,
+  .ah-chip button:hover {
+    background: #f3e3c0;
+  }
+  .ah-claimed {
+    grid-column: 1 / -1;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    color: #2f5640;
+  }
+  .ah-item.is-claimed .ah-item__name {
+    color: #4a5a4e;
+  }
+  .ah-claim-form {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .ah-claim-form input:not(.guest-form__hp) {
+    flex: 1 1 10rem;
+    min-height: 2.5rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid #a07a35;
+    border-radius: 3px;
+    background: #fffaf0;
+    font: inherit;
+    font-size: 1rem;
+  }
+  .ah-claim-status {
+    flex-basis: 100%;
+    font-style: italic;
+    color: #5e1a29;
+  }
+  .ah-chip {
+    margin-top: 1rem;
+  }
+  .ah-chip__label {
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.1rem;
+    color: #18301f;
+  }
+  .ah-chip__amounts,
+  .ah-chip__pay {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .ah-chip button[aria-pressed='true'] {
+    background: #5e1a29;
+    border-color: #5e1a29;
+    color: #fbeed2;
+  }
+  .ah-chip__btn {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    background: linear-gradient(180deg, #8a2d40, #5e1a29);
+    color: #fbeed2;
+    border-color: #4a1320;
+  }
+  .ah-card__credit {
+    margin-top: 1.1rem;
+    font-size: 0.92rem;
+    font-style: italic;
+    line-height: 1.45;
+    color: #5b4330;
+  }
+  .ah-card__credit a {
+    color: #2f5640;
+  }
+
+  /* steering */
+  .ah__steer {
+    position: absolute;
+    z-index: 4;
+    inset: auto 0 max(0.9rem, env(safe-area-inset-bottom)) 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 clamp(1rem, 3vw, 2rem);
+    pointer-events: none;
+  }
+  .ah__steer > * {
+    pointer-events: auto;
+  }
+  .ah__steer-hint {
+    flex: 1;
+    padding-bottom: 0.7rem;
+    text-align: center;
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.1rem;
+    color: #f0d48e;
+    text-shadow: 0 1px 6px rgb(0 0 0 / 0.9);
+  }
+  .ah-pad {
+    position: relative;
+    width: 8.5rem;
+    height: 8.5rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(14 28 21 / 0.55), rgb(14 28 21 / 0.85));
+    box-shadow:
+      inset 0 0 0 1.5px #c9a24f,
+      inset 0 0 0 5px rgb(14 28 21 / 0.8),
+      inset 0 0 0 6px rgb(201 162 79 / 0.4);
+    touch-action: none;
+  }
+  .ah-pad__knob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin: -1.7rem 0 0 -1.7rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff1b8, #d4a443 55%, #6e4a12);
+    box-shadow: 0 6px 14px rgb(0 0 0 / 0.6);
+  }
+  .ah__steer-touch {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .ah__steer-keys {
+      display: none;
+    }
+    .ah__steer-touch {
+      display: inline;
+    }
+  }
+  @media (pointer: fine) {
+    .ah-pad {
+      display: none;
+    }
+  }
+  .ah.is-steering .ah__picker,
+  .ah.is-steering .ah__head {
+    display: none;
+  }
+
+  /* phones: the card becomes a sheet above the picker */
+  @media (max-width: 47.99rem) {
+    .ah-card {
+      left: 0.6rem;
+      right: 0.6rem;
+      top: auto;
+      bottom: 4.9rem;
+      width: auto;
+      max-height: 60svh;
+      padding: 1.3rem 1.15rem 1.1rem;
+    }
+    .ah__head {
+      padding: 0.7rem 1rem 0.8rem;
+    }
+    .ah__back {
+      min-height: 2.5rem;
+      font-size: 0.98rem;
+    }
+    .ah.has-card .ah__lead,
+    .ah.has-card .ah__eyebrow {
+      display: none;
+    }
+    .ah-pick {
+      padding-inline: 0.7rem;
+      font-size: 1.02rem;
+    }
+    .ah__picker {
+      gap: 0.35rem;
+      padding: 0.35rem;
+    }
+  }
+
+  /* without WebGL: the cards as a simple list */
+  .ah--list {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+  .ah--list .ah__stage,
+  .ah--list .ah__picker,
+  .ah--list .ah-card__close,
+  .ah--list .ah-card__steer {
+    display: none;
+  }
+  .ah--list .ah__head {
+    position: relative;
+  }
+  .ah--list .ah__cards {
+    display: grid;
+    gap: 2.2rem;
+    padding: 1rem clamp(1rem, 4vw, 2rem) 3rem;
+    max-width: 30rem;
+  }
+  .ah--list .ah-card {
+    position: relative;
+    inset: auto;
+    display: block !important;
+    width: auto;
+    max-height: none;
+  }
+</style>

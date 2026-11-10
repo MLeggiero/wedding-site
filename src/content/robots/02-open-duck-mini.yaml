@@ -1,0 +1,31 @@
+name: Open Duck Mini v2
+species: Anas mechanica aperta
+blurb: An open-source duck you build yourself, servo by servo.
+scene: open-duck-mini
+items:
+  - id: odm-servos
+    label: Feetech STS3215 servo
+    qty: 14
+    price: 20
+    url: https://www.seeedstudio.com/STS3215-19kg-cm-7-4V-Serial-Servo-p-6338.html
+    note: The legs and neck take 14
+  - id: odm-pi-zero
+    label: Raspberry Pi Zero 2 W
+    price: 15
+    url: https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/
+  - id: odm-imu
+    label: BNO055 orientation sensor
+    price: 29.95
+    url: https://www.adafruit.com/product/4646
+  - id: odm-servo-adapter
+    label: Waveshare bus servo adapter
+    price: 4.99
+    url: https://www.waveshare.com/bus-servo-adapter-a.htm
+chipIn:
+  suggested: [25, 50, 100]
+  note: Open Duck build fund (batteries, switches, filament)
+project:
+  label: Open Duck Mini on GitHub
+  url: https://github.com/apirrone/Open_Duck_Mini
+credit: Open Duck Mini is by Antoine Pirrone and contributors (Apache-2.0). Shown here as a stylized portrait.
+checked: 2026-11-10

@@ -1,0 +1,33 @@
+# One file per robot in the After Hours room (the secret robot registry).
+# Prices in USD, checked on the date below; item ids must be unique site-wide
+# (they're what "I'm getting this" claims record).
+name: Microduck
+species: Anas mechanica minor
+blurb: A pocket-sized duck that learned to walk in simulation.
+scene: microduck
+items:
+  - id: microduck
+    label: Microduck
+    price: 399
+    url: https://store.pollen-robotics.com/products/microduck
+    note: Pre-order; ships after April 2027
+  - id: microduck-accessory-pack
+    label: Accessory Pack
+    price: 39
+    url: https://store.pollen-robotics.com/products/accessory-pack
+  - id: microduck-charger-pack
+    label: Charger Pack
+    price: 39
+    url: https://store.pollen-robotics.com/products/charger-pack
+  - id: microduck-dev-pack
+    label: Dev Pack
+    price: 119
+    url: https://store.pollen-robotics.com/products/dev-pack
+chipIn:
+  suggested: [25, 50, 100]
+  note: Microduck fund
+project:
+  label: Pollen Robotics
+  url: https://pollen-robotics.com/microduck/blog/introducing-microduck/
+credit: Microduck is by Pollen Robotics and Hugging Face. Shown here as a stylized portrait.
+checked: 2026-11-10

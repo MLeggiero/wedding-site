@@ -1,67 +1,80 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
-import ArchFrame from '../components/ArchFrame.astro';
+import CozyRoom from '../components/CozyRoom.astro';
+import RoomHeading from '../components/RoomHeading.astro';
+import GiltCard from '../components/GiltCard.astro';
+import HeroFrame from '../components/HeroFrame.astro';
 import { photo } from '../lib/photos';
 import { inlineMd } from '../lib/inline-md';
 import { withBase } from '../lib/url';
 
 const ch = Object.fromEntries((await getCollection('chapters')).map((c) => [c.id, c.data]));
-const q = ch['the-question'];
-const met = ch['how-we-met'];
+const notes = [ch['the-question'], ch['how-we-met']];
 ---
 
 <Base title="Our Story" description="How Ally & Mark got engaged.">
-  <PageHeader kicker="Our Story" title={q.title} />
+  <CozyRoom flora="full" label="Our story">
+    <RoomHeading eyebrow="Our story" title="The question" />
 
-  <section class="container story">
-    <div class="story__photo">
-      <ArchFrame photo={photo('20')} bars="frame" aspect={0.85} sizes="(min-width: 52rem) 26rem, 86vw" />
-    </div>
-    <div class="story__text">
-      <p class="lead" set:html={inlineMd(q.body)} />
-      <p class="kicker">{met.kicker}</p>
-      <p set:html={inlineMd(met.body)} />
-      <div class="story__actions">
-        <a class="btn" href={withBase('/travel/')}>Plan your trip</a>
-        <a class="btn btn--ghost" href={withBase('/registry/')}>Registry</a>
+    <div class="story container">
+      <div class="story__photo">
+        <HeroFrame photo={photo('20')} art="arch" mirror priority sizes="(min-width: 60rem) 28rem, 84vw" />
+      </div>
+      <div class="story__notes">
+        {
+          notes.map((n, i) => (
+            <GiltCard sprigs={i === 0 ? 'two' : 'none'} width="fill" as="article" class="note">
+              <p class="cc-kicker">{n.kicker}</p>
+              <h2 class="cc-title">{n.title}</h2>
+              <p class="cc-text" set:html={inlineMd(n.body)} />
+            </GiltCard>
+          ))
+        }
+        <div class="story__links">
+          <a class="btn-plate" href={withBase('/travel/')}>Getting to Athens</a>
+          <a class="btn-plate" href={withBase('/registry/')}>Gifts & giving</a>
+        </div>
       </div>
     </div>
-  </section>
+  </CozyRoom>
 </Base>
 
 <style>
   .story {
     display: grid;
-    gap: clamp(1.5rem, 5vw, 3.5rem);
+    gap: clamp(3rem, 6vw, 4.5rem);
     align-items: center;
-    padding-bottom: 2rem;
+    max-width: 66rem;
+    margin-top: clamp(3.5rem, 7vw, 5rem);
+    margin-bottom: clamp(4rem, 9vw, 5.5rem);
   }
   .story__photo {
-    width: min(100%, 26rem);
+    width: min(100%, 30rem);
     margin-inline: auto;
   }
-  .story__text {
+  .story__notes {
     display: grid;
-    gap: 0.8rem;
-    justify-items: center;
+    gap: 2.4rem;
+    width: min(100%, 30rem);
+    margin-inline: auto;
+  }
+  .story__notes :global(.note .gilt-card__body) {
+    display: grid;
+    gap: 0.35rem;
+    padding: 2rem 1.9rem 1.8rem;
     text-align: center;
   }
-  .story__actions {
+  .story__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
     justify-content: center;
-    margin-top: 0.6rem;
+    gap: 1.4rem 1.6rem;
+    margin-top: 0.4rem;
   }
-  @media (min-width: 52rem) {
+  @media (min-width: 60rem) {
     .story {
-      grid-template-columns: 26rem 1fr;
-    }
-    .story__text {
-      justify-items: start;
-      text-align: left;
+      grid-template-columns: 30rem 1fr;
     }
   }
 </style>

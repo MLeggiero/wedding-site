@@ -3,7 +3,7 @@
 // light and browsers cache the art across pages; Flora.astro and
 // HeroFrame.astro place the files as images.
 import { swag, bed, vine, sprigMagnolia, sprigJessamine, sprigFern, sprigAzalea, svgDocument, type Arrangement } from './flora';
-import { heroBack, heroFront } from './hero-art';
+import { heroBack, heroFront, archBack, archFront } from './hero-art';
 import { withBase } from './url';
 
 const builders = {
@@ -16,6 +16,8 @@ const builders = {
   'sprig-azalea': () => sprigAzalea(14),
   'hero-back': heroBack,
   'hero-front': heroFront,
+  'arch-back': archBack,
+  'arch-front': archFront,
 } satisfies Record<string, () => Arrangement>;
 
 export type ArtName = keyof typeof builders;

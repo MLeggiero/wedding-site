@@ -9,12 +9,15 @@ interface Props {
   lead?: string;
   /** heading level for the title */
   level?: 1 | 2;
+  /** 'page' for the top of a page, 'section' for a smaller heading further down */
+  size?: 'page' | 'section';
+  class?: string;
 }
-const { eyebrow, title, lead, level = 1 } = Astro.props;
+const { eyebrow, title, lead, level = 1, size = 'page', class: cls } = Astro.props;
 const Title = level === 1 ? 'h1' : 'h2';
 ---
 
-<header class="rh">
+<header class:list={['rh', `rh--${size}`, cls]}>
   {eyebrow && <p class="rh__eyebrow">{eyebrow}</p>}
   <Title class="rh__title">{title}</Title>
   <Flourish class="rh__flourish" />
@@ -47,6 +50,9 @@ const Title = level === 1 ? 'h1' : 'h2';
     background-clip: text;
     color: transparent;
     filter: drop-shadow(0 3px 1px rgb(0 0 0 / 0.45));
+  }
+  .rh--section .rh__title {
+    font-size: clamp(2.7rem, 2rem + 3vw, 4.2rem);
   }
   .rh :global(.rh__flourish) {
     width: min(17rem, 72%);

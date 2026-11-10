@@ -22,6 +22,8 @@ Everything is plain text — edit on GitHub's web editor and commit; the site re
 | Names, date, venue, details password, contact email, photo credit | `src/config.ts` |
 | Guest uploads & song requests endpoint, Spotify playlist link | `src/config.ts` (`guestEndpoint`, `spotifyPlaylistUrl`) |
 | Our Story text | `src/content/chapters.yaml` |
+| The robot room's robots, kits, parts and prices | `src/content/robots/*.yaml` |
+| Robot chip-in handles (Venmo, PayPal) | `src/config.ts` (`venmoHandle`, `paypalHandle`) |
 | FAQ | `src/content/faq.yaml` |
 | Athens field guide | `src/content/places.yaml` |
 | Charities | `src/content/charities.yaml` |
@@ -44,6 +46,23 @@ everything to a Google Sheet — nothing lands in this repo. Until it's set up, 
 2. Paste the web-app URL into `guestEndpoint` in `src/config.ts`.
 3. Optional: paste your Spotify playlist link into `spotifyPlaylistUrl` to show it on the Songs page.
    Requests arrive in the Sheet with a Spotify search link, ready to add.
+
+## The robot room (After Hours)
+
+A secret page: the glasshouse at night, where the robots come out. The only way in is the little
+**brass duck** hiding in the flower bed at the bottom of the Registry page (or the direct link,
+`/after-hours/`, for robot friends). It's unlisted and `noindex`.
+
+- **The robots:** stylized 3D portraits of Microduck, Open Duck Mini v2 and the reBot Arm
+  B601-DM with its Star Arm 102 leader. They walk the brick path, repot a fern, and Microduck can
+  be steered (joystick on phones, arrow keys or WASD on a computer).
+- **Gift cards:** tapping a robot opens its card, with store links and prices from
+  `src/content/robots/*.yaml`.
+- **Claims:** "I'm getting this" buttons appear once `guestEndpoint` is set; claims land in the
+  Sheet's `RobotClaims` tab.
+- **Chip-in:** Venmo and PayPal buttons appear once you fill in `venmoHandle` / `paypalHandle`.
+- **Fallbacks:** with no WebGL the page shows the cards as a list; with reduced motion the scene
+  holds still.
 
 ## QR codes
 

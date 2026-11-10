@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import HeroFrame from '../components/HeroFrame.astro';
-import ArchFrame from '../components/ArchFrame.astro';
+import GiltCard from '../components/GiltCard.astro';
+import Photo from '../components/Photo.astro';
 import Countdown from '../components/Countdown.astro';
 import CozyRoom from '../components/CozyRoom.astro';
 import Flourish from '../components/Flourish.astro';
@@ -10,7 +11,7 @@ import { withBase } from '../lib/url';
 import { guestLinks, site } from '../config';
 
 const cards = [
-  { href: '/our-story/', kicker: 'Our Story', title: 'The question', photo: photo('20'), cta: 'Read it' },
+  { href: '/our-story/', kicker: 'Our story', title: 'The question', photo: photo('20'), cta: 'Read it' },
   { href: '/travel/', kicker: 'Travel', title: 'Getting to Athens', photo: photo('62'), cta: 'Plan your trip' },
   { href: '/registry/', kicker: 'Registry', title: 'Gifts & giving', photo: photo('40'), cta: 'Take a look' },
 ];
@@ -54,28 +55,28 @@ const cards = [
     </div>
   </CozyRoom>
 
-  <section class="section cards-section" aria-label="Explore">
+  <CozyRoom class="explore" label="Explore" flora="small" fireflies={[[6, 30, 4.6, 0.3], [94, 60, 5.2, 1.6], [50, 92, 4.2, 2.4]]}>
     <div class="container cards">
       {
         cards.map((c) => (
-          <article class="card glass reveal">
-            <ArchFrame photo={c.photo} aspect={0.82} bars="frame" sizes="(min-width: 64rem) 20rem, (min-width: 40rem) 42vw, 80vw" />
-            <div class="card__body">
-              <p class="kicker">{c.kicker}</p>
-              <h3>
-                <a class="card__link" href={withBase(c.href)}>
-                  {c.title}
-                </a>
-              </h3>
-              <span class="arrow-link" aria-hidden="true">
-                {c.cta}
-              </span>
+          <GiltCard sprigs="none" width="fill" as="article" class="card">
+            <div class="card__photo">
+              <Photo photo={c.photo} sizes="(min-width: 64rem) 20rem, (min-width: 40rem) 42vw, 80vw" widths={[480, 800, 1200]} />
             </div>
-          </article>
+            <p class="cc-kicker">{c.kicker}</p>
+            <h2 class="cc-title">
+              <a class="card__link" href={withBase(c.href)}>
+                {c.title}
+              </a>
+            </h2>
+            <span class="card__cta" aria-hidden="true">
+              {c.cta} →
+            </span>
+          </GiltCard>
         ))
       }
     </div>
-  </section>
+  </CozyRoom>
 
   <CozyRoom
     class="join"
@@ -249,23 +250,40 @@ const cards = [
   }
 
   /* ---------- cards ---------- */
+  .explore {
+    --room-pad: clamp(3.5rem, 7vw, 5rem);
+  }
   .cards {
     display: grid;
-    gap: clamp(1.25rem, 3vw, 2rem);
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: clamp(2rem, 4vw, 2.6rem);
+    grid-template-columns: repeat(auto-fit, minmax(16.5rem, 1fr));
   }
-  .card {
+  .cards :global(.card .gilt-card__body) {
     display: grid;
-    gap: 1rem;
-    padding: 1.1rem 1.1rem 1.4rem;
-  }
-  .card__body {
-    display: grid;
-    gap: 0.35rem;
+    justify-items: center;
+    gap: 0.3rem;
+    padding: 1.4rem 1.4rem 1.6rem;
     text-align: center;
   }
-  .card h3 {
-    font-size: 1.9rem;
+  .card__photo {
+    width: 100%;
+    aspect-ratio: 0.86;
+    margin-bottom: 0.9rem;
+    overflow: hidden;
+    border-radius: 50% 50% 3px 3px / 36% 36% 3px 3px;
+    box-shadow:
+      0 0 0 2px #c79d40,
+      0 0 0 5px #f6ecd6,
+      0 0 0 6.5px #a07a35;
+  }
+  .card__photo :global(picture),
+  .card__photo :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .card__photo :global(img) {
+    object-fit: cover;
+    object-position: var(--focus);
   }
   .card__link {
     color: inherit;
@@ -277,7 +295,19 @@ const cards = [
     inset: 0;
     z-index: 3;
   }
-  .card .arrow-link {
-    color: var(--green-700);
+  .card__link:focus-visible {
+    outline: none;
+  }
+  .cards :global(.card:has(.card__link:focus-visible)) {
+    outline: 2px solid #f2d27e;
+    outline-offset: 10px;
+  }
+  .cards :global(.card:hover .cc-title) {
+    color: #5e1a29;
+  }
+  .card__cta {
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.1rem;
+    color: #5e1a29;
   }
 </style>

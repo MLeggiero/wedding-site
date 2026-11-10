@@ -12,8 +12,17 @@ interface Props {
   photo: PhotoT;
   alt?: string;
   sizes?: string;
+  /** 'hero': the full wreath (home page); 'arch': the lighter frame for inner pages */
+  art?: 'hero' | 'arch';
+  /** flip the plants left↔right (the arch art only; its file is symmetric) */
+  mirror?: boolean;
+  /** load the photo first (above the fold) */
+  priority?: boolean;
+  class?: string;
 }
-const { photo, alt, sizes = '(min-width: 64rem) 34rem, 92vw' } = Astro.props;
+const { photo, alt, sizes = '(min-width: 64rem) 34rem, 92vw', art = 'hero', mirror = false, priority = art === 'hero', class: cls } = Astro.props;
+const back = `${art}-back` as ArtName;
+const front = `${art}-front` as ArtName;
 
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 const winStyle = [
@@ -30,13 +39,13 @@ const layerStyle = (name: ArtName) => {
 };
 ---
 
-<figure class="hf">
-  <img class="hf__layer" src={artUrl('hero-back')} alt="" style={layerStyle('hero-back')} decoding="async" />
+<figure class:list={['hf', cls, { 'hf--mirror': mirror }]}>
+  <img class="hf__layer" src={artUrl(back)} alt="" style={layerStyle(back)} decoding="async" loading={priority ? 'eager' : 'lazy'} />
   <div class="hf__window" style={winStyle}>
-    <Photo photo={photo} alt={alt} sizes={sizes} priority widths={[600, 900, 1200, 1600]} />
+    <Photo photo={photo} alt={alt} sizes={sizes} priority={priority} widths={[600, 900, 1200, 1600]} />
     <span class="hf__glow" aria-hidden="true"></span>
   </div>
-  <img class="hf__layer" src={artUrl('hero-front')} alt="" style={layerStyle('hero-front')} decoding="async" />
+  <img class="hf__layer" src={artUrl(front)} alt="" style={layerStyle(front)} decoding="async" loading={priority ? 'eager' : 'lazy'} />
 </figure>
 
 <style>
@@ -44,6 +53,9 @@ const layerStyle = (name: ArtName) => {
     position: relative;
     aspect-ratio: 1000 / 1300;
     margin: 0;
+  }
+  .hf--mirror .hf__layer {
+    scale: -1 1;
   }
   .hf__layer {
     position: absolute;

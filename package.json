@@ -22,10 +22,12 @@
     "@fontsource-variable/source-sans-3": "^5.3.1",
     "@fontsource/ballet": "^5.3.0",
     "@fontsource/im-fell-english-sc": "^5.3.0",
-    "astro": "^7.4.8"
+    "astro": "^7.4.8",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@types/three": "0.186.0",
     "qrcode": "^1.5.4",
     "typescript": "^6.0.3"
   }

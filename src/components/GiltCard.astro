@@ -5,27 +5,35 @@ import Flora from './Flora.astro';
 
 interface Props {
   class?: string;
+  /** native sprigs over the corners: all four, two (top-left and bottom-right), or none */
+  sprigs?: 'four' | 'two' | 'none';
+  /** 'page': centred, up to 40rem wide; 'fill': fill its grid cell */
+  width?: 'page' | 'fill';
+  /** semantic element for the card */
+  as?: 'div' | 'article' | 'section';
 }
-const { class: cls } = Astro.props;
+const { class: cls, sprigs = 'four', width = 'page', as: Tag = 'div' } = Astro.props;
 ---
 
-<div class:list={['gilt-card', cls]}>
-  <div class="gilt-card__sprigs" aria-hidden="true">
-    <Flora name="sprig-magnolia" eager class="gilt-card__sprig gilt-card__sprig--tl" />
-    <Flora name="sprig-jessamine" eager class="gilt-card__sprig gilt-card__sprig--tr" />
-    <Flora name="sprig-fern" class="gilt-card__sprig gilt-card__sprig--bl" />
-    <Flora name="sprig-azalea" class="gilt-card__sprig gilt-card__sprig--br" />
-  </div>
+<Tag class:list={['gilt-card', `gilt-card--${width}`, cls]}>
+  {
+    sprigs !== 'none' && (
+      <div class="gilt-card__sprigs" aria-hidden="true">
+        <Flora name="sprig-magnolia" class="gilt-card__sprig gilt-card__sprig--tl" />
+        {sprigs === 'four' && <Flora name="sprig-jessamine" class="gilt-card__sprig gilt-card__sprig--tr" />}
+        {sprigs === 'four' && <Flora name="sprig-fern" class="gilt-card__sprig gilt-card__sprig--bl" />}
+        <Flora name="sprig-azalea" class="gilt-card__sprig gilt-card__sprig--br" />
+      </div>
+    )
+  }
   <div class="gilt-card__body">
     <slot />
   </div>
-</div>
+</Tag>
 
 <style>
   .gilt-card {
     position: relative;
-    width: min(100% - 2 * max(var(--gutter), 1.75rem), 40rem);
-    margin-inline: auto;
     border-radius: 3px;
     background:
       radial-gradient(ellipse at 50% 35%, rgb(255 251 240 / 0.9), transparent 70%),
@@ -36,6 +44,10 @@ const { class: cls } = Astro.props;
       0 0 0 7px #18301f,
       0 0 0 8.5px #e9cf85,
       0 30px 60px -18px rgb(0 0 0 / 0.75);
+  }
+  .gilt-card--page {
+    width: min(100% - 2 * max(var(--gutter), 1.75rem), 40rem);
+    margin-inline: auto;
   }
   .gilt-card::before {
     content: '';

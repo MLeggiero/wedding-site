@@ -1,15 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
-import CozyRoom from '../components/CozyRoom.astro';
-import RoomHeading from '../components/RoomHeading.astro';
+import FloralSection from '../components/FloralSection.astro';
+import SectionHeading from '../components/SectionHeading.astro';
 import { withBase } from '../lib/url';
 ---
 
-<Base title="Off the path">
-  <CozyRoom flora="full" label="Page not found" class="lost">
-    <RoomHeading eyebrow="Page not found" title="Off the path" lead="This corner of the garden hasn’t been planted yet." />
-    <p class="lost__home"><a class="btn-plate" href={withBase('/')}>Back to the garden</a></p>
-  </CozyRoom>
+<Base title="Page not found">
+  <FloralSection flora="full" label="Page not found" class="lost">
+    <SectionHeading eyebrow="page not found" title="Off the path" />
+    <p class="lost__home"><a class="btn" href={withBase('/')}>Home</a></p>
+  </FloralSection>
 </Base>
 
 <style>
@@ -22,6 +22,9 @@ import { withBase } from '../lib/url';
   .lost__home {
     display: flex;
     justify-content: center;
-    margin-top: 2.2rem;
+    margin-top: 2rem;
+  }
+  .lost__home .btn {
+    min-width: 11rem;
   }
 </style>

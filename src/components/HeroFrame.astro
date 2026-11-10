@@ -1,12 +1,13 @@
 ---
-// The hero "frame": a gilded arch holding a photo, wreathed in plants native to
-// the southeastern US. Three stacked layers share one 1000×1300 coordinate
-// system (lib/hero-art.ts): plants behind → the photo (HTML, responsive) →
-// gilt frame + plants in front. The two art layers are cached SVG files.
+// The photo frame: a fine double-ruled arch holding a photo, with engraved
+// plants native to the southeastern US. Three stacked layers share one
+// 1000×1300 coordinate system (lib/hero-art.ts): plants behind (each fern and
+// leaf its own swaying image), then the photo (HTML, responsive), then the
+// ruled frame and the plants in front. The art layers are cached SVG files.
 import Photo from './Photo.astro';
 import type { Photo as PhotoT } from '../lib/photos';
 import { HERO_BOX as VB, HERO_WINDOW as W } from '../lib/hero-art';
-import { artUrl, artView, type ArtName } from '../lib/art';
+import { artUrl, artView, artLayers, type ArtName } from '../lib/art';
 
 interface Props {
   photo: PhotoT;
@@ -37,13 +38,23 @@ const layerStyle = (name: ArtName) => {
   const [x, y, w, h] = artView(name);
   return `left:${pct(x, VB.w)};top:${pct(y, VB.h)};width:${pct(w, VB.w)};height:${pct(h, VB.h)}`;
 };
+// the back layer's ferns and leaves sway on their own (a mirrored frame mirrors their places too)
+const backLayers = artLayers(back);
+const swayStyle = (s: (typeof backLayers.sways)[number]) => {
+  const [x, y, w] = s.view;
+  return `left:${pct(mirror ? VB.w - x - w : x, VB.w)};top:${pct(y, VB.h)};width:${pct(w, VB.w)};--amp:${s.amp}deg;--dur:${s.dur}s;--delay:${s.delay}s`;
+};
 ---
 
 <figure class:list={['hf', cls, { 'hf--mirror': mirror }]}>
-  <img class="hf__layer" src={artUrl(back)} alt="" style={layerStyle(back)} decoding="async" loading={priority ? 'eager' : 'lazy'} />
+  {
+    backLayers.sways.map((s) => (
+      <img class="sway hf__sway" src={s.url} alt="" width={s.view[2]} height={s.view[3]} style={swayStyle(s)} decoding="async" loading={priority ? 'eager' : 'lazy'} />
+    ))
+  }
+  {backLayers.base && <img class="hf__layer" src={backLayers.base} alt="" style={layerStyle(back)} decoding="async" loading={priority ? 'eager' : 'lazy'} />}
   <div class="hf__window" style={winStyle}>
     <Photo photo={photo} alt={alt} sizes={sizes} priority={priority} widths={[600, 900, 1200, 1600]} />
-    <span class="hf__glow" aria-hidden="true"></span>
   </div>
   <img class="hf__layer" src={artUrl(front)} alt="" style={layerStyle(front)} decoding="async" loading={priority ? 'eager' : 'lazy'} />
 </figure>
@@ -54,7 +65,7 @@ const layerStyle = (name: ArtName) => {
     aspect-ratio: 1000 / 1300;
     margin: 0;
   }
-  .hf--mirror .hf__layer {
+  .hf--mirror :is(.hf__layer, .hf__sway) {
     scale: -1 1;
   }
   .hf__layer {
@@ -67,7 +78,7 @@ const layerStyle = (name: ArtName) => {
     position: absolute;
     overflow: hidden;
     border-radius: 50% 50% 0 0 / var(--ry) var(--ry) 0 0;
-    background: #2a3a2c;
+    background: var(--paper);
   }
   .hf__window :global(picture),
   .hf__window :global(img) {
@@ -77,14 +88,6 @@ const layerStyle = (name: ArtName) => {
   .hf__window :global(img) {
     object-fit: cover;
     object-position: var(--focus);
-  }
-  .hf__glow {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(120% 80% at 50% 0%, rgb(255 236 190 / 0.18), transparent 55%),
-      linear-gradient(180deg, transparent 70%, rgb(24 48 31 / 0.35));
-    mix-blend-mode: soft-light;
-    box-shadow: inset 0 0 40px 6px rgb(16 30 20 / 0.55);
+    filter: var(--photo-tone);
   }
 </style>

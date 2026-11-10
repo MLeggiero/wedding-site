@@ -1,0 +1,21 @@
+---
+// An engraved divider: a small dogwood blossom with a leafy sprig to each side.
+import { artUrl, artView } from '../lib/art';
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+const [, , w, h] = artView('divider');
+---
+
+<img class:list={['divider', cls]} src={artUrl('divider')} alt="" width={w} height={h} decoding="async" />
+
+<style>
+  .divider {
+    width: min(14rem, 70%);
+    height: auto;
+    margin-inline: auto;
+    user-select: none;
+  }
+</style>

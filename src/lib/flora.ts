@@ -1,11 +1,12 @@
-// Ready-made arrangements of southeastern native plants, built from the
-// generators in natives.ts. lib/art.ts writes each one to an SVG file at build
-// time and Flora.astro places it as an image.
+// Arrangements of engraved native plants (lib/engrave.ts) for the site's
+// borders, card corners and dividers. lib/art.ts writes each one to SVG files
+// at build time and Flora.astro places them as images. Some parts (fronds,
+// sprigs, leaves) are kept apart as `sway` layers, so they can move in a
+// gentle breeze while the rest of the drawing stays still.
 import {
-  NV_DEFS, LIFT_DEFS,
-  rng, place, magnoliaLeaf, magnoliaFlower, dogwoodFlower, azalea, honeysuckle, jessamine, redbud,
-  christmasFern, maidenhair, cinnamonFern, spanishMoss, trillium, passionflower, swallowtail,
-} from './natives';
+  place, ink, INK_STYLE, magnoliaLeaf, magnoliaFlower, magnoliaBud, dogwoodLeaf, dogwoodFlower, dogwoodBranch,
+  azalea, christmasFern, trillium, passionflower, passionLeaf, tendril, jessamine, sprig, leaf,
+} from './engrave';
 
 export interface Arrangement {
   /** the nominal box (0,0)–(w,h) that CSS sizes and anchors */
@@ -15,171 +16,167 @@ export interface Arrangement {
   /**
    * The region written to the file, [x, y, width, height]. Plants spill past
    * the nominal box, so this adds headroom on the sides that show; it starts
-   * at the anchor (a room corner, a card corner's centre) so CSS needs no offsets.
+   * at the anchor (a section corner, a card corner's centre) so CSS needs no offsets.
    */
   view?: [number, number, number, number];
-  /** extra <defs> the markup needs */
-  defs?: string;
-  /** wrap the markup in the soft drop shadow (default true) */
-  lift?: boolean;
+  /** parts drawn as their own layers behind the rest, each pivoting where it grows from */
+  sway?: Sway[];
 }
 
-/** A standalone SVG document for an arrangement. */
+export interface Sway {
+  /** the part, in the arrangement's coordinates */
+  markup: string;
+  /** the point it grows or hangs from: it pivots here */
+  at: [number, number];
+  /** how far it reaches from that point (sets its file's square view) */
+  reach: number;
+  /** how far it swings each way, in degrees */
+  amp: number;
+}
+
+/** Place a part as a swaying layer (same arguments as `place`, plus its reach and swing). */
+export function sway(markup: string, x: number, y: number, rot: number, reach: number, amp: number, scale = 1, mirror = false): Sway {
+  return { markup: place(markup, x, y, rot, scale, mirror), at: [x, y], reach: reach * scale, amp };
+}
+
+/** A sway layer's view: a square centred on its pivot. */
+export const swayView = (s: Sway): [number, number, number, number] => [s.at[0] - s.reach, s.at[1] - s.reach, s.reach * 2, s.reach * 2];
+
+const doc = ([x, y, w, h]: readonly number[], markup: string) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${w}" height="${h}">${INK_STYLE}${ink(markup)}</svg>`;
+
+/** The whole arrangement as one still SVG document (swaying parts included, behind the rest). */
 export function svgDocument(a: Arrangement): string {
-  const [x, y, w, h] = a.view ?? [0, 0, a.w, a.h];
-  const body = a.lift === false ? a.markup : `<g filter="url(#nv-lift)">${a.markup}</g>`;
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${w}" height="${h}">` +
-    `<defs>${NV_DEFS}${LIFT_DEFS}${a.defs ?? ''}</defs>${body}</svg>`
-  );
+  return doc(a.view ?? [0, 0, a.w, a.h], (a.sway ?? []).map((s) => s.markup).join('') + a.markup);
+}
+/** Just the still part of an arrangement. */
+export const baseDocument = (a: Arrangement) => doc(a.view ?? [0, 0, a.w, a.h], a.markup);
+/** One swaying part, in its own square view around its pivot. */
+export const swayDocument = (s: Sway) => doc(swayView(s), s.markup);
+
+/** Outline weight, in screen pixels, for every drawing on the site. */
+export const PEN = 1.15;
+
+/**
+ * Top-left corner of a section: a magnolia in bloom with its leaves, a dogwood
+ * branch and jessamine running along the top edge, a fern hanging down the
+ * left. Origin = the section's top-left corner.
+ */
+export function corner(): Arrangement {
+  const p = PEN;
+  // behind, swaying: a fern down the left edge, a sprig, the dogwood branch,
+  // jessamine along the top and magnolia leaves fanning from the corner
+  const sways = [
+    sway(christmasFern(330, p, 21, -0.18), 34, 30, 172, 340, 1.4),
+    sway(sprig(230, p, 22, 7), 70, 40, 132, 240, 2.2),
+    sway(dogwoodBranch(330, p, 23), 40, 54, 98, 490, 0.7),
+    sway(jessamine(300, p, 24), 210, 20, 3, 320, 1.1),
+    ...[118, 142, 166, 192].map((a, i) => sway(magnoliaLeaf(150 + i * 8, p, 25 + i, i % 2 ? 1 : -1), 58, 58, a, 204, 1.8)),
+  ];
+  const parts = [
+    place(magnoliaLeaf(140, p, 31), 70, 70, 74),
+    // in front: the flower, a bud and a small sprig
+    place(magnoliaBud(76, p, 32), 168, 128, 128),
+    place(magnoliaFlower(84, p, 33), 92, 94),
+    place(sprig(120, p, 34, 4), 40, 168, 196),
+    place(tendril(70, 1.6, p, 35), 330, 30, 12),
+  ];
+  return { w: 460, h: 440, view: [0, 0, 560, 470], markup: parts.join(''), sway: sways };
 }
 
 /**
- * Top-corner swag for a room: a magnolia bough from the corner, Spanish moss
- * hanging from it, Carolina jessamine trailing along the top edge, redbud,
- * dogwood and a magnolia blossom. Origin = the room's top-left corner.
+ * Bottom-left corner of a section: ferns, a native azalea, trillium and a
+ * maypop rising from the bottom edge. Origin = the section's bottom-left corner.
  */
-export function swag(seed = 1): Arrangement {
-  const R = rng(seed * 101);
-  const j = (v: number) => (R() - 0.5) * v;
-  const back = [
-    // ferns and leaves fanning out of the corner
-    place(christmasFern(330, 0.32, seed + 1, 'url(#nv-fern-light)'), 20, 30, 128 + j(10), 1),
-    place(christmasFern(280, -0.3, seed + 2), 40, 10, 104 + j(8), 1),
-    place(christmasFern(250, 0.25, seed + 3), 10, 60, 160 + j(8), 1),
-    ...[96, 112, 128, 146, 162, 176].map((a, i) => place(magnoliaLeaf(170 + R() * 70, i % 3 === 2), 18 + j(20), 18 + j(20), a + j(10), 1)),
-    // Spanish moss hanging off the bough
-    place(spanishMoss(300, 64, seed + 4), 120, 40, 0, 1),
-    place(spanishMoss(260, 54, seed + 5), 215, 24, 0, 1),
-    place(spanishMoss(240, 46, seed + 6), 60, 120, 0, 1),
-    place(spanishMoss(190, 36, seed + 7), 310, 14, 0, 1),
-  ];
-  const front = [
-    place(jessamine(430, seed + 8), 30, 18, 6 + j(4), 1),
-    place(redbud(250, seed + 9), 30, 110, 32 + j(6), 1),
-    place(magnoliaLeaf(150), 70, 60, 70 + j(8), 1),
-    place(magnoliaLeaf(140, true), 60, 80, 196 + j(8), 1),
-    place(magnoliaFlower(84, seed + 10), 78, 74, 12, 1),
-    place(dogwoodFlower(40, seed + 11), 180, 66, 18, 1),
-    place(dogwoodFlower(34, seed + 12), 40, 182, -12, 1),
-    place(azalea(48, 'pink', seed + 13), 150, 140, 0, 1),
-  ];
-  return { w: 460, h: 440, view: [0, 0, 530, 440], markup: back.join('') + front.join('') };
-}
-
-/**
- * Bottom-corner bed for a room: Christmas and cinnamon ferns, maidenhair,
- * magnolia leaves, azaleas and Sweet Betsy trillium. Origin = bottom-left.
- */
-export function bed(seed = 1): Arrangement {
-  const R = rng(seed * 131);
-  const j = (v: number) => (R() - 0.5) * v;
+export function cornerLow(): Arrangement {
+  const p = PEN;
   const H = 460;
-  const back = [
-    place(christmasFern(400, 0.4, seed + 1, 'url(#nv-fern-light)'), 40, H, 22 + j(6), 1),
-    place(christmasFern(360, 0.3, seed + 2), 10, H, 4 + j(6), 1),
-    place(christmasFern(320, 0.45, seed + 3), 90, H, 48 + j(6), 1),
-    place(christmasFern(260, 0.35, seed + 4), 150, H, 70 + j(6), 1),
-    place(cinnamonFern(300, seed + 5), 120, H, 12, 1),
-    place(cinnamonFern(240, seed + 6), 190, H, 26, 1),
-    place(maidenhair(170, seed + 7), 250, H, 30, 1),
-    ...[20, 40, 60, 78].map((a, i) => place(magnoliaLeaf(160 + R() * 50, i === 2), 30 + i * 40, H - 20, a + j(10), 1)),
+  // behind, swaying: two ferns, a sprig and a maypop leaf rising from the bottom edge
+  const sways = [
+    sway(christmasFern(340, p, 41, 0.22), 46, H, 8, 350, 1.4),
+    sway(christmasFern(280, p, 42, 0.3), 120, H, 46, 290, 1.8),
+    sway(sprig(220, p, 43, 6), 210, H, 70, 274, 2.2),
+    sway(passionLeaf(110, p, 44), 270, H - 10, 58, 144, 2.6),
   ];
-  const front = [
-    place(azalea(66, 'flame', seed + 8), 120, H - 150, 0, 1),
-    place(azalea(54, 'pink', seed + 9), 250, H - 90, 0, 1),
-    place(dogwoodFlower(44, seed + 10), 40, H - 230, 10, 1),
-    place(dogwoodFlower(38, seed + 11), 210, H - 200, -16, 1),
-    place(trillium(42, seed + 12), 60, H - 60, -6, 1),
-    place(trillium(36, seed + 13), 330, H - 40, 8, 1),
-    place(passionflower(46, seed + 14), 330, H - 130, 0, 1),
+  const parts = [
+    place(tendril(80, 1.8, p, 45), 300, H - 70, -20),
+    place(azalea(92, p, 46), 96, H - 120, 8),
+    ...[30, 64].map((a, i) => place(dogwoodLeaf(120, p, 47 + i, i ? 1 : -1), 40, H - 10, a)),
+    place(trillium(54, p, 49), 196, H - 62),
+    place(passionflower(52, p, 50), 330, H - 120),
+    place(dogwoodFlower(36, p, 51), 40, H - 210),
   ];
-  return { w: 420, h: H, view: [0, 0, 484, H], markup: back.join('') + front.join('') };
+  return { w: 420, h: H, view: [0, -40, 470, H + 40], markup: parts.join(''), sway: sways };
+}
+
+/** A climbing jessamine for the side wall of a tall section; grows up from the bottom of its box. */
+export function vine(): Arrangement {
+  const p = PEN;
+  const H = 760;
+  const sways = [sway(sprig(200, p, 62, 6), 90, H - 380, 26, 234, 2.2)];
+  const parts = [
+    place(jessamine(640, p, 61), 70, H, -86),
+    place(tendril(70, 1.5, p, 63), 70, H - 520, -40),
+    place(passionflower(44, p, 64), 120, H - 600),
+  ];
+  return { w: 200, h: H, view: [-40, -40, 280, H + 60], markup: parts.join(''), sway: sways };
 }
 
 /** Card corner sprigs. Each sits centred on a card corner (the middle of its box). */
-const SPRIG_VIEW: [number, number, number, number] = [-110, -110, 520, 520];
+const SPRIG_VIEW: [number, number, number, number] = [-40, -40, 380, 380];
 
-export function sprigMagnolia(seed = 1): Arrangement {
+export function sprigMagnolia(): Arrangement {
+  const p = PEN;
   const C = 150;
-  const parts = [
-    place(maidenhair(110, seed), C - 30, C - 10, -50, 1),
-    place(magnoliaLeaf(120), C, C, -20, 1),
-    place(magnoliaLeaf(112, true), C, C, -78, 1),
-    place(magnoliaLeaf(100), C, C, 32, 1),
-    place(magnoliaLeaf(90, true), C, C, -128, 1),
-    place(magnoliaFlower(62, seed + 1), C - 6, C - 8, 8, 1),
-    place(dogwoodFlower(28, seed + 2), C + 58, C - 34, 16, 1),
-    place(dogwoodFlower(24, seed + 3), C - 50, C + 44, -10, 1),
+  const sways = [
+    sway(magnoliaLeaf(118, p, 71, 1), C, C, -32, 134, 2.4),
+    sway(magnoliaLeaf(108, p, 72, -1), C, C, -96, 128, 2.4),
+    sway(sprig(120, p, 73, 4), C, C, 40, 128, 3),
   ];
-  return { w: 300, h: 300, view: SPRIG_VIEW, markup: parts.join('') };
+  return { w: 300, h: 300, view: SPRIG_VIEW, markup: place(magnoliaFlower(48, p, 74), C, C), sway: sways };
 }
 
-export function sprigJessamine(seed = 1): Arrangement {
+export function sprigDogwood(): Arrangement {
+  const p = PEN;
   const C = 150;
-  const parts = [
-    place(christmasFern(150, 0.3, seed, 'url(#nv-fern-light)'), C, C, 40, 1),
-    place(jessamine(240, seed + 1), C + 10, C - 6, 180, 1),
-    place(honeysuckle(46, seed + 2), C + 4, C - 4, 30, 1),
-    place(dogwoodFlower(26, seed + 3), C + 52, C + 30, 10, 1),
+  const sways = [
+    sway(dogwoodLeaf(100, p, 81, -1), C, C, 20, 124, 2.6),
+    sway(dogwoodLeaf(92, p, 82, 1), C, C, 96, 114, 2.6),
+    sway(sprig(110, p, 83, 4), C, C, -40, 118, 3),
   ];
-  return { w: 300, h: 300, view: SPRIG_VIEW, markup: parts.join('') };
+  return { w: 300, h: 300, view: SPRIG_VIEW, markup: place(dogwoodFlower(40, p, 84), C, C), sway: sways };
 }
 
-export function sprigFern(seed = 1): Arrangement {
+export function sprigFern(): Arrangement {
+  const p = PEN;
   const C = 150;
-  const parts = [
-    place(christmasFern(160, 0.35, seed), C, C, -150, 1),
-    place(christmasFern(130, -0.3, seed + 1, 'url(#nv-fern-light)'), C, C, -112, 1),
-    place(magnoliaLeaf(96), C, C, -170, 1),
-    place(azalea(40, 'pink', seed + 2), C - 10, C + 6, 0, 1),
-    place(trillium(28, seed + 3), C + 40, C + 34, 10, 1),
+  const sways = [
+    sway(christmasFern(150, p, 91, 0.25), C, C, -150, 158, 2.4),
+    sway(christmasFern(120, p, 92, -0.2), C, C, -108, 128, 2.8),
   ];
-  return { w: 300, h: 300, view: SPRIG_VIEW, markup: parts.join('') };
+  return { w: 300, h: 300, view: SPRIG_VIEW, markup: place(trillium(34, p, 93), C, C), sway: sways };
 }
 
-export function sprigAzalea(seed = 1): Arrangement {
+export function sprigMaypop(): Arrangement {
+  const p = PEN;
   const C = 150;
-  const parts = [
-    place(cinnamonFern(130, seed), C + 10, C + 40, 30, 1),
-    place(christmasFern(150, 0.3, seed + 1), C, C, 140, 1),
-    place(magnoliaLeaf(100, true), C, C, 100, 1),
-    place(magnoliaLeaf(90), C, C, 168, 1),
-    place(azalea(44, 'flame', seed + 2), C + 6, C + 4, 0, 1),
-    place(passionflower(30, seed + 3), C - 46, C + 30, 0, 1),
-    place(dogwoodFlower(24, seed + 4), C + 44, C - 40, -8, 1),
+  const sways = [
+    sway(passionLeaf(90, p, 101), C, C, 150, 120, 2.6),
+    sway(sprig(100, p, 103, 4), C, C, 110, 122, 3),
   ];
-  return { w: 300, h: 300, view: SPRIG_VIEW, markup: parts.join('') };
+  const parts = [place(tendril(70, 1.6, p, 102), C, C, 20), place(passionflower(40, p, 104), C, C)];
+  return { w: 300, h: 300, view: SPRIG_VIEW, markup: parts.join(''), sway: sways };
 }
 
-/**
- * A climbing vine for the side wall of a tall room: Carolina jessamine
- * zig-zagging up the trellis laths, with coral honeysuckle and maypop at the
- * bends and a tiger swallowtail. Grows up from the bottom of its box.
- */
-export function vine(seed = 1): Arrangement {
-  const W = 260;
-  const H = 780;
-  const bends: [number, number][] = [
-    [60, H],
-    [190, H - 250],
-    [70, H - 500],
-    [180, H - 740],
+/** A divider: a small dogwood blossom with a leafy sprig reaching out to each side. */
+export function divider(): Arrangement {
+  const p = PEN;
+  const parts = [
+    place(sprig(150, p, 111, 5), 182, 34, -96),
+    place(sprig(150, p, 112, 5), 178, 34, 96, 1, true),
+    place(leaf({ L: 38, W: 9, widest: 0.45, acuminate: 0.5, veins: 2, shade: 0, seed: 113 }, p), 180, 34, -30),
+    place(leaf({ L: 38, W: 9, widest: 0.45, acuminate: 0.5, veins: 2, shade: 0, seed: 114 }, p), 180, 34, 30),
+    place(dogwoodFlower(17, p, 115), 180, 34),
   ];
-  const parts: string[] = [];
-  for (let k = 0; k < bends.length - 1; k++) {
-    const [x0, y0] = bends[k];
-    const [x1, y1] = bends[k + 1];
-    const ang = (Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
-    parts.push(place(jessamine(Math.hypot(x1 - x0, y1 - y0), seed + k, 640), x0, y0, ang, 1));
-  }
-  parts.push(
-    place(maidenhair(120, seed + 4), 70, H, 12, 1),
-    place(honeysuckle(50, seed + 5), 190, H - 250, -30, 1),
-    place(passionflower(42, seed + 6), 70, H - 500, 0, 1),
-    place(honeysuckle(44, seed + 7), 178, H - 735, 24, 1),
-    place(passionflower(30, seed + 8), 132, H - 360, 0, 1),
-    place(swallowtail(40, `vine-${seed}`), 205, H - 560, 24, 1),
-  );
-  return { w: W, h: H, view: [-40, -60, W + 80, H + 120], markup: parts.join('') };
+  return { w: 360, h: 68, view: [0, -10, 360, 96], markup: parts.join('') };
 }

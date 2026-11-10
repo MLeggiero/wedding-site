@@ -1,5 +1,5 @@
-// After Hours: the glasshouse at night, where the robots come out.
-// Builds the scene, animates the residents, and talks to the page's cards (ui.ts).
+// The Secret Registry's 3D room: builds the scene, animates the robots, and
+// talks to the page's gift cards (ui.ts).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -8,7 +8,7 @@ import { buildDuck, poseDuck, buildArm, armIK, setArm } from './robots';
 import { loadRealRobots } from './real';
 import { initUI, type RobotId } from './ui';
 
-const root = document.querySelector<HTMLElement>('[data-after-hours]')!;
+const root = document.querySelector<HTMLElement>('[data-secret-registry]')!;
 const stage = root.querySelector<HTMLElement>('.ah__stage')!;
 const loading = root.querySelector<HTMLElement>('.ah__loading')!;
 const bar = root.querySelector<HTMLElement>('.ah__loading-bar span')!;
@@ -42,8 +42,8 @@ async function start() {
   let loaded = false;
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.prepend(renderer.domElement);
   renderer.domElement.setAttribute('aria-hidden', 'true');
@@ -84,14 +84,14 @@ async function start() {
     sh.scale.setScalar(1 / d.root.scale.x);
   }
 
-  // the reBot arm on the bench, with its Star Arm 102 leader (a portrait: no public model) beside it
+  // the reBot arm on the bench
   const armBase = new THREE.Vector3(bench.x + 0.1, world.benchTop, bench.z - 0.15);
   const ARM_K = 1.15; // world units per unit of the arm program below
   interface ArmLike {
     root: THREE.Object3D;
     tip: THREE.Object3D;
-    /** move the fingertips to `local` (relative to the base, program units); returns joint angles to echo */
-    move: (local: THREE.Vector3, roll: number, grip: number) => number[] | null;
+    /** move the fingertips to `local` (relative to the base, program units) */
+    move: (local: THREE.Vector3, roll: number, grip: number) => void;
   }
   let arm: ArmLike;
   if (real.arm) {
@@ -105,27 +105,19 @@ async function start() {
       move: (local, roll, grip) => {
         r.reach(toWorld(local), roll);
         r.grip(grip);
-        return null;
       },
     };
   } else {
-    const a = buildArm('follower');
+    const a = buildArm();
     a.root.position.copy(armBase);
     a.root.scale.setScalar(ARM_K);
     arm = {
       root: a.root,
       tip: a.tip,
-      move: (local, roll, grip) => {
-        const q = armIK(a, local, roll);
-        setArm(a, q, grip);
-        return q;
-      },
+      move: (local, roll, grip) => setArm(a, armIK(a, local, roll), grip),
     };
   }
-  const leader = buildArm('leader');
-  leader.root.position.set(bench.x - 0.5, world.benchTop, bench.z - 0.05);
-  leader.root.scale.setScalar(ARM_K);
-  scene.add(arm.root, leader.root);
+  scene.add(arm.root);
 
   // two pots for the arm to repot a fern seedling between
   const local = (x: number, z: number) => new THREE.Vector3(x, 0, z);
@@ -138,10 +130,10 @@ async function start() {
   }
   const seedling = new THREE.Group();
   {
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 10), new THREE.MeshStandardMaterial({ color: '#3a2618', roughness: 1 }));
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 10), new THREE.MeshStandardMaterial({ color: '#6f5f50', roughness: 1 }));
     ball.scale.y = 0.7;
     seedling.add(ball);
-    const frondMat = new THREE.MeshStandardMaterial({ color: '#5f9a45', roughness: 0.7, side: THREE.DoubleSide });
+    const frondMat = new THREE.MeshStandardMaterial({ color: '#6f8f72', roughness: 0.75, side: THREE.DoubleSide });
     for (let i = 0; i < 7; i++) {
       const f = new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.2, 5), frondMat);
       const a = (i / 7) * Math.PI * 2;
@@ -196,7 +188,6 @@ async function start() {
     controls.maxAzimuthAngle = 0.6;
     camera.updateProjectionMatrix();
     controls.update();
-    (world.flies.material as THREE.ShaderMaterial).uniforms.scale.value = h / 700;
     requestRender();
   }
 
@@ -322,8 +313,6 @@ async function start() {
   let roll = 0;
   let startRoll = 0;
   const ease = (x: number) => x * x * (3 - 2 * x);
-  const leaderQ = [0, 0, 0, 0, 0, 0];
-  let leaderGrip = 1;
 
   function updateArm(dt: number) {
     const s = steps[stepI];
@@ -336,12 +325,7 @@ async function start() {
     }
     grip = startGrip + (s.grip - startGrip) * k;
     roll = startRoll + ((s.roll ?? 0) - startRoll) * k;
-    const echoed = arm.move(cur, roll, grip);
-    // the leader arm leads, as if a hand were guiding it: the same path at its own smaller size
-    const q = echoed ?? armIK(leader, cur.clone().multiplyScalar(0.62), roll);
-    for (let i = 0; i < 6; i++) leaderQ[i] += (q[i] - leaderQ[i]) * Math.min(1, dt * 9);
-    leaderGrip += (grip - leaderGrip) * Math.min(1, dt * 9);
-    setArm(leader, leaderQ, leaderGrip);
+    arm.move(cur, roll, grip);
     if (stepT >= 1) {
       if (s.act === 'grab') arm.tip.attach(seedling);
       if (s.act === 'drop') placeSeedling(1 - from);
@@ -359,10 +343,10 @@ async function start() {
   }
 
   // ---------------------------------------------------------------- selection
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.36, 0.42, 48),
-    new THREE.MeshBasicMaterial({ color: '#f2c86b', transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide }),
-  );
+  // a fine double rule on the floor, like the borders of the cards
+  const ringMat = new THREE.MeshBasicMaterial({ color: '#4a5c51', transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.386, 0.4, 72), ringMat);
+  ring.add(new THREE.Mesh(new THREE.RingGeometry(0.43, 0.436, 72), ringMat));
   ring.rotation.x = -Math.PI / 2;
   ring.visible = false;
   scene.add(ring);
@@ -373,7 +357,7 @@ async function start() {
   };
 
   const raycaster = new THREE.Raycaster();
-  const pickables = [odm.root, micro.root, arm.root, leader.root];
+  const pickables = [odm.root, micro.root, arm.root];
   const pick = (cx: number, cy: number): RobotId | null => {
     const r = renderer.domElement.getBoundingClientRect();
     raycaster.setFromCamera(new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1), camera);
@@ -434,7 +418,6 @@ async function start() {
   }
   controls.addEventListener('change', requestRender);
 
-  const flyMat = world.flies.material as THREE.ShaderMaterial;
   const camFlat = new THREE.Vector3();
   function tick() {
     const dt = Math.min(delta(), 0.05);
@@ -443,13 +426,8 @@ async function start() {
       time += dt;
       updateDucks(dt, time);
       if (!reduceMotion) updateArm(dt);
-      flyMat.uniforms.time.value = time;
       world.sphere.rotation.y = time * 0.15;
-      for (const [i, l] of world.lanterns.entries()) {
-        const f = 1 + 0.08 * Math.sin(time * 7.3 + i * 2) + 0.05 * Math.sin(time * 13.1 + i);
-        l.light.intensity = 2.6 * f;
-        l.halo.material.opacity = 0.75 + 0.15 * f;
-      }
+      for (const f of world.flats) f.mesh.rotation.z = f.amp * (Math.sin(time * f.speed + f.phase) + 0.35 * Math.sin(time * f.speed * 2.3 + f.phase * 1.7));
     }
     // keep the camera's attention on what's happening
     const goal = steer.on || steer.returning ? micro.root.position.clone().setY(0.45) : selected ? home.clone().lerp(robotPos(selected).setY(0.55), 0.45) : home;
@@ -485,7 +463,6 @@ async function start() {
     placeOnLoop(microW);
     micro.pose(0, 0, -0.3, 0);
     arm.move(cur, 0, 1);
-    setArm(leader, armIK(leader, cur.clone().multiplyScalar(0.62), 0), 1);
   }
 
   new ResizeObserver(frame).observe(stage);

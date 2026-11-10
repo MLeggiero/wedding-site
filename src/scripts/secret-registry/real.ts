@@ -69,6 +69,8 @@ interface DuckSpec {
   /** half a step and the foot's clearance, in the model's own metres */
   step: number;
   lift: number;
+  /** forward lean of the body while walking, in radians */
+  lean: number;
 }
 
 const ODM: DuckSpec = {
@@ -85,8 +87,9 @@ const ODM: DuckSpec = {
   neck: ['neck_pitch', 'head_pitch'],
   headYaw: 'head_yaw',
   antennas: ['left_antenna', 'right_antenna'],
-  step: 0.026,
+  step: 0.024,
   lift: 0.014,
+  lean: 0.13,
 };
 
 const MICRO: DuckSpec = {
@@ -102,8 +105,9 @@ const MICRO: DuckSpec = {
   ],
   neck: ['neck_pitch', 'head_pitch'],
   headYaw: 'head_yaw',
-  step: 0.016,
+  step: 0.015,
   lift: 0.012,
+  lean: 0.12,
 };
 
 export interface RealDuck {
@@ -135,12 +139,13 @@ function duck(model: THREE.Object3D, spec: DuckSpec, scale: number): RealDuck {
   const tmpV = new THREE.Vector3();
   const tmpQ = new THREE.Quaternion();
   const bodyQ = new THREE.Quaternion();
-  const ankleIn = (n: THREE.Object3D, out: THREE.Vector3) => body.worldToLocal(n.getWorldPosition(out));
+  // legs are solved in the root's frame (the floor under the duck), so the body can lean and sway
+  const ankleIn = (n: THREE.Object3D, out: THREE.Vector3) => root.worldToLocal(n.getWorldPosition(out));
   const footQIn = (n: THREE.Object3D, out: THREE.Quaternion) => {
-    body.getWorldQuaternion(bodyQ).invert();
+    root.getWorldQuaternion(bodyQ).invert();
     return out.copy(bodyQ).multiply(n.getWorldQuaternion(tmpQ));
   };
-  /** rotation of the foot about the body's left–right axis, relative to standing */
+  /** rotation of the foot about the left-right axis, relative to standing */
   const footPitch = (n: THREE.Object3D, q0: THREE.Quaternion) => {
     const e = footQIn(n, new THREE.Quaternion()).multiply(q0.clone().invert());
     return 2 * Math.atan2(e.x, e.w);
@@ -203,22 +208,22 @@ function duck(model: THREE.Object3D, spec: DuckSpec, scale: number): RealDuck {
   };
 
   const pose = (phase: number, amount: number, look: number, t: number) => {
+    // lean into the walk and waddle over the standing foot, then solve the legs under that
     body.position.y = 0;
-    body.rotation.z = 0;
-    body.updateMatrixWorld(true);
+    body.rotation.set(spec.lean * amount, 0, 0.045 * amount * Math.cos(phase));
+    root.updateMatrixWorld(true);
     legs.forEach((leg, i) => {
       const p = phase + i * Math.PI;
-      // swing forward with the foot lifted, then push back along the floor
+      // swing forward with the foot lifted, then push back along the floor; the path sits a
+      // little behind the standing position so the feet pass under and behind the body
       target.copy(leg.a0);
-      target.z += spec.step * scale * amount * Math.sin(p);
+      target.z += spec.step * scale * amount * (Math.sin(p) - 0.3);
       target.y += spec.lift * scale * amount * Math.max(0, Math.cos(p));
       solveLeg(leg);
     });
-    // a gentle waddle over the standing foot, and settle that foot onto the floor
-    body.rotation.z = 0.045 * amount * Math.cos(phase);
-    body.updateMatrixWorld(true);
+    // settle the standing foot onto the floor
     let low = Infinity;
-    for (const leg of legs) low = Math.min(low, root.worldToLocal(leg.ankle.node.getWorldPosition(tmpV)).y - leg.a0.y);
+    for (const leg of legs) low = Math.min(low, ankleIn(leg.ankle.node, tmpV).y - leg.a0.y);
     body.position.y = -low;
     // a duck's head bob while walking; a slow breath and a look about while standing
     rig.set(spec.neck[0], spec.stand[spec.neck[0]] + 0.1 * amount * Math.sin(2 * phase) + 0.04 * (1 - amount) * Math.sin(t * 1.3));
@@ -239,8 +244,6 @@ export interface RealArm {
   /** solve and apply: put the fingertips at `target` (world) pointing down */
   reach: (target: THREE.Vector3, roll: number) => void;
   grip: (open: number) => void;
-  /** the arm's current joint angles (for the leader arm to echo) */
-  q: number[];
 }
 
 function arm(model: THREE.Object3D, scale: number): RealArm {
@@ -382,9 +385,6 @@ function arm(model: THREE.Object3D, scale: number): RealArm {
     warm,
     reach,
     grip,
-    get q() {
-      return q;
-    },
   };
 }
 

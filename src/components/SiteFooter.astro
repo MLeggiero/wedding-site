@@ -1,34 +1,33 @@
 ---
-// The footer: a gilded evergreen band with the names in gold script.
+// The footer, set like the back of an invitation: monogram, names in script,
+// the date in spaced capitals, the place in italics. No plants: the section
+// above ends on a bed of them.
 import { nav, guestLinks, site } from '../config';
 import { withBase } from '../lib/url';
 import Monogram from './Monogram.astro';
-import Flourish from './Flourish.astro';
-import Flora from './Flora.astro';
+import Divider from './Divider.astro';
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__flora" aria-hidden="true">
-    <Flora name="bed" class="site-footer__plant site-footer__plant--bl" />
-    <Flora name="bed" mirror class="site-footer__plant site-footer__plant--br" />
-  </div>
   <div class="container site-footer__inner">
     <Monogram class="site-footer__mono" label="Ally and Mark" />
-    <p class="site-footer__names">Ally <span class="amp">&amp;</span> Mark</p>
-    <Flourish class="site-footer__flourish" />
-    <p class="site-footer__date">{site.dateKicker}</p>
-    <p class="site-footer__place">{site.venue}<br />{site.city}</p>
+    <p class="site-footer__names t-script">Ally &amp; Mark</p>
+    <Divider class="site-footer__divider" />
+    <p class="site-footer__date t-caps">{site.dateKicker}</p>
+    <p class="site-footer__place t-italic">{site.venue}<br />{site.city}</p>
 
     <nav aria-label="Footer">
-      <ul>
-        {
-          [...nav, ...guestLinks].map((item) => (
-            <li>
-              <a href={withBase(item.href)}>{item.label}</a>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        [nav, guestLinks].map((group) => (
+          <ul>
+            {group.map((item) => (
+              <li>
+                <a href={withBase(item.href)}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
     </nav>
 
     {
@@ -47,121 +46,69 @@ import Flora from './Flora.astro';
   .site-footer {
     position: relative;
     overflow: hidden;
-    margin-top: clamp(3rem, 8vw, 6rem);
-    padding-block: 3.2rem 4.5rem;
+    padding-block: 3rem 4.5rem;
+    border-top: 1px solid var(--rule);
     text-align: center;
-    color: #f3e8cf;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgb(224 168 79 / 0.16), transparent 60%),
-      linear-gradient(180deg, #11241a, #0b1812);
-    border-top: 1px solid rgb(201 162 79 / 0.9);
-    box-shadow:
-      inset 0 3px 0 -1px #0b1812,
-      inset 0 4px 0 -1px rgb(201 162 79 / 0.4);
-  }
-  /* a page that ends in a dark conservatory room runs straight into the footer */
-  :global(body:has(main > .room:last-child)) .site-footer {
-    margin-top: 0;
-  }
-  .site-footer__flora {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.85;
-  }
-  .site-footer :global(.site-footer__plant) {
-    --flora-w: clamp(110px, 17vw, 260px);
-    bottom: 0;
-  }
-  .site-footer :global(.site-footer__plant--bl) {
-    left: 0;
-  }
-  .site-footer :global(.site-footer__plant--br) {
-    right: 0;
   }
   .site-footer__inner {
     position: relative;
     z-index: 2;
     display: grid;
     justify-items: center;
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
   .site-footer :global(.site-footer__mono) {
-    width: 2.6rem;
-    color: #e9cf85;
+    width: 2.4rem;
+    color: var(--ink);
   }
   .site-footer__names {
-    margin-top: 0.2rem;
-    padding: 0.05em 0.4em 0.2em;
-    font-family: 'Ballet', 'Playfair Display Variable', cursive;
-    font-size: clamp(2.8rem, 2.2rem + 2.4vw, 3.8rem);
+    font-size: clamp(3rem, 2.4rem + 2.4vw, 4rem);
     line-height: 1.1;
-    background: linear-gradient(172deg, #fff0bf 6%, #d9ab4e 38%, #f7dc90 56%, #a8772a 86%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.45));
   }
-  .site-footer__names .amp {
-    font-family: inherit;
-    font-style: normal;
-    color: inherit;
-  }
-  .site-footer :global(.site-footer__flourish) {
-    width: min(15rem, 70%);
-    margin-top: -1.2rem;
-    color: #d9ab4e;
+  .site-footer :global(.site-footer__divider) {
+    width: min(11rem, 60%);
   }
   .site-footer__date {
-    font-family: 'Playfair Display Variable', Georgia, serif;
-    font-weight: 600;
-    font-size: 1.05rem;
-    letter-spacing: 0.22em;
-    font-variant-numeric: lining-nums;
+    margin-top: 0.3rem;
+    font-size: 0.92rem;
   }
   .site-footer__place {
-    font-family: 'EB Garamond Variable', Georgia, serif;
-    font-style: italic;
-    font-size: 1.15rem;
-    line-height: 1.35;
-    color: #e3d3ad;
+    font-size: 1.12rem;
+    line-height: 1.4;
+  }
+  .site-footer nav {
+    margin-top: 1rem;
   }
   .site-footer ul {
     list-style: none;
-    margin: 1rem 0 0;
+    margin: 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0 1.3rem;
-    max-width: 44rem;
+    gap: 0 1.4rem;
+    max-width: 46rem;
   }
   .site-footer nav a {
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    font-family: 'IM Fell English SC', Georgia, serif;
-    font-size: 1.08rem;
-    letter-spacing: 0.04em;
-    color: #e9cf85;
+    font-family: var(--font-caps);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--heading);
     text-decoration: none;
   }
   .site-footer nav a:hover {
-    color: #fff1c4;
     text-decoration: underline;
-    text-decoration-color: rgb(233 207 133 / 0.6);
-    text-underline-offset: 0.25em;
-  }
-  .site-footer a:focus-visible {
-    outline: 2px solid #f2d27e;
-    outline-offset: 3px;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 0.3em;
   }
   .site-footer__small {
     margin-top: 0.4rem;
-    font-size: 0.98rem;
-    color: #d9cfb6;
-  }
-  .site-footer__small a {
-    color: #e9cf85;
+    font-size: 1rem;
+    color: var(--soft);
   }
 </style>

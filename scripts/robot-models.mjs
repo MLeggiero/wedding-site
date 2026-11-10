@@ -1,5 +1,5 @@
 // Converts the official robot models (MuJoCo MJCF + STL parts) into small,
-// rigged GLB files for the After Hours room (public/models/*.glb).
+// rigged GLB files for the Secret Registry room (public/models/*.glb).
 //
 //   node scripts/robot-models.mjs <dir>
 //

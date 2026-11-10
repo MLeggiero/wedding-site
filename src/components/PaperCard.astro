@@ -1,0 +1,86 @@
+---
+// A card ruled like an invitation (a double rule), with an engraved sprig over
+// each corner. The card is the same paper as the page, so the sprigs' paper
+// fills blend in.
+import Flora from './Flora.astro';
+
+interface Props {
+  class?: string;
+  /** engraved sprigs over the corners: all four, two (top-left and bottom-right), or none */
+  sprigs?: 'four' | 'two' | 'none';
+  /** 'page': centred, up to 40rem wide; 'fill': fill its grid cell */
+  width?: 'page' | 'fill';
+  /** semantic element for the card */
+  as?: 'div' | 'article' | 'section';
+}
+const { class: cls, sprigs = 'four', width = 'page', as: Tag = 'div' } = Astro.props;
+---
+
+<Tag class:list={['paper-card', `paper-card--${width}`, cls]}>
+  {
+    sprigs !== 'none' && (
+      <div class="paper-card__sprigs" aria-hidden="true">
+        <Flora name="sprig-magnolia" class="paper-card__sprig paper-card__sprig--tl" />
+        {sprigs === 'four' && <Flora name="sprig-dogwood" class="paper-card__sprig paper-card__sprig--tr" />}
+        {sprigs === 'four' && <Flora name="sprig-fern" class="paper-card__sprig paper-card__sprig--bl" />}
+        <Flora name="sprig-maypop" class="paper-card__sprig paper-card__sprig--br" />
+      </div>
+    )
+  }
+  <div class="paper-card__body">
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .paper-card {
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+  }
+  .paper-card::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+  .paper-card--page {
+    width: min(100% - 2 * max(var(--gutter), 1.75rem), 40rem);
+    margin-inline: auto;
+  }
+  .paper-card__body {
+    position: relative;
+    z-index: 1;
+    padding: clamp(2.4rem, 6vw, 3.2rem) clamp(1.5rem, 5vw, 3rem) clamp(2.2rem, 5vw, 2.8rem);
+  }
+  .paper-card__sprigs {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .paper-card :global(.paper-card__sprig) {
+    --flora-w: clamp(118px, 15vw, 190px);
+  }
+  .paper-card :global(.paper-card__sprig--tl) {
+    left: 0;
+    top: 0;
+    translate: -50% -50%;
+  }
+  .paper-card :global(.paper-card__sprig--tr) {
+    right: 0;
+    top: 0;
+    translate: 50% -50%;
+  }
+  .paper-card :global(.paper-card__sprig--bl) {
+    left: 0;
+    bottom: 0;
+    translate: -50% 50%;
+  }
+  .paper-card :global(.paper-card__sprig--br) {
+    right: 0;
+    bottom: 0;
+    translate: 50% 50%;
+  }
+</style>

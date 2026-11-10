@@ -8,7 +8,7 @@ export async function postGuest(endpoint: string, payload: Record<string, unknow
     body: JSON.stringify(payload),
   });
   const data = await res.json().catch(() => ({ ok: false, error: 'The server sent an unexpected reply.' }));
-  if (!data.ok) throw new Error(data.error || 'Something went wrong — please try again.');
+  if (!data.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
 }
 
 const toBase64 = (blob: Blob) =>
@@ -33,7 +33,7 @@ export async function prepareImage(file: File): Promise<{ data: string; mime: st
     );
     return { data: await toBase64(blob), mime: 'image/jpeg' };
   } catch {
-    if (file.size > 12_000_000) throw new Error('That photo is too large — please choose a smaller one.');
+    if (file.size > 12_000_000) throw new Error('That photo is too large. Please choose a smaller one.');
     return { data: await toBase64(file), mime: file.type || 'image/jpeg' };
   }
 }

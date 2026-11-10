@@ -1,12 +1,13 @@
-// Writes each decorative drawing in lib/art.ts to /flora/<name>.svg.
+// Writes each decorative drawing in lib/art.ts to /flora/<name>.svg, plus the
+// still base and swaying parts of the drawings that move in the breeze.
 import type { APIRoute } from 'astro';
-import { artFile, artNames, type ArtName } from '../../lib/art';
+import { artFiles } from '../../lib/art';
 
 export function getStaticPaths() {
-  return artNames.map((name) => ({ params: { name } }));
+  return artFiles().map(({ file, body }) => ({ params: { name: file }, props: { body } }));
 }
 
-export const GET: APIRoute = ({ params }) =>
-  new Response(artFile(params.name as ArtName), {
+export const GET: APIRoute = ({ props }) =>
+  new Response((props.body as () => string)(), {
     headers: { 'Content-Type': 'image/svg+xml; charset=utf-8' },
   });

@@ -1,0 +1,59 @@
+---
+// A heading set like an invitation: a small italic line, the title in script,
+// an engraved divider and one short line.
+import Divider from './Divider.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  /** heading level for the title */
+  level?: 1 | 2;
+  /** 'page' for the top of a page, 'section' for a smaller heading further down */
+  size?: 'page' | 'section';
+  class?: string;
+}
+const { eyebrow, title, lead, level = 1, size = 'page', class: cls } = Astro.props;
+const Title = level === 1 ? 'h1' : 'h2';
+---
+
+<header class:list={['sh', `sh--${size}`, cls]}>
+  {eyebrow && <p class="sh__eyebrow t-italic">{eyebrow}</p>}
+  <Title class="sh__title t-script">{title}</Title>
+  <Divider class="sh__divider" />
+  {lead && <p class="sh__lead">{lead}</p>}
+</header>
+
+<style>
+  .sh {
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    text-align: center;
+    padding-inline: var(--gutter);
+  }
+  .sh__eyebrow {
+    font-size: clamp(1.1rem, 1rem + 0.35vw, 1.3rem);
+  }
+  .sh__title {
+    padding: 0.05em 0.2em 0.12em;
+    font-size: clamp(3.6rem, 2.4rem + 5vw, 6.2rem);
+    line-height: 1.05;
+  }
+  .sh--section .sh__title {
+    font-size: clamp(3rem, 2.2rem + 3.4vw, 4.6rem);
+  }
+  .sh :global(.sh__divider) {
+    width: min(14rem, 62%);
+  }
+  .sh__lead {
+    max-width: 30rem;
+    margin-top: 0.4rem;
+    font-family: var(--font-caps);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.42rem);
+    line-height: 1.4;
+    color: var(--soft);
+  }
+</style>

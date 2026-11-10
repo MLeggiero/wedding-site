@@ -1,6 +1,5 @@
 name: Open Duck Mini v2
-species: Anas mechanica aperta
-blurb: An open-source duck you build yourself, servo by servo.
+blurb: An open-source robot duck you build yourself.
 scene: open-duck-mini
 items:
   - id: odm-servos

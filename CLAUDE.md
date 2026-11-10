@@ -1,4 +1,4 @@
-# Project instructions — Ally & Mark's wedding site
+# Project instructions: Ally & Mark's wedding site
 
 Read `docs/PLAN.md` for the full plan. These rules come from the couple and override it.
 
@@ -14,20 +14,23 @@ Read `docs/PLAN.md` for the full plan. These rules come from the couple and over
 
 | Criterion | Points |
 |---|---|
-| Direction fit: maximalist, cozy, lush Southern conservatory (not minimal, not cold) | 20 |
-| Botany: abundant, layered plants that are all native to the southeastern US | 20 |
-| Typography: fancy and characterful, yet legible, with a clear hierarchy | 15 |
+| Direction fit: a botanical-engraving invitation, sage line art on ivory; abundant but refined (not cartoony, not Christmassy) | 20 |
+| Botany: abundant, layered engraved plants, all native to the southeastern US | 20 |
+| Typography: script names, spaced capitals and italics; fancy yet legible, with a clear hierarchy | 15 |
 | Photos: flattering, few, well cropped and well treated | 15 |
-| Palette: warm, cozy, harmonious | 10 |
-| Composition and polish: balance, spacing, detail, no glitches | 10 |
+| Palette: sage ink on ivory, soft and harmonious | 10 |
+| Composition and polish: balance, spacing, detail, no glitches, nothing that looks machine-made | 10 |
 | Usability and accessibility: contrast, phone layout, tap targets, motion | 10 |
 
 ## Style
 
-- **Maximalist and cozy.** Layered, abundant and warm. Ornate frames, patterns and texture are welcome.
+- **A botanical-engraving invitation.** Fine sage line drawings on ivory paper, like a letterpress wedding invitation: flat line art (no gradients, glows or drop shadows), abundant and layered around every section, but refined rather than cartoony.
 - **Plants: southeastern US natives only, and lots of them.** For example: Southern magnolia, flowering dogwood, native azaleas (Piedmont, flame), Carolina jessamine, coral honeysuckle, oakleaf hydrangea, mountain laurel, redbud, passionflower (maypop), trillium, wild columbine, Christmas/cinnamon/maidenhair ferns, Spanish moss, dwarf palmetto. No tropicals (no monstera, no tropical palms).
-- **Fancy fonts and ornate styling.**
+- **Not Christmassy.** No red-and-green pairing, no pine green with red or gold-glitter accents, no string lights. Spring in a Southern garden, not the holidays.
+- **Fancy fonts.** A thin script for names and titles, spaced capitals for labels and dates, lowercase italics for small lines.
 - **Few words.** Keep copy short; no long narrative.
+- **Plain labels, no flourish.** Name things directly (for example "Secret Registry"); no poetic taglines.
+- **No em-dashes**, anywhere: site copy, alt text, docs, code comments and commit messages. Use a full stop, comma, colon or parentheses.
 
 ## Photos
 

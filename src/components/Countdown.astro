@@ -1,14 +1,12 @@
 ---
-// "N days until we're married under glass" — rendered at build time and
+// "N days until I do", rendered at build time and
 // refreshed in the browser so it's always today's number.
 import { site } from '../config';
-import PlantTag from './PlantTag.astro';
 
 interface Props {
-  /** 'tag' = brass plant tag (default); 'plain' = just the text, for custom frames */
-  variant?: 'tag' | 'plain';
+  class?: string;
 }
-const { variant = 'tag' } = Astro.props;
+const { class: cls } = Astro.props;
 
 function daysUntil(now: Date): number {
   const today = new Intl.DateTimeFormat('en-CA', {
@@ -22,39 +20,19 @@ function daysUntil(now: Date): number {
 const days = daysUntil(new Date());
 ---
 
-{
-  variant === 'plain' ? (
-    <span class="countdown" data-countdown data-date={site.date}>
-      {days > 1 ? (
-        <>
-          <strong>{days}</strong> days until “I do”
-        </>
-      ) : days === 1 ? (
-        'Tomorrow, we say “I do”'
-      ) : days === 0 ? (
-        'Today, we say “I do”'
-      ) : (
-        'Married April 24, 2027'
-      )}
-    </span>
+<span class:list={['countdown', cls]} data-countdown data-date={site.date}>
+  {days > 1 ? (
+    <>
+      <strong>{days}</strong> days until “I do”
+    </>
+  ) : days === 1 ? (
+    'Tomorrow, we say “I do”'
+  ) : days === 0 ? (
+    'Today, we say “I do”'
   ) : (
-    <PlantTag class="countdown">
-      <span data-countdown data-date={site.date}>
-        {days > 1 ? (
-          <>
-            <strong>{days}</strong> days until “I do”
-          </>
-        ) : days === 1 ? (
-          'Tomorrow, we say “I do”'
-        ) : days === 0 ? (
-          'Today, we say “I do”'
-        ) : (
-          'Married April 24, 2027'
-        )}
-      </span>
-    </PlantTag>
-  )
-}
+    'Married April 24, 2027'
+  )}
+</span>
 
 <script>
   for (const el of document.querySelectorAll<HTMLElement>('[data-countdown]')) {

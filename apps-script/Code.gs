@@ -1,5 +1,5 @@
 /**
- * Ally & Mark — guest photo uploads, song requests and robot gift claims.
+ * Ally & Mark: guest photo uploads, song requests and robot gift claims.
  *
  * Lives in a Google Sheet (Extensions → Apps Script). Photos are saved to a
  * private Drive folder and logged on the "Photos" tab; song requests go to the
@@ -31,7 +31,7 @@ function doPost(e) {
 function savePhoto(b) {
   const name = clean(b.name, 80);
   if (!name) throw new Error('Please add your name.');
-  if (!b.data) throw new Error('No photo arrived — please try again.');
+  if (!b.data) throw new Error('No photo arrived. Please try again.');
   const bytes = Utilities.base64Decode(b.data);
   if (bytes.length > MAX_BYTES) throw new Error('That photo is too large.');
   const mime = /^image\/(jpeg|png|webp|heic|heif|gif)$/.test(b.mime) ? b.mime : 'image/jpeg';
@@ -39,7 +39,7 @@ function savePhoto(b) {
   const stamp = Utilities.formatDate(new Date(), 'America/New_York', 'yyyy-MM-dd HHmm');
   const folder = DriveApp.getFolderById(prop('PHOTO_FOLDER_ID'));
   const file = folder.createFile(Utilities.newBlob(bytes, mime, stamp + ' ' + name + '.' + ext));
-  file.setDescription([clean(b.who, 20), clean(b.note, 300)].filter(String).join(' — '));
+  file.setDescription([clean(b.who, 20), clean(b.note, 300)].filter(String).join(' · '));
   sheet('Photos', ['Time', 'Name', 'Email', 'Who is in it', 'Note', 'File']).appendRow(
     [new Date(), name, clean(b.email, 120), clean(b.who, 20), clean(b.note, 300), file.getUrl()].map(cell),
   );

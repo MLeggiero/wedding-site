@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import CozyRoom from '../components/CozyRoom.astro';
-import RoomHeading from '../components/RoomHeading.astro';
-import GiltCard from '../components/GiltCard.astro';
+import FloralSection from '../components/FloralSection.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PaperCard from '../components/PaperCard.astro';
 import HeroFrame from '../components/HeroFrame.astro';
-import BrassDuck from '../components/BrassDuck.astro';
+import SecretDuck from '../components/SecretDuck.astro';
 import { photo } from '../lib/photos';
 import { site } from '../config';
 
@@ -18,15 +18,15 @@ const registry = [
 ---
 
 <Base title="Registry" description="Ally & Mark’s registry: a honeymoon fund, a few gifts and two causes close to their hearts.">
-  <CozyRoom flora="full" label="Gifts">
-    <RoomHeading eyebrow="Registry" title="Gifts & giving" lead="Your being there is the gift." />
+  <FloralSection flora="full" label="Gifts">
+    <SectionHeading eyebrow="registry" title="Gifts & giving" lead="Your being there is the gift." />
 
     <div class="gifts container">
       <div class="gifts__photo">
         <HeroFrame photo={photo('40')} art="arch" sizes="(min-width: 60rem) 26rem, 80vw" />
       </div>
-      <GiltCard class="gifts__card" sprigs="two" width="fill" as="section">
-        <p class="plate-tag">Opening in {site.registryOpens}</p>
+      <PaperCard class="gifts__card" sprigs="two" width="fill" as="section">
+        <p class="tag">Opening in {site.registryOpens}</p>
         <h2 class="cc-title gifts__title">Our registry</h2>
         <ul class="gift-list">
           {
@@ -38,26 +38,26 @@ const registry = [
             ))
           }
         </ul>
-      </GiltCard>
+      </PaperCard>
     </div>
 
-    <RoomHeading level={2} size="section" title="Giving back" lead="Two causes close to our hearts." class="gifts__give" />
+    <SectionHeading level={2} size="section" title="Giving back" lead="Two causes close to our hearts." class="gifts__give" />
     <div class="causes container">
       {
         charities.map((c) => (
-          <GiltCard sprigs="none" width="fill" as="article" class="cause">
+          <PaperCard sprigs="none" width="fill" as="article" class="cause">
             <h3 class="cc-title">{c.name}</h3>
             <p class="cc-text">{c.blurb}</p>
-            <a class="btn-plate btn-plate--small cause__link" href={c.url} target="_blank" rel="noopener">
+            <a class="btn btn--small cause__link" href={c.url} target="_blank" rel="noopener">
               Visit<span class="visually-hidden"> {c.name}</span>
             </a>
-          </GiltCard>
+          </PaperCard>
         ))
       }
     </div>
 
-    <BrassDuck class="gifts__duck" />
-  </CozyRoom>
+    <SecretDuck slot="decor" class="gifts__duck" />
+  </FloralSection>
 </Base>
 
 <style>
@@ -66,7 +66,7 @@ const registry = [
     gap: clamp(3rem, 6vw, 4rem);
     align-items: center;
     max-width: 64rem;
-    margin-top: clamp(3.5rem, 7vw, 5rem);
+    margin-top: clamp(2.5rem, 6vw, 4rem);
   }
   .gifts__photo {
     width: min(100%, 28rem);
@@ -75,6 +75,7 @@ const registry = [
   .gifts :global(.gifts__card) {
     width: min(100%, 30rem);
     margin-inline: auto;
+    text-align: center;
   }
   .gifts__title {
     margin-top: 0.4rem;
@@ -84,25 +85,27 @@ const registry = [
     list-style: none;
     margin: 1.1rem 0 0;
     padding: 0;
-    border-top: 1px solid rgb(168 130 58 / 0.5);
+    border-top: 1px solid var(--rule);
   }
   .gift-list li {
     display: grid;
     gap: 0.1rem;
     padding: 0.8rem 0;
-    border-bottom: 1px solid rgb(168 130 58 / 0.35);
+    border-bottom: 1px solid var(--rule);
     text-align: center;
   }
   .gift-list__name {
-    font-family: 'IM Fell English SC', Georgia, serif;
-    font-size: 1.3rem;
-    color: #18301f;
+    font-family: var(--font-caps);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--heading);
   }
   .gift-list__note {
-    font-family: 'EB Garamond Variable', Georgia, serif;
     font-style: italic;
     font-size: 1.1rem;
-    color: #5b4330;
+    color: var(--soft);
   }
   :global(.gifts__give) {
     margin-top: clamp(4rem, 9vw, 6rem);
@@ -114,7 +117,7 @@ const registry = [
     margin-top: 2rem;
     margin-bottom: clamp(5rem, 10vw, 6rem);
   }
-  .causes :global(.cause .gilt-card__body) {
+  .causes :global(.cause .paper-card__body) {
     display: grid;
     justify-items: center;
     gap: 0.7rem;
@@ -126,9 +129,10 @@ const registry = [
     align-self: end;
     margin-top: 0.4rem;
   }
+  /* the duck walks the ruled line at the foot of the page */
   :global(.gifts__duck) {
-    right: clamp(4.5rem, 14vw, 13rem);
-    bottom: -3.3rem;
+    left: calc(50% + min(6rem, 8vw));
+    bottom: calc(-0.15rem - 3px);
   }
   @media (min-width: 52rem) {
     .gifts {

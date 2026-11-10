@@ -32,12 +32,11 @@ const charities = defineCollection({
   schema: z.object({ name: z.string(), blurb: z.string(), url: z.string(), ein: z.string().optional() }),
 });
 
-/** The After Hours robot registry: one file per robot (see src/content/robots/). */
+/** The Secret Registry: one file per robot (see src/content/robots/). */
 const robots = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/robots' }),
   schema: z.object({
     name: z.string(),
-    species: z.string(),
     blurb: z.string(),
     scene: z.enum(['microduck', 'open-duck-mini', 'rebot-arm']),
     items: z

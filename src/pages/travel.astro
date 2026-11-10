@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import CozyRoom from '../components/CozyRoom.astro';
-import RoomHeading from '../components/RoomHeading.astro';
-import GiltCard from '../components/GiltCard.astro';
+import FloralSection from '../components/FloralSection.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PaperCard from '../components/PaperCard.astro';
 import HeroFrame from '../components/HeroFrame.astro';
 import { photo } from '../lib/photos';
 import { site } from '../config';
@@ -30,41 +30,41 @@ const tips = [
 ];
 ---
 
-<Base title="Travel" description="How to get to Athens, Georgia for Ally & Mark’s wedding — and what to do while you’re in town.">
-  <CozyRoom flora="full" label="Travel">
-    <RoomHeading eyebrow="Travel" title="Getting to Athens" lead="A leafy college town, ninety minutes from Atlanta." />
+<Base title="Travel" description="How to get to Athens, Georgia for Ally & Mark’s wedding, and what to do while you’re in town.">
+  <FloralSection flora="full" label="Travel">
+    <SectionHeading eyebrow="travel" title="Getting to Athens" lead="Ninety minutes from Atlanta." />
 
     <div class="trip container">
       <div class="trip__photo">
         <HeroFrame photo={photo('62')} art="arch" priority sizes="(min-width: 60rem) 26rem, 80vw" />
       </div>
-      <GiltCard sprigs="two" width="fill" as="section" class="venue">
+      <PaperCard sprigs="two" width="fill" as="section" class="venue">
         <p class="cc-kicker">The venue</p>
         <h2 class="cc-title">{site.venue}</h2>
         <p class="cc-text venue__address">{site.address}</p>
         <p class="cc-text">Free parking. Downtown is ten minutes away.</p>
-        <a class="btn-plate btn-plate--small venue__map" href={site.mapsUrl} target="_blank" rel="noopener">Open in Maps</a>
-      </GiltCard>
+        <a class="btn btn--small venue__map" href={site.mapsUrl} target="_blank" rel="noopener">Open in Maps</a>
+      </PaperCard>
     </div>
 
     <div class="tips container">
       {
         tips.map((t) => (
-          <GiltCard sprigs="none" width="fill" as="article" class="tip">
+          <PaperCard sprigs="none" width="fill" as="article" class="tip">
             <p class="cc-kicker">{t.kicker}</p>
             <h3 class="cc-title">{t.title}</h3>
             <p class="cc-text">{t.text}</p>
-            {t.soon && <p class="plate-tag tip__soon">{t.soon}</p>}
-          </GiltCard>
+            {t.soon && <p class="tag tip__soon">{t.soon}</p>}
+          </PaperCard>
         ))
       }
     </div>
 
-    <RoomHeading level={2} size="section" eyebrow="Field guide" title="Around Athens" lead="A few favorites while you’re in town." class="guide-head" />
+    <SectionHeading level={2} size="section" title="Around Athens" lead="A few favorites." class="guide-head" />
     <div class="guide container">
       {
         groups.map((g) => (
-          <GiltCard sprigs="none" width="fill" as="section" class="guide__group">
+          <PaperCard sprigs="none" width="fill" as="section" class="guide__group">
             <h3 class="cc-kicker guide__cat">{labels[g.category]}</h3>
             <ul class="guide__list">
               {g.items.map((p) => (
@@ -78,11 +78,11 @@ const tips = [
                 </li>
               ))}
             </ul>
-          </GiltCard>
+          </PaperCard>
         ))
       }
     </div>
-  </CozyRoom>
+  </FloralSection>
 </Base>
 
 <style>
@@ -91,7 +91,7 @@ const tips = [
     gap: clamp(3rem, 6vw, 4rem);
     align-items: center;
     max-width: 64rem;
-    margin-top: clamp(3.5rem, 7vw, 5rem);
+    margin-top: clamp(2.5rem, 6vw, 4rem);
   }
   .trip__photo {
     width: min(100%, 28rem);
@@ -101,8 +101,8 @@ const tips = [
     width: min(100%, 30rem);
     margin-inline: auto;
   }
-  .trip :global(.venue .gilt-card__body),
-  .tips :global(.tip .gilt-card__body) {
+  .trip :global(.venue .paper-card__body),
+  .tips :global(.tip .paper-card__body) {
     display: grid;
     justify-items: center;
     gap: 0.35rem;
@@ -120,7 +120,7 @@ const tips = [
     max-width: 62rem;
     margin-top: clamp(3.5rem, 7vw, 4.5rem);
   }
-  .tips :global(.tip .gilt-card__body) {
+  .tips :global(.tip .paper-card__body) {
     height: 100%;
     align-content: start;
     padding: 1.8rem 1.5rem 1.7rem;
@@ -141,12 +141,12 @@ const tips = [
     break-inside: avoid;
     margin-bottom: 2rem;
   }
-  .guide :global(.guide__group .gilt-card__body) {
+  .guide :global(.guide__group .paper-card__body) {
     padding: 1.7rem 1.6rem 1.5rem;
   }
   .guide__cat {
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgb(168 130 58 / 0.5);
+    border-bottom: 1px solid var(--rule);
     text-align: center;
   }
   .guide__list {
@@ -156,33 +156,33 @@ const tips = [
   }
   .place {
     padding: 0.8rem 0;
-    border-bottom: 1px solid rgb(168 130 58 / 0.3);
+    border-bottom: 1px solid var(--rule);
   }
   .place:last-child {
     border-bottom: 0;
   }
   .place__name {
-    font-family: 'Playfair Display Variable', Georgia, serif;
-    font-weight: 600;
-    font-size: 1.18rem;
-    color: #18301f;
-    text-decoration-color: rgb(138 97 25 / 0.7);
+    font-family: var(--font-caps);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--heading);
   }
   .place__name:hover {
-    color: #5e1a29;
+    color: var(--text);
   }
   .place__area {
     display: block;
-    font-family: 'IM Fell English SC', Georgia, serif;
-    font-size: 0.98rem;
-    color: #7a5416;
+    font-family: var(--font-caps);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.05rem;
+    color: var(--soft);
   }
   .place__note {
     margin-top: 0.15rem;
-    font-family: 'EB Garamond Variable', Georgia, serif;
     font-size: 1.1rem;
     line-height: 1.45;
-    color: #1d2a20;
+    color: var(--text);
   }
   @media (min-width: 52rem) {
     .tips {

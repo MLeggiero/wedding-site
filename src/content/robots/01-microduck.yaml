@@ -1,9 +1,8 @@
-# One file per robot in the After Hours room (the secret robot registry).
+# One file per robot in the Secret Registry.
 # Prices in USD, checked on the date below; item ids must be unique site-wide
 # (they're what "I'm getting this" claims record).
 name: Microduck
-species: Anas mechanica minor
-blurb: A pocket-sized duck that learned to walk in simulation.
+blurb: A small two-legged robot duck.
 scene: microduck
 items:
   - id: microduck

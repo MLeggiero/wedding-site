@@ -1,13 +1,13 @@
-# Guest photos, song requests & robot gift claims — 10-minute setup
+# Guest photos, song requests and robot gift claims: 10-minute setup
 
 The site's **Share a photo** and **Songs** pages, and the "I'm getting this" buttons in the
 robot room, send to a small Google Apps Script.
 Photos go into a private Drive folder only you two can see; everything is logged in a Sheet.
 Nothing is stored in this public repo.
 
-1. **Make a Drive folder** called e.g. "Wedding — guest photos". Open it and copy the ID
+1. **Make a Drive folder** called e.g. "Wedding guest photos". Open it and copy the ID
    from the address bar (the long code after `/folders/`).
-2. **Make a Google Sheet** called e.g. "Wedding — guests". (The script adds the `Photos`,
+2. **Make a Google Sheet** called e.g. "Wedding guests". (The script adds the `Photos`,
    `Songs` and `RobotClaims` tabs by itself.)
 3. In the Sheet: **Extensions → Apps Script**. Replace the editor's contents with
    [`Code.gs`](Code.gs). In **Project Settings**, tick "Show appsscript.json" and paste

@@ -1,5 +1,5 @@
 # Charities on the Registry page (Every.org giving links arrive in December).
-# Entries appear in id order — keep the two-digit prefixes (01-, 02-, …).
+# Entries appear in id order, so keep the two-digit prefixes (01-, 02-, …).
 
 - id: 01-kiwimbi
   name: Kiwimbi International
@@ -14,5 +14,5 @@
   url: https://chattahoochee.org/
   ein: 58-2095413
   blurb: >-
-    Protects and restores the Chattahoochee River and its watershed — the main
+    Protects and restores the Chattahoochee River and its watershed, the main
     source of drinking water for metro Atlanta.

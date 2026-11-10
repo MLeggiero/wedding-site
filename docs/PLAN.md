@@ -5,7 +5,8 @@
 > Status: plan, written 2026-11-10, with every decision below confirmed in Q&A. Updated the same day to simplify security.
 > **v1 built (2026-11-10):** Home, Our Story, Travel (with field guide), Registry teaser, FAQ, Details (courtesy-password placeholder) and 404, plus save-the-date QR files in `print/`. See the v1 checklist in §15.
 > **Direction revised (2026-11-10, from your feedback):** cozy *maximalist* Southern conservatory, plants native to the southeastern US only, four photos in all, short copy, fancier type. Guests can now send a favorite photo and request songs. §3 describes the new design system; the house rules (and the 100-point rubric every design must clear) live in `CLAUDE.md`. Every page now uses it.
-> **Robot room built (2026-11-10):** After Hours is live behind a brass duck on the Registry page (your request: that's the only way in). The robots are their makers' official 3D models, simplified and moving on their real joints, with a steerable Microduck. The live MuJoCo duck remains a follow-up; see §10.6.
+> **Robot room built (2026-11-10):** the robot room is live behind a duck on the Registry page (your request: that's the only way in). The robots are their makers' official 3D models, simplified and moving on their real joints, with a steerable Microduck. The live MuJoCo duck remains a follow-up; see §10.6.
+> **Redesigned as an engraved invitation (2026-11-10, from your feedback):** the dark, gilded look read as too Christmassy and cartoony, so the whole site is now fine sage line engravings on ivory paper, like a letterpress invitation (§3). The robot room is now the plainly named **Secret Registry**, in a daylit conservatory drawn the same way; the leader arm is gone and the reBot Arm lists just its two kits. The duck that leads there now waddles along the foot of the Registry page.
 > A **GitHub Pages** site published straight from this repo. Security isn't a goal (it's a wedding website). Everything lives here except RSVP answers and the guest list, which stay in a Google Sheet.
 
 ---
@@ -14,7 +15,7 @@
 
 | Area | Decision |
 |---|---|
-| Concept | **Cozy maximalist Southern conservatory** (revised from the original airy Victorian glasshouse): evergreen trellis walls by candlelight, gilt frames, oxblood plates, and southeastern native plants spilling over everything |
+| Concept | **A botanical-engraving wedding invitation** (revised twice, from an airy Victorian glasshouse and then a dark, gilded conservatory): fine sage line drawings of southeastern native plants on ivory paper, abundant around every section |
 | Photos | **Four in all:** #35 (home hero, deep-pink blossoms), #20 (the ring), #40 (ring hand on his chest, cropped waist-up), #62 (the stone bridge) |
 | Guest features | **Share a photo** (to a private Google Drive folder) and **Request a song** (logged to a Google Sheet; the Spotify playlist is shown on the page). Both go through one Apps Script web app (`apps-script/`). |
 | Names | **Ally & Mark**, with an **A & M** monogram |
@@ -27,7 +28,7 @@
 | Items and cash funds | **Zola** is the system of record: items from any store, plus cash funds with the 2.5% fee absorbed by us. The site shows a themed gallery that links out to Zola. |
 | Charities | Every.org donate pop-up on our own page, for **Kiwimbi International** and **Chattahoochee Riverkeeper** |
 | Extra feature | Athens field guide and illustrated garden map |
-| Secret page | **"After Hours"** (§10), a 3D night glasshouse that doubles as a robot registry:<br>• **Door:** a brass duck hidden in the footer<br>• **Residents:** Microduck, Open Duck Mini v2, and the reBot Arm B601-DM with its leader arm<br>• **Motion:** animated robots, plus a live-physics Microduck you can steer<br>• **Gifts:** store links with an "I'm getting this" claim, plus Venmo/PayPal chip-in |
+| Secret page | **Secret Registry** (§10), a 3D conservatory that doubles as a robot registry:<br>• **Door:** a duck that waddles along the foot of the Registry page<br>• **Residents:** Microduck, Open Duck Mini v2, and the reBot Arm B601-DM (sold as two kits)<br>• **Motion:** animated robots, plus a Microduck you can steer<br>• **Gifts:** store links with an "I'm getting this" claim, plus Venmo/PayPal chip-in |
 | Editing | Markdown/YAML files in this repo. Edits made in GitHub's web editor publish automatically. |
 | Timeline | The QR code exists on day 1; v1 goes live within ~2 weeks so save-the-dates can go out |
 
@@ -45,83 +46,75 @@
 
 ### 3.1 Mood
 
-A Southern conservatory after dark: evergreen trellis walls lit by candlelight, gilded frames, fireflies, and plants native to the Southeast spilling over every edge, from magnolia and dogwood to azaleas, jessamine, ferns and Spanish moss. Maximalist and cozy, never minimal or cold. The couple's rules (style, photos, the grading rubric) are in `CLAUDE.md`.
+A letterpress wedding invitation brought to the web: fine botanical engravings in sage ink on ivory paper, a thin script for the names, spaced capitals, lowercase italics. Plants native to the Southeast frame every section, from magnolia and dogwood to azaleas, jessamine, ferns and maypop: abundant, but refined. Flat line art only (no gradients, glows or drop shadows), and nothing Christmassy. The couple's rules (style, photos, the grading rubric) are in `CLAUDE.md`.
 
 ### 3.2 Palette
 
-| Role | Hex |
-|---|---|
-| Evergreen wall | `#18301F` (trellis laths `#22432C`) |
-| Gold leaf | gradient `#7A5416 → #F7E3A1 → #8A6119`; flat gold `#D9AB4E` |
-| Amber (eyebrows, notes) | `#E0A84F` |
-| Cream text on dark | `#F3E8CF`; italic leads `#EAD9B4` |
-| Card stock | `#F8EFDC → #F1E3C4` |
-| Oxblood plate | `#8A2D40 → #5E1A29` with a double gold ring |
-| Ink on card | `#1D2A20`; labels `#18301F`; "optional" `#6B4A2E` |
-| Flower accents | azalea pink, flame orange, honeysuckle red, jessamine yellow, maypop lavender |
+| Role | Token | Hex |
+|---|---|---|
+| Paper | `--paper` | `#EFEDE6` (also the fill inside the drawings) |
+| Cards and fields | `--paper-2` | `#F7F5EF` |
+| Sage ink: line art, rules, the large script | `--ink` | `#61746A` |
+| Capitals, titles, labels | `--heading` | `#4A5C51` |
+| Reading text | `--text` | `#38453D` |
+| Italic notes | `--soft` | `#56665B` |
+| Hairlines (decorative) | `--rule` | sage at 45% |
 
-**Measured WCAG contrast:**
+**Measured WCAG contrast** on paper (and on cards):
 
 | Pairing | Contrast |
 |---|---|
-| Cream on evergreen | 11.6:1 |
-| Leads on evergreen | 10.2:1 |
-| Amber / gold on evergreen | 6.7:1 |
-| Ink on card | 11.8:1 |
-| Labels on card | 11.2:1 |
-| "optional" on card | 6.2:1 |
-| Button text on oxblood | 7.2–11.0:1 |
-| Focus ring (oxblood) on card | 7.7:1 |
-| Input borders on card | 3.1:1 (non-text, ≥ 3:1) |
+| Reading text | 8.6:1 (9.2:1) |
+| Capitals, titles, labels | 6.1:1 (6.6:1) |
+| Italic notes | 5.2:1 (5.6:1) |
+| Sage ink (large script, borders, focus) | 4.3:1 (4.6:1); large text and non-text need 3:1 |
+| Card text on a pressed sage button | 6.6:1 |
 
 ### 3.3 Typography
 
 All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requests.
 
-- **Names and titles:** Ballet, a formal script, in gold leaf.
-- **Dates and headings:** Playfair Display (variable).
-- **Eyebrows, labels and buttons:** IM Fell English SC.
-- **Body, leads and inputs:** EB Garamond (variable), with italics for leads.
-- Pages not yet restyled still use the original Cormorant Garamond and Source Sans 3.
+- **Names and titles:** Corinthia, a thin script, in solid sage ink (never clipped or gilded).
+- **Labels, dates, buttons:** Cormorant Garamond in widely spaced capitals.
+- **Small lines** ("save the date", "formal invitation to follow"): Cormorant Garamond italic, lowercase.
+- **Reading text and inputs:** EB Garamond (variable).
 
 ### 3.4 Motifs and components
 
 | Component | What it is |
 |---|---|
-| `CozyRoom` | The dark conservatory wall: trellis wallpaper, candle glow, a double gilt border with corner scrolls, fireflies, and optional native plants (corner swags and beds, plus climbing side vines on wide screens) |
-| `HeroFrame` | A gilded arch around the hero photo, wreathed in magnolia, ferns and blossoms |
-| `GiltCard` | Cream card stock in a double gilt frame, with a native sprig over each corner; holds forms |
-| `RoomHeading` | Small-caps eyebrow, gilded script title, gold flourish, one italic line |
+| `FloralSection` | A section framed by engraved plants: corner clusters hanging from the top and rising from the bottom, climbing jessamine down the sides on wide screens. Between two sections, a hairline the plants tuck behind. |
+| `HeroFrame` | A fine double-ruled arch around a photo, wreathed in engraved magnolia, dogwood, jessamine, fern, azalea and maypop |
+| `PaperCard` | A card ruled like an invitation (an outer line and an inner rule), with an engraved sprig over its corners |
+| `SectionHeading` | Lowercase italic eyebrow, script title, engraved divider, one italic line |
+| `Divider` | A small dogwood blossom with a leafy sprig to each side |
 | `Flora` | Places one plant drawing as an image |
-| `.btn-plate` | The oxblood plate button with a double gold ring |
-| `Flourish` | Gold scrollwork with a dogwood at its heart |
+| `SecretDuck` | The engraved duck that walks the line at the foot of the Registry page; the only link to the Secret Registry |
+| `.btn` | A double-ruled outline button in spaced capitals |
 
-**Botanical art** is drawn in code, so it's crisp at any size and recolors easily:
+**Botanical art** is engraved in code, so it's crisp at any size:
 
-- `src/lib/natives.ts`: the plants
+- `src/lib/engrave.ts`: the drawing tools (leaves, petals, stems, hatching) and the species
 - `src/lib/flora.ts` and `src/lib/hero-art.ts`: the arrangements
-- At build time, `src/lib/art.ts` writes each arrangement to a cached file in `/flora/*.svg`, so pages stay small and the plants load once for the whole site.
+- At build time, `src/lib/art.ts` writes each arrangement to a cached file in `/flora/*.svg`, so pages stay small and the plants load once for the whole site. The pen keeps the same weight on screen at every size.
 
 Every plant is native to the southeastern US:
 
-- **Flowers and shrubs:** Southern magnolia, flowering dogwood, Piedmont and flame azaleas, eastern redbud, Sweet Betsy trillium.
-- **Vines:** Carolina jessamine, coral honeysuckle, maypop.
-- **Ferns:** Christmas, maidenhair and cinnamon ferns.
-- **Moss:** Spanish moss.
-- **Butterfly:** the eastern tiger swallowtail, Georgia's state butterfly.
+- **Flowers and shrubs:** Southern magnolia, flowering dogwood, Piedmont and flame azaleas, Sweet Betsy trillium.
+- **Vines:** Carolina jessamine, maypop.
+- **Ferns:** Christmas fern.
 - **No tropicals.**
 
 ### 3.5 Motion
 
-- Fireflies twinkle softly in the conservatory rooms.
 - Astro view transitions give a quick cross-fade between pages.
-- Reveal-on-scroll is a fade plus an 8px rise, 300ms or less.
-- Parallax uses CSS scroll-driven animations where supported and stays static elsewhere.
+- Reveal-on-scroll is a fade plus a small rise, 300ms or less.
+- The duck on the Registry page waddles back and forth; it stops for a hop when you point at it.
 - `prefers-reduced-motion` turns all of it off.
 
 ### 3.6 Voice
 
-Warm and brief. **Few words:** a line, not a paragraph. For example: "Join in." · "What gets you on the dance floor?" · "Formal invitation to follow."
+Warm and brief. **Few words:** a line, not a paragraph, and plain labels. For example: "Join in." · "What gets you dancing?" · "Formal invitation to follow." · "Secret Registry".
 
 ---
 
@@ -140,29 +133,29 @@ Warm and brief. **Few words:** a line, not a paragraph. For example: "Join in." 
 │   ├── /details/map/   Garden map · parking · accessible route ... 🔒
 │   ├── /details/stay/  Hotel-block codes · shuttle ............... 🔒
 │   └── /details/rsvp/  RSVP ...................................... 🔒
-├── /after-hours/       Secret robot glasshouse ................... unlisted · noindex
+├── /secret-registry/   Secret Registry (robots) .................. unlisted · noindex
 └── 404                 "You've wandered off the path"
 ```
 
 Navigation: **Home · Our Story · Travel · Registry · FAQ · 🔒 Details & RSVP**. The two guest pages are linked from the footer and the home page's "Join in" band.
 
-On phones the menu opens as a full-screen frosted "glass door".
+On phones the menu opens as a full-screen engraved card.
 
 ## 5. Pages
 
 ### Home
 
-- **Hero** (a `CozyRoom`):
-  - "Save the date", then *Ally & Mark* in gilded script.
-  - SATURDAY · APRIL 24 · 2027, the venue in italics.
-  - Photo #35 in the gilded, plant-wreathed `HeroFrame`.
-  - An oxblood plate counting the days until "I do", and "Formal invitation to follow".
-- **Cards:** Our Story (#20), Travel (#62), Registry (#40).
-- **Join in:** a small conservatory band with two plate buttons, **Share a photo** and **Request a song**.
+- **Hero,** set like the face of an invitation:
+  - SAVE THE DATE, then *Ally & Mark* in script.
+  - SATURDAY · APRIL 24 · 2027, a divider, the venue in italics.
+  - Photo #35 in the engraved, plant-wreathed `HeroFrame`.
+  - A ruled line counting the days until "I do", and "formal invitation to follow".
+- **Cards:** Our Story (#20), Travel (#62), Registry (#40), with engraved corners hanging over them.
+- **Join in:** two outline buttons, **Share a photo** and **Request a song**.
 
 ### Share a photo (public)
 
-A gilt card with a short form:
+A ruled paper card with a short form:
 
 - **Fields:** name, optional email, who's in it (both of us · Ally · Mark), the photo, and an optional note.
 - **On the phone:** photos shrink to about 2400 px before sending.
@@ -179,7 +172,7 @@ Both forms say **"Opening soon"** until `guestEndpoint` is set (setup: `apps-scr
 
 ### Our Story
 
-Short by design: the ring photo (#20) in a gilt arch, one line, and links on to Travel and the Registry. "How we met" waits for your words.
+Short by design: the ring photo (#20) in an engraved arch, one line, and links on to Travel and the Registry. "How we met" waits for your words.
 
 ### Travel (public)
 
@@ -344,23 +337,18 @@ A Google Apps Script web app attached to that Sheet. It's free and needs no serv
 
 ---
 
-## 10. Secret page: the robot glasshouse
+## 10. Secret page: the Secret Registry
 
-### 10.1 Concept: "After Hours"
+### 10.1 Concept
 
-The same Victorian glasshouse, at night:
-- moonlight through the glazing
-- lanterns and string lights
-- fireflies drifting between the palms
-
-Once the guests have gone home, the robots have the run of the place. Every robot doubles as a registry card.
+A conservatory by day, drawn like the rest of the site: ivory paper for the sky, a floor engraved in sage ink with a curved brick path, sage-painted glazing, and the site's engraved native plants standing in the room like the flats of a little theatre. The robots have the run of the place, and every robot doubles as a registry card. The page is called plainly what it is: **Secret Registry**. (It began as "After Hours", a night glasshouse with lanterns and fireflies; that read as too Christmassy.)
 
 ### 10.2 The secret door
 
-- **The duck.** A tiny **brass duck figurine** hides in the flower bed at the bottom of the **Registry (Gifts) page**, and nowhere else.
-  - On hover or focus it waddles.
-  - Clicking it opens `/after-hours/`.
-- **Accessible.** The duck is a real link with a playful label ("A small brass duck. What's it doing here?"), so keyboard and screen-reader users can find it too.
+- **The duck.** An engraved duck waddles back and forth along the ruled line at the foot of the **Registry (Gifts) page**, and nowhere else.
+  - On hover or focus it stops for a little hop; with reduced motion it stands still.
+  - Clicking it opens `/secret-registry/`.
+- **Accessible.** The duck is a real link named "Secret Registry", so keyboard and screen-reader users can find it too.
 - **Unlisted.** The page is `noindex` and appears in neither the navigation nor the sitemap. You can still send the link straight to robot friends.
 
 ### 10.3 The residents
@@ -368,7 +356,7 @@ Once the guests have gone home, the robots have the run of the place. Every robo
 Prices were checked on Nov 10, 2026. They drift, so every entry carries a `checked:` date, and the weekly link check flags dead links.
 
 **Microduck** (Pollen Robotics × Hugging Face; press reports say Seeed manufactures it)
-- **In the scene:** waddles the brick paths, inspects ferns and chases fireflies. Tap it to **take the controls** (§10.6).
+- **In the scene:** waddles the brick path behind its parent. Tap it to **take the controls** (§10.6).
 - **Registry:**
 
   | Item | Price |
@@ -392,32 +380,25 @@ Prices were checked on Nov 10, 2026. They drift, so every entry carries a `check
     - filament
   - **Chip-in** toward the full build (about €400 in parts)
 
-**reBot Arm B601-DM** (Seeed; 6+1 DoF, 7 Damiao brushless actuators) **+ Star Arm 102 leader**
-- **In the scene:** at the potting bench, gently repotting a fern and offering a rose. The leader arm sits beside it, as if someone is teleoperating.
-- **Registry:**
+**reBot Arm B601-DM** (Seeed; 6+1 DoF, Damiao brushless actuators)
+- **In the scene:** at the potting bench, repotting a fern seedling.
+- **Registry** (your call: just the two kits that build it):
 
   | Item | Price |
   |---|---|
-  | Assembled kit with gripper | **$1,499** |
-  | DIY bundle (the next three kits) | $1,197 |
-  | ↳ Body Motor Kit | $829 |
-  | ↳ Body Structure Kit | $169 |
-  | ↳ Gripper Kit | $199 |
-  | Star Arm 102 leader | about $259 |
-  | DM-J4310-2EC actuator | about $116–186 |
-  | DM-J4340P-2EC actuator | about $175–278 |
+  | Body Motor Kit (six Damiao motors, CAN board and power board) | **$829** |
+  | Body Structure Kit (metal and 3D-printed parts, screws and pins) | $169 |
   | Chip-in | any amount |
 
 Reference specs for the B601-DM:
 - Payload: 1.5 kg
 - Reach: 767 mm with the gripper
-- LeRobot support: `rebot_b601_follower` and `rebot_102_leader`
+- LeRobot support: `rebot_b601_follower`
 
 ### 10.4 The robot card
 
-Tapping a robot slides up a brass-framed plant-tag panel with:
-- the robot's name and a mock Latin "species" line, e.g. *Anas mechanica minor*
-- a short "why we love it"
+Tapping a robot opens a ruled paper card with:
+- the robot's name and one plain line about it
 - the kit and parts list, each line with a store link, price and an **"I'm getting this"** button
 - a **Chip in** row with Venmo (amount pre-filled) and PayPal.me buttons
 - credit and license lines
@@ -442,20 +423,20 @@ Tapping a robot slides up a brass-framed plant-tag panel with:
 
 #### What's built (v1, Nov 10)
 
-- **Stack:** plain three.js 0.186 (no React), loaded only on `/after-hours/`. That's about 155 KB gzipped, plus the site's cached plant drawings.
+- **Stack:** plain three.js 0.186 (no React), loaded only on `/secret-registry/`. That's about 155 KB gzipped, plus the site's cached plant drawings.
 - **Robots:** the official models, converted by `scripts/robot-models.mjs` from each robot's MuJoCo description (MJCF + STL parts): parts merged per body and colour, simplified with meshoptimizer and compressed. That gives 134–148 KB per robot, each joint kept as a named node. Credits and licences are in `public/models/LICENSES.md` and on each gift card.
   - The ducks start from their own standing poses (Microduck's `STAND` keyframe, Open Duck Mini's runtime pose). A small numeric leg solver walks them within their real joint limits: feet lift 2–3 cm, stay level, and the standing foot stays planted. The duckling follows its parent.
-  - The arm's solver works on the B601's real kinematics (base yaw, three pitch joints, wrist swing, gripper roll). It repots a fern seedling between two pots, gripper pointing down, and the stand-in leader arm mirrors it.
+  - The arm's solver works on the B601's real kinematics (base yaw, three pitch joints, wrist swing, gripper roll). It repots a fern seedling between two pots, gripper pointing down.
   - If a model fails to load, that robot falls back to its stylized portrait.
 - **Scene:**
-  - The night glasshouse: glazed iron bays with the moon behind them, lanterns, string lights and fireflies.
-  - A brass armillary sphere stands in the middle of the loop.
-  - The site's native-plant drawings stand around the room as painted flats.
+  - The conservatory by day: sage-painted glazing bars against an ivory sky, a stippled floor with an outlined brick path, a potting bench.
+  - A bronze armillary sphere, green with age, stands in the middle of the loop.
+  - The site's engraved plant drawings stand around the room as paper flats, beyond the glass too, fading into the paper.
 - **"Take the controls":** steers Microduck kinematically (joystick, arrow keys or WASD), then it walks itself home. The MuJoCo-physics duck below is the upgrade path.
 - **Cards and claims:** HTML cards (keyboard and screen-reader friendly), with claims through the Apps Script `claim` action and chip-in through Venmo/PayPal links.
 - **Fallbacks:** a list without WebGL, and a still life under reduced motion.
 
-#### Layer 1: everyone, on any phone (original plan)
+#### Layer 1: everyone, on any phone (original plan, superseded by what's built above)
 
 - **Stack.** three.js r187, React Three Fiber 9 and drei, in a single Astro island that only loads on `/after-hours/`.
 - **Models.** Each robot is built from its official model:
@@ -493,7 +474,7 @@ Tapping a robot slides up a brass-framed plant-tag panel with:
 
 #### Fallbacks and performance
 
-- **Fallback view.** No WebGL, low power or reduced motion get a static illustrated night glasshouse with the same robot cards as a list.
+- **Fallback view.** Without WebGL the robot cards show as a list; with reduced motion the room holds still.
 - **Performance:**
   - The pixel ratio is capped at 1.5.
   - The scene renders only on demand when idle, and pauses in hidden tabs.
@@ -516,25 +497,23 @@ These are shown in an "About these robots" footnote on the page.
 | Microduck Sandbox | `pollen-robotics/microduck-simulator` (HF Space) | Apache-2.0 | The basis for live mode |
 | Open Duck Mini v2 | `apirrone/Open_Duck_Mini` (v2) | Apache-2.0 | Include the license and credit. Avoid any Disney / BD-X branding. |
 | reBot Arm B601-DM | `Seeed-Projects/reBot-DevArm` → `Rebot_Arm_description/DM/` | CERN-OHL-W-2.0 | Keep the notice. Our converted files stay public in this repo. |
-| Star Arm 102 | No open model confirmed | n/a | Use a stylized stand-in if no model is found |
 
 ### 10.8 Data shape
 
 One file per robot under `src/content/robots/`:
 
 ```yaml
-# src/content/robots/microduck.yaml
-id: microduck
+# src/content/robots/01-microduck.yaml
 name: Microduck
-species: Anas mechanica minor
-scene: { model: models/microduck.glb, clip: waddle, path: brick-loop, live: true }
-blurb: "…"
-kit:
-  - { id: microduck-unit, label: Microduck, price: 399, url: "https://store.pollen-robotics.com/products/microduck" }
-parts:
-  - { id: microduck-accessory, label: Accessory Pack, price: 39, url: "…" }
-chipIn: { suggested: [25, 50, 100], note: "Microduck fund" }
-credit: "Model © Pollen Robotics, CC BY-NC-SA"
+blurb: A small two-legged robot duck.
+scene: microduck
+items:
+  - { id: microduck, label: Microduck, price: 399, url: "https://store.pollen-robotics.com/products/microduck", note: "Pre-order; ships after April 2027" }
+  - { id: microduck-accessory-pack, label: Accessory Pack, price: 39, url: "…" }
+chipIn: { suggested: [25, 50, 100], note: Microduck fund }
+project: { label: About Microduck, url: "…" }
+credit: Microduck is by Pollen Robotics and Hugging Face.
+model: { by: Pollen Robotics, license: CC BY-NC-SA 4.0, licenseUrl: "…", source: "…" }
 checked: 2026-11-10
 ```
 
@@ -595,7 +574,7 @@ wedding-site/
 │   ├── content/            chapters, proposal, faq, places, charities (.yaml); later registry/*, robots/*
 │   ├── lib/                botanicals.ts (procedural plants), photos.ts, url.ts, inline-md.ts
 │   ├── layouts/            Base.astro
-│   ├── pages/              index, our-story, travel, registry, faq, details/, 404 (later: after-hours)
+│   ├── pages/              index, our-story, travel, registry, faq, details/, 404, secret-registry
 │   └── styles/             global.css
 ├── public/                 favicon, apple-touch-icon, og.jpg (later: models/ for robot GLBs)
 ├── print/                  save-the-date QR (SVG, PNG, PDF)
@@ -618,7 +597,7 @@ wedding-site/
 
 - **Accessibility:**
   - WCAG 2.2 AA
-  - 44px targets and visible brass focus rings
+  - 44px targets and visible sage focus rings
   - alt text on every photo
   - a keyboard-friendly lightbox, plus a 2D fallback for the robot room
 - **Performance:**
@@ -642,7 +621,7 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 | Dec | Registry live (Zola and Every.org). Illustrated Athens map. Garden-map draft. |
 | Jan | Robot glasshouse: animated scene, then the live duck. RSVP backend and UI. Friends-and-family test run. |
 | **by ~Feb 12** | Protected details final, RSVP live, and the invitation QR (auto-unlock) sent to the stationer |
-| ~Feb 27 – Mar 6 | Invitations mail, 7–8 weeks out |
+| ~Feb 27 to Mar 6 | Invitations mail, 7–8 weeks out |
 | ~Mar 27 | RSVP deadline (confirm against the caterer's final-count date) |
 | Apr 1–20 | Final updates; content freeze on April 20 |
 | **Apr 24** | 🌿 |
@@ -665,9 +644,10 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [ ] **You:** switch on Pages (Settings → Pages → Source: GitHub Actions)
 - [ ] **You:** set up the Apps Script web app (`apps-script/README.md`) and paste its URL into `guestEndpoint`
 - [x] Restyle Our Story, Travel, Registry, FAQ, Details, 404, header and footer in the new direction (each graded 91–92)
-- [x] After Hours robot room (graded 92): stylized 3D robots, gift cards, claims, chip-in, steerable Microduck, list fallback
+- [x] Robot room (graded 92): stylized 3D robots, gift cards, claims, chip-in, steerable Microduck, list fallback
 - [ ] **You:** Venmo/PayPal handles for robot chip-ins (`venmoHandle`, `paypalHandle`)
 - [x] Official robot models in the room, moving on their real joints
+- [x] Redesign as a botanical-engraving invitation: sage on ivory, engraved native plants, the Secret Registry by day, the walking duck
 - [ ] Later: the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two
@@ -697,6 +677,5 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - RSVP deadline vs. the caterer's final-count date.
 - Whether Every.org's amount-raised endpoint can be called from the browser. Build-time fetching works either way.
 - **Microduck timing:** current pre-orders ship after April 2027, so the gift arrives after the wedding. Mention that on the card.
-- **Star Arm 102 model:** if no open 3D model exists, use a stylized stand-in.
 - **Venmo/PayPal link formats:** test on iOS, Android and desktop before launch.
 - **Robot prices:** these drift, and Damiao actuator prices vary a lot by reseller. Re-check them in January.

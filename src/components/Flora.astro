@@ -1,8 +1,10 @@
 ---
-// A drawing of native plants (lib/art.ts), placed as a decorative image.
+// A drawing of native plants (lib/art.ts), placed as decorative images.
 // Size it with --flora-w (the width of the drawing's nominal box) and
 // position it from the parent with a class; `mirror` flips it left↔right.
-import { art, artUrl, artView, type ArtName } from '../lib/art';
+// Its fronds, sprigs and leaves sit on their own layers behind the rest and
+// sway in a gentle breeze (the .sway styles in global.css).
+import { art, artView, artLayers, type ArtName } from '../lib/art';
 
 interface Props {
   name: ArtName;
@@ -12,31 +14,47 @@ interface Props {
   eager?: boolean;
 }
 const { name, class: cls, mirror = false, eager = false } = Astro.props;
-const [, , vw, vh] = artView(name);
+const [vx, vy, vw, vh] = artView(name);
 const k = vw / art(name).w;
+const { base, sways } = artLayers(name);
+const loading = eager ? 'eager' : 'lazy';
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
 ---
 
-<img
-  class:list={['flora', cls, { 'flora--mirror': mirror }]}
-  src={artUrl(name)}
-  alt=""
-  width={vw}
-  height={vh}
-  loading={eager ? 'eager' : 'lazy'}
-  decoding="async"
-  style={`--k:${k.toFixed(4)}`}
-/>
+<span class:list={['flora', cls, { 'flora--mirror': mirror }]} style={`--k:${k.toFixed(4)};aspect-ratio:${vw} / ${vh}`}>
+  {
+    sways.map((s) => (
+      <img
+        class="sway"
+        src={s.url}
+        alt=""
+        width={s.view[2]}
+        height={s.view[3]}
+        loading={loading}
+        decoding="async"
+        style={`left:${pct(s.view[0] - vx, vw)};top:${pct(s.view[1] - vy, vh)};width:${pct(s.view[2], vw)};--amp:${s.amp}deg;--dur:${s.dur}s;--delay:${s.delay}s`}
+      />
+    ))
+  }
+  {base && <img class="flora__base" src={base} alt="" width={vw} height={vh} loading={loading} decoding="async" />}
+</span>
 
 <style>
   .flora {
     position: absolute;
+    display: block;
     width: calc(var(--flora-w, 200px) * var(--k, 1));
-    height: auto;
-    max-width: none;
     pointer-events: none;
     user-select: none;
   }
   .flora--mirror {
     scale: -1 1;
+  }
+  .flora__base {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
 </style>

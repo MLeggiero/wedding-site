@@ -1,6 +1,6 @@
 # FAQ page. Answers support [links](/travel/), *italics* and **bold**.
 # Add questions like dress code, children and plus-ones once decided.
-# Entries appear in id order — keep the two-digit prefixes (01-, 02-, …).
+# Entries appear in id order, so keep the two-digit prefixes (01-, 02-, …).
 
 - id: 01-when-where
   question: When and where is the wedding?
@@ -16,18 +16,18 @@
 
 - id: 03-indoors
   question: Will it be indoors?
-  answer: Mostly under glass — we’ll celebrate in the garden’s conservatory.
+  answer: Mostly under glass. We’ll celebrate in the garden’s conservatory.
 
 - id: 04-parking
   question: Is there parking?
-  answer: Yes — parking at the garden is free.
+  answer: Yes, parking at the garden is free.
 
 - id: 05-accessibility
   question: Is the venue accessible?
   answer: >-
     Yes. An elevator connects the parking area to the garden’s entry plaza. If
-    getting around on foot is hard for you, tell us and we’ll arrange help —
-    the garden has golf carts.
+    getting around on foot is hard for you, tell us and we’ll arrange help.
+    The garden has golf carts.
 
 - id: 06-stay
   question: Where should we stay?

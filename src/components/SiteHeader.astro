@@ -1,34 +1,26 @@
 ---
-// The site header: a dark evergreen bar with a gilt rule. On phones the menu
-// opens as a candlelit conservatory room.
+// The site header: the names in script and the pages in spaced capitals over
+// a fine rule. On phones the menu opens as an engraved card.
 import { nav } from '../config';
 import { withBase, isCurrent } from '../lib/url';
-import { trellisTile } from '../lib/natives';
-import Monogram from './Monogram.astro';
 import Flora from './Flora.astro';
 
 const path = Astro.url.pathname;
-const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}")`;
 ---
 
 <header class="site-header">
   <div class="container site-header__inner">
-    <a class="brand" href={withBase('/')}>
-      <Monogram class="brand__mark" />
-      <span class="brand__name">Ally <span class="brand__amp">&amp;</span> Mark</span>
-    </a>
+    <a class="brand t-script" href={withBase('/')}>Ally &amp; Mark</a>
 
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
       <span class="menu-toggle__label">Menu</span>
       <span class="menu-toggle__icon" aria-hidden="true"><span></span></span>
     </button>
 
-    <nav id="site-nav" class="site-nav" aria-label="Main" style={`--wallpaper:${wallpaper}`}>
+    <nav id="site-nav" class="site-nav" aria-label="Main">
       <div class="site-nav__flora" aria-hidden="true">
-        <Flora name="swag" class="site-nav__plant site-nav__plant--tl" />
-        <Flora name="swag" mirror class="site-nav__plant site-nav__plant--tr" />
-        <Flora name="bed" class="site-nav__plant site-nav__plant--bl" />
-        <Flora name="bed" mirror class="site-nav__plant site-nav__plant--br" />
+        <Flora name="corner" class="site-nav__plant site-nav__plant--tl" />
+        <Flora name="corner-low" mirror class="site-nav__plant site-nav__plant--br" />
       </div>
       <ul>
         {
@@ -36,12 +28,6 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
             <li>
               <a href={withBase(item.href)} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
                 {item.label}
-                {'locked' in item && (
-                  <svg class="key" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="8" cy="12" r="4" />
-                    <path d="M12 12h9M18 12v3M21 12v2" />
-                  </svg>
-                )}
               </a>
             </li>
           ))
@@ -74,10 +60,9 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
   .site-header {
     position: relative;
     z-index: 20;
-    padding-block: 0.65rem 0.8rem;
-    background: linear-gradient(180deg, #13271d, #0f2018);
-    border-bottom: 1px solid rgb(201 162 79 / 0.9);
-    box-shadow: 0 3px 0 -1px #0f2018, 0 4px 0 -1px rgb(201 162 79 / 0.4);
+    padding-block: 0.5rem 0.55rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
   }
   .site-header__inner {
     display: flex;
@@ -90,30 +75,15 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
     z-index: 31;
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
     min-height: 2.75rem;
-    color: #f3e8cf;
+    padding-inline: 0.1em;
+    font-size: 2.3rem;
+    line-height: 1;
+    color: var(--ink);
     text-decoration: none;
   }
-  .brand :global(.brand__mark) {
-    width: 2rem;
-    color: #e9cf85;
-  }
-  .brand__name {
-    font-family: 'Playfair Display Variable', Georgia, serif;
-    font-style: italic;
-    font-size: 1.45rem;
-    line-height: 1;
-    color: #f3e8cf;
-  }
-  .brand__amp {
-    font-family: 'Ballet', cursive;
-    font-style: normal;
-    font-size: 1.15em;
-    color: #e0b55c;
-  }
-  .brand:hover .brand__name {
-    color: #fff3d6;
+  .brand:hover {
+    color: var(--heading);
   }
 
   .site-nav ul {
@@ -121,56 +91,26 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
     margin: 0;
     padding: 0;
     display: flex;
-    gap: clamp(0.9rem, 1.9vw, 1.9rem);
+    gap: clamp(0.9rem, 2vw, 2rem);
   }
   .site-nav a {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.35em;
     min-height: 2.75rem;
-    font-family: 'IM Fell English SC', Georgia, serif;
-    font-size: 1.14rem;
-    letter-spacing: 0.05em;
-    color: #efe3c6;
+    font-family: var(--font-caps);
+    font-weight: 600;
+    font-size: 0.86rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--heading);
     text-decoration: none;
-  }
-  .site-nav a::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 0.25rem;
-    width: 0.32rem;
-    height: 0.32rem;
-    border-radius: 50%;
-    background: #e0b55c;
-    translate: -50% 0;
-    opacity: 0;
-    transition: opacity 160ms var(--ease);
+    border-bottom: 1px solid transparent;
   }
   .site-nav a:hover {
-    color: #f2d27e;
+    border-bottom-color: var(--rule);
   }
   .site-nav a[aria-current='page'] {
-    color: #f2d27e;
-  }
-  .site-nav a[aria-current='page']::after,
-  .site-nav a:hover::after {
-    opacity: 1;
-  }
-  .site-nav a:focus-visible,
-  .menu-toggle:focus-visible,
-  .brand:focus-visible {
-    outline: 2px solid #f2d27e;
-    outline-offset: 3px;
-  }
-  .key {
-    width: 1em;
-    height: 1em;
-    fill: none;
-    stroke: #e0b55c;
-    stroke-width: 2;
-    stroke-linecap: round;
+    border-bottom-color: var(--ink);
   }
   .menu-toggle,
   .site-nav__flora {
@@ -185,14 +125,16 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
       align-items: center;
       gap: 0.6rem;
       min-height: 2.75rem;
-      padding: 0.35rem 1rem 0.45rem;
-      border: 1px solid rgb(224 181 92 / 0.85);
-      border-radius: 999px;
-      background: rgb(255 255 255 / 0.03);
-      color: #f3e8cf;
-      font-family: 'IM Fell English SC', Georgia, serif;
-      font-size: 1.12rem;
-      letter-spacing: 0.06em;
+      padding: 0.3rem 0.9rem;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--heading);
+      font-family: var(--font-caps);
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
       cursor: pointer;
     }
     .menu-toggle__icon,
@@ -200,9 +142,9 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
     .menu-toggle__icon::before,
     .menu-toggle__icon::after {
       display: block;
-      width: 1.1rem;
-      height: 1.5px;
-      background: #e0b55c;
+      width: 1.05rem;
+      height: 1px;
+      background: currentColor;
       transition:
         transform 200ms var(--ease),
         opacity 200ms var(--ease);
@@ -223,9 +165,6 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
     .menu-toggle__icon::after {
       top: 5px;
     }
-    :global(.menu-open) .menu-toggle {
-      background: #10221a;
-    }
     :global(.menu-open) .menu-toggle__icon span {
       opacity: 0;
     }
@@ -244,12 +183,7 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
       place-items: center;
       padding: 6rem var(--gutter) 4rem;
       overflow: hidden;
-      background-color: #13281d;
-      background-image:
-        radial-gradient(circle at 50% 40%, rgb(224 168 79 / 0.28), transparent 60%),
-        radial-gradient(ellipse at 50% 50%, transparent 45%, rgb(5 12 8 / 0.6)),
-        var(--wallpaper);
-      background-size: auto, auto, 96px 128px;
+      background: var(--paper);
       opacity: 0;
       visibility: hidden;
       transition:
@@ -259,10 +193,10 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
     .site-nav::before {
       content: '';
       position: absolute;
-      inset: 10px;
-      border: 1.5px solid rgb(201 160 70 / 0.8);
-      outline: 1px solid rgb(201 160 70 / 0.4);
-      outline-offset: -7px;
+      inset: 4.6rem 0.75rem 0.75rem;
+      border: 1px solid var(--ink);
+      outline: 1px solid var(--rule);
+      outline-offset: -6px;
       pointer-events: none;
     }
     :global(.menu-open) .site-nav {
@@ -280,19 +214,10 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
       pointer-events: none;
     }
     .site-nav :global(.site-nav__plant) {
-      --flora-w: clamp(150px, 34vw, 300px);
+      --flora-w: clamp(170px, 46vw, 300px);
     }
-    /* the swags hang just below the brand and the close button */
     .site-nav :global(.site-nav__plant--tl) {
-      top: 4.4rem;
-      left: 0;
-    }
-    .site-nav :global(.site-nav__plant--tr) {
-      top: 4.4rem;
-      right: 0;
-    }
-    .site-nav :global(.site-nav__plant--bl) {
-      bottom: 0;
+      top: 4.6rem;
       left: 0;
     }
     .site-nav :global(.site-nav__plant--br) {
@@ -303,18 +228,13 @@ const wallpaper = `url("data:image/svg+xml,${encodeURIComponent(trellisTile())}"
       position: relative;
       flex-direction: column;
       align-items: center;
-      gap: 0.2rem;
-      padding: 1.2rem 2rem;
-      border-radius: 4px;
-      background: rgb(9 18 13 / 0.55);
+      gap: 0.35rem;
+      padding: 1rem 2rem;
+      background: var(--paper);
     }
     .site-nav a {
-      font-size: 1.75rem;
-      letter-spacing: 0.04em;
-      min-height: 3.1rem;
-    }
-    .site-nav a::after {
-      bottom: 0.15rem;
+      font-size: 1.1rem;
+      min-height: 3rem;
     }
   }
 </style>

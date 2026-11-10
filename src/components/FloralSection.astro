@@ -1,0 +1,107 @@
+---
+// A section of the page framed by engraved plants at its corners, like the
+// border of an invitation (lib/flora.ts). 'full' adds climbing jessamine down
+// the sides on wide screens; 'small' uses smaller corners.
+import Flora from './Flora.astro';
+
+interface Props {
+  class?: string;
+  /** aria-label for the section */
+  label?: string;
+  flora?: 'full' | 'small' | false;
+  /** which corners carry plants: hanging from the top, rising from the bottom, or both */
+  corners?: 'both' | 'top' | 'bottom';
+  style?: string;
+}
+const { class: cls, label, flora = false, corners = 'both', style } = Astro.props;
+const top = corners !== 'bottom';
+const bottom = corners !== 'top';
+---
+
+<section class:list={['room', cls, flora && `room--${flora}`]} aria-label={label} style={style}>
+  {
+    flora && (
+      <div class="room__flora" aria-hidden="true">
+        {flora === 'full' && <Flora name="vine" class="room__plant room__vine room__vine--l" />}
+        {flora === 'full' && <Flora name="vine" mirror class="room__plant room__vine room__vine--r" />}
+        {top && <Flora name="corner" eager={flora === 'full'} class="room__plant room__plant--tl" />}
+        {top && <Flora name="corner" eager={flora === 'full'} mirror class="room__plant room__plant--tr" />}
+        {bottom && <Flora name="corner-low" class="room__plant room__plant--bl" />}
+        {bottom && <Flora name="corner-low" mirror class="room__plant room__plant--br" />}
+      </div>
+    )
+  }
+  <slot name="decor" />
+  <div class="room__inner">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .room {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--room-pad, clamp(2.5rem, 6vw, 4.5rem));
+  }
+  .room__flora {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  /* between two sections, a hairline that the plants tuck behind (it hides
+     where the corner drawings meet the edge of their section) */
+  .room + .room::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 0 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .room--full {
+    --plant-w: clamp(128px, 27vw, 400px);
+  }
+  .room--small {
+    --plant-w: clamp(124px, 17vw, 250px);
+  }
+  .room :global(.room__plant) {
+    --flora-w: var(--plant-w);
+  }
+  .room :global(.room__plant--tl) {
+    top: 0;
+    left: 0;
+  }
+  .room :global(.room__plant--tr) {
+    top: 0;
+    right: 0;
+  }
+  .room :global(.room__plant--bl) {
+    bottom: 0;
+    left: 0;
+  }
+  .room :global(.room__plant--br) {
+    bottom: 0;
+    right: 0;
+  }
+  /* climbing jessamine down the sides (wide screens only) */
+  .room :global(.room__vine) {
+    display: none;
+    top: 50%;
+    --flora-w: clamp(110px, 10vw, 170px);
+    translate: 0 -50%;
+  }
+  .room :global(.room__vine--l) {
+    left: 0;
+  }
+  .room :global(.room__vine--r) {
+    right: 0;
+  }
+  @media (min-width: 64rem) {
+    .room :global(.room__vine) {
+      display: block;
+    }
+  }
+  .room__inner {
+    position: relative;
+    z-index: 2;
+  }
+</style>

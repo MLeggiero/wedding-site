@@ -1,19 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import CozyRoom from '../components/CozyRoom.astro';
-import RoomHeading from '../components/RoomHeading.astro';
-import GiltCard from '../components/GiltCard.astro';
+import FloralSection from '../components/FloralSection.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PaperCard from '../components/PaperCard.astro';
 import { site } from '../config';
 
 const ready = Boolean(site.guestEndpoint);
 ---
 
 <Base title="Share a photo" description="Send Ally & Mark your favorite photo of them.">
-  <CozyRoom flora="full" label="Share a photo">
-    <RoomHeading eyebrow="Join in" title="Share a photo" lead="Your favorite of Ally, of Mark, or of us both." />
-    <GiltCard class="guest-card">
+  <FloralSection flora="full" label="Share a photo">
+    <SectionHeading eyebrow="join in" title="Share a photo" lead="Your favorite of Ally, of Mark, or of us both." />
+    <PaperCard class="guest-card">
       <form class="guest-form" data-photo-form data-endpoint={site.guestEndpoint}>
-        {!ready && <p class="guest-form__soon">Opening soon</p>}
+        {!ready && <p class="tag guest-form__soon">Opening soon</p>}
         <fieldset class="guest-form__fields" disabled={!ready}>
           <label>
             <span class="guest-form__label">Your name</span>
@@ -39,12 +39,12 @@ const ready = Boolean(site.guestEndpoint);
             <textarea name="note" rows="3" maxlength="300"></textarea>
           </label>
           <input class="guest-form__hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <button class="btn-plate" type="submit">Send photo</button>
+          <button class="btn" type="submit">Send photo</button>
           <p class="guest-form__status" role="status" aria-live="polite"></p>
         </fieldset>
       </form>
-    </GiltCard>
-  </CozyRoom>
+    </PaperCard>
+  </FloralSection>
 </Base>
 
 <script>

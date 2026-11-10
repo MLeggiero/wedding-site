@@ -1,37 +1,24 @@
 name: reBot Arm B601-DM
-species: Brachium hortense
-blurb: A research arm gentle enough to repot a fern, with a leader arm to steer it by hand.
+blurb: A six-axis robot arm, built from two kits.
 scene: rebot-arm
 items:
-  - id: rebot-assembled
-    label: Assembled arm with gripper
-    price: 1499
-    url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Bundle.html
   - id: rebot-motor-kit
-    label: Body Motor Kit (DIY)
+    label: Body Motor Kit
     price: 829
     url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Bundle.html
     note: Six Damiao motors, CAN board and power board
   - id: rebot-structure-kit
-    label: Body Structure Kit (DIY)
+    label: Body Structure Kit
     price: 169
     url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Bundle.html
-  - id: rebot-gripper-kit
-    label: Gripper Kit (DIY)
-    price: 199
-    url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Bundle.html
-  - id: rebot-leader
-    label: Star Arm 102 leader arm
-    price: 259
-    url: https://www.robotshop.com/products/star-arm-102-rebot-b601-dmrs-leader-arm
-    note: For steering the arm by hand
+    note: Metal and 3D-printed parts, screws and pins
 chipIn:
   suggested: [50, 100, 250]
   note: Robot arm fund
 project:
   label: reBot Arm on GitHub
   url: https://github.com/Seeed-Projects/reBot-DevArm
-credit: reBot Arm B601-DM is by Seeed Studio. The leader arm beside it is a stand-in; no public model exists.
+credit: reBot Arm B601-DM is by Seeed Studio.
 model:
   by: Seeed Studio
   license: CERN-OHL-W-2.0

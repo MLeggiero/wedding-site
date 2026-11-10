@@ -2,36 +2,36 @@
 // Behind the courtesy password: the day's schedule, garden map, hotel blocks
 // and RSVP. Placeholder until invitations go out.
 import Base from '../../layouts/Base.astro';
-import CozyRoom from '../../components/CozyRoom.astro';
-import RoomHeading from '../../components/RoomHeading.astro';
-import GiltCard from '../../components/GiltCard.astro';
+import FloralSection from '../../components/FloralSection.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import PaperCard from '../../components/PaperCard.astro';
 import PasswordGate from '../../components/PasswordGate.astro';
 import { withBase } from '../../lib/url';
 import { site } from '../../config';
 ---
 
 <Base title="Details & RSVP" description="Schedule, garden map and RSVP for Ally & Mark’s wedding guests.">
-  <CozyRoom flora="full" label="Details and RSVP">
-    <RoomHeading eyebrow="Details & RSVP" title="For our guests" />
-    <GiltCard class="details-card" as="section">
+  <FloralSection flora="full" label="Details and RSVP">
+    <SectionHeading eyebrow="details & RSVP" title="For our guests" />
+    <PaperCard class="details-card" as="section">
       <PasswordGate>
         <div class="soon">
-          <p class="plate-tag">{site.dateLong}</p>
-          <h2 class="cc-title">The doors open with your invitation</h2>
-          <p class="cc-text">The schedule, a garden map, hotel details and the RSVP arrive here in {site.invitationsSend}.</p>
+          <p class="tag">{site.dateLong}</p>
+          <h2 class="cc-title">Schedule, map and RSVP</h2>
+          <p class="cc-text">They arrive here with the invitations in {site.invitationsSend}.</p>
           <p class="soon__links cc-text">
-            Meanwhile: <a href={withBase('/travel/')}>Travel</a> · <a href={withBase('/faq/')}>FAQ</a> ·
+            <a href={withBase('/travel/')}>Travel</a> · <a href={withBase('/faq/')}>FAQ</a> ·
             <a href={withBase('/our-story/')}>Our Story</a>
           </p>
         </div>
       </PasswordGate>
-    </GiltCard>
-  </CozyRoom>
+    </PaperCard>
+  </FloralSection>
 </Base>
 
 <style>
   :global(.details-card) {
-    margin-block: clamp(4.5rem, 10vw, 6rem) clamp(5.5rem, 10vw, 6rem);
+    margin-block: clamp(3rem, 8vw, 4.5rem) clamp(4rem, 9vw, 5rem);
   }
   .soon {
     display: grid;
@@ -39,7 +39,7 @@ import { site } from '../../config';
     gap: 0.6rem;
     text-align: center;
   }
-  .soon .plate-tag {
+  .soon .tag {
     margin-bottom: 0.8rem;
   }
   .soon__links {

@@ -1,19 +1,14 @@
 ---
 import '@fontsource-variable/cormorant-garamond/wght.css';
 import '@fontsource-variable/cormorant-garamond/wght-italic.css';
-import '@fontsource-variable/source-sans-3/wght.css';
-import '@fontsource/ballet/400.css';
-import '@fontsource-variable/playfair-display/wght.css';
-import '@fontsource-variable/playfair-display/wght-italic.css';
-import '@fontsource/im-fell-english-sc/400.css';
+import '@fontsource/corinthia/400.css';
 import '@fontsource-variable/eb-garamond/wght.css';
 import '@fontsource-variable/eb-garamond/wght-italic.css';
 import '../styles/global.css';
 
-import cormorantItalic from '@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-italic.woff2?url';
-import cormorantNormal from '@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-normal.woff2?url';
-import sourceSans from '@fontsource-variable/source-sans-3/files/source-sans-3-latin-wght-normal.woff2?url';
-import ballet from '@fontsource/ballet/files/ballet-latin-400-normal.woff2?url';
+import corinthia from '@fontsource/corinthia/files/corinthia-latin-400-normal.woff2?url';
+import cormorant from '@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-normal.woff2?url';
+import ebGaramond from '@fontsource-variable/eb-garamond/files/eb-garamond-latin-wght-normal.woff2?url';
 
 import { site } from '../config';
 import { withBase } from '../lib/url';
@@ -42,14 +37,13 @@ const ogImage = new URL(withBase('/og.jpg'), Astro.site);
     <meta name="description" content={description} />
     <!-- a wedding site, not a search result -->
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="theme-color" content="#1e3a2b" />
+    <meta name="theme-color" content="#efede6" />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
 
-    <link rel="preload" href={cormorantItalic} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={cormorantNormal} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={sourceSans} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={ballet} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={corinthia} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={cormorant} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={ebGaramond} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Ally & Mark" />

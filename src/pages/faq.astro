@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import CozyRoom from '../components/CozyRoom.astro';
-import RoomHeading from '../components/RoomHeading.astro';
-import GiltCard from '../components/GiltCard.astro';
+import FloralSection from '../components/FloralSection.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PaperCard from '../components/PaperCard.astro';
 import { inlineMd } from '../lib/inline-md';
 import { site } from '../config';
 
@@ -11,9 +11,9 @@ const faqs = (await getCollection('faq')).map((f) => f.data);
 ---
 
 <Base title="FAQ" description="Questions and answers about Ally & Mark’s wedding.">
-  <CozyRoom flora="full" label="Questions and answers">
-    <RoomHeading eyebrow="FAQ" title="Questions" lead="The things people ask us most." />
-    <GiltCard class="faq-card" as="section">
+  <FloralSection flora="full" label="Questions and answers">
+    <SectionHeading title="Questions" />
+    <PaperCard class="faq-card" as="section">
       <div class="faq-list">
         {
           faqs.map((f, i) => (
@@ -34,19 +34,19 @@ const faqs = (await getCollection('faq')).map((f) => f.data);
           </p>
         )
       }
-    </GiltCard>
-  </CozyRoom>
+    </PaperCard>
+  </FloralSection>
 </Base>
 
 <style>
   :global(.faq-card) {
-    margin-block: clamp(4.5rem, 10vw, 6rem) clamp(5.5rem, 10vw, 6rem);
+    margin-block: clamp(3rem, 8vw, 4.5rem) clamp(4rem, 9vw, 5rem);
   }
   .faq-list {
-    border-top: 1px solid rgb(168 130 58 / 0.5);
+    border-top: 1px solid var(--rule);
   }
   .faq {
-    border-bottom: 1px solid rgb(168 130 58 / 0.4);
+    border-bottom: 1px solid var(--rule);
   }
   .faq summary {
     display: flex;
@@ -57,20 +57,20 @@ const faqs = (await getCollection('faq')).map((f) => f.data);
     padding: 0.85rem 0.2rem;
     cursor: pointer;
     list-style: none;
-    font-family: 'Playfair Display Variable', Georgia, serif;
-    font-weight: 600;
-    font-size: clamp(1.18rem, 1.1rem + 0.35vw, 1.35rem);
+    font-family: var(--font-caps);
+    font-weight: 700;
+    font-size: clamp(1.28rem, 1.2rem + 0.35vw, 1.45rem);
     line-height: 1.3;
-    color: #18301f;
+    color: var(--heading);
   }
   .faq summary::-webkit-details-marker {
     display: none;
   }
   .faq summary:hover {
-    color: #5e1a29;
+    color: var(--text);
   }
   .faq summary:focus-visible {
-    outline: 2px solid #7a2637;
+    outline: 2px solid var(--heading);
     outline-offset: 2px;
   }
   .faq__icon {
@@ -79,7 +79,7 @@ const faqs = (await getCollection('faq')).map((f) => f.data);
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 50%;
-    box-shadow: inset 0 0 0 1px #a07a35;
+    box-shadow: inset 0 0 0 1px var(--ink);
   }
   .faq__icon::before,
   .faq__icon::after {
@@ -89,7 +89,7 @@ const faqs = (await getCollection('faq')).map((f) => f.data);
     top: 50%;
     width: 0.7rem;
     height: 1.5px;
-    background: #5e1a29;
+    background: var(--heading);
     translate: -50% -50%;
     transition: rotate 200ms var(--ease);
   }

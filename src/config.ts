@@ -1,4 +1,4 @@
-// Site-wide settings. Edit freely — every page reads from here.
+// Site-wide settings. Edit freely: every page reads from here.
 
 export const site = {
   couple: 'Ally & Mark',
@@ -17,7 +17,7 @@ export const site = {
     'https://www.google.com/maps/search/?api=1&query=State+Botanical+Garden+of+Georgia%2C+2450+S+Milledge+Ave%2C+Athens%2C+GA+30605',
 
   /**
-   * Courtesy password for the Details & RSVP pages. This is NOT security —
+   * Courtesy password for the Details & RSVP pages. This is NOT security;
    * it just keeps casual visitors out of the schedule. Set to '' to remove
    * the prompt entirely. The invitation QR can unlock it with ?key=<password>.
    */
@@ -36,7 +36,7 @@ export const site = {
   spotifyPlaylistUrl: '',
 
   /**
-   * Chip-in handles for the robot room (After Hours). Leave '' to hide that
+   * Chip-in handles for the Secret Registry. Leave '' to hide that
    * button. Venmo: your username without "@"; PayPal: your paypal.me name.
    */
   venmoHandle: '',

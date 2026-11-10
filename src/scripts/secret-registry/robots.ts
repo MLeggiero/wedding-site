@@ -1,6 +1,6 @@
-// Stylized portraits of the After Hours residents, built from simple shapes.
-// Not the official CAD models: friendly, low-poly stand-ins with the real
-// robots' proportions and joints, so they can walk, look around and work.
+// Stylized stand-ins for the Secret Registry robots, built from simple shapes
+// (used only if a robot's real model fails to load), with the real robots'
+// proportions and joints so they can walk, look around and work.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
@@ -21,8 +21,6 @@ export const MAT = {
   motor: std('#16181a', 0.45, 0.4),
   ring: std('#d9dde2', 0.25, 0.9),
   brass: std('#c9a24f', 0.35, 0.85),
-  pla: std('#e9e6df', 0.6),
-  plaDark: std('#4a4f55', 0.6),
   accent: std('#e2733a', 0.5),
 };
 
@@ -188,14 +186,13 @@ function motor(r: number, h: number, axis: 'y' | 'z') {
   return g;
 }
 
-/** reBot Arm B601-DM ("follower") or the Star Arm 102 leader that steers it. */
-export function buildArm(kind: 'follower' | 'leader'): Arm {
-  const leader = kind === 'leader';
-  const link = leader ? MAT.pla : MAT.alu;
-  const k = leader ? 0.62 : 1;
+/** A stylized reBot Arm B601-DM (the fallback if its real model doesn't load). */
+export function buildArm(): Arm {
+  const link = MAT.alu;
+  const k = 1;
   const dims = { h0: 0.17 * k, l1: 0.3 * k, l2: 0.32 * k, hand: 0.14 * k };
   const root = new THREE.Group();
-  root.add(mesh(cyl(0.095 * k, 0.04 * k, 28), leader ? MAT.plaDark : MAT.servo, [0, 0.02 * k, 0]));
+  root.add(mesh(cyl(0.095 * k, 0.04 * k, 28), MAT.servo, [0, 0.02 * k, 0]));
 
   const j1 = group([0, 0.04 * k, 0]);
   root.add(j1);
@@ -223,18 +220,13 @@ export function buildArm(kind: 'follower' | 'leader'): Arm {
   const j6 = group([0, 0.04 * k, 0]);
   j5.add(j6);
   j6.add(mesh(cyl(0.03 * k, 0.02 * k, 20), MAT.ring, [0, 0.01 * k, 0]));
-  j6.add(mesh(rbox(0.1 * k, 0.03 * k, 0.045 * k), leader ? MAT.plaDark : MAT.servo, [0, 0.035 * k, 0]));
+  j6.add(mesh(rbox(0.1 * k, 0.03 * k, 0.045 * k), MAT.servo, [0, 0.035 * k, 0]));
   const fingerGeo = rbox(0.014 * k, 0.07 * k, 0.03 * k, 0.005 * k);
   const fingers: [THREE.Mesh, THREE.Mesh] = [
-    mesh(fingerGeo, leader ? MAT.pla : MAT.alu, [-0.03 * k, 0.085 * k, 0]),
-    mesh(fingerGeo, leader ? MAT.pla : MAT.alu, [0.03 * k, 0.085 * k, 0]),
+    mesh(fingerGeo, MAT.alu, [-0.03 * k, 0.085 * k, 0]),
+    mesh(fingerGeo, MAT.alu, [0.03 * k, 0.085 * k, 0]),
   ];
   j6.add(...fingers);
-  if (leader) {
-    // the handle and trigger the operator holds
-    j6.add(mesh(cyl(0.016, 0.09, 12), MAT.plaDark, [0, 0.03, 0.05], [Math.PI / 2, 0, 0]));
-    j6.add(mesh(rbox(0.012, 0.03, 0.02, 0.004), MAT.accent, [0, 0.0, 0.05]));
-  }
   const tip = new THREE.Object3D();
   tip.position.set(0, 0.1 * k, 0);
   j6.add(tip);

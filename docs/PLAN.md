@@ -520,7 +520,7 @@ From the 62 color-graded engagement photos:
 
 | Use | Photos (ColorGraded-NN) |
 |---|---|
-| Home hero, all screens | **55**: full-length under pale blossoms. Its faces sit just below the window's spring line and clear of the mullions. #16 was the first pick, but the glazing bars crossed both faces. |
+| Home hero, all screens | **56**: under pale blossoms, Mark smiling and Ally laughing. Both faces sit below the window's spring line and between the mullions. #16 was the first pick, but the glazing bars crossed both faces; #55 is the same tree, but Mark is sticking his tongue out. |
 | Link-preview image (`public/og.jpg`) | **16**: the ring moment, with a white glasshouse behind you |
 | Proposal sequence | 08 → 10 → 12 → 15 → 16 → 20 → 23 → 18 → 13 |
 | Black-and-white accents | 19, 22, 45, 47 |

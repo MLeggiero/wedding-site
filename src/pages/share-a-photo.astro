@@ -8,9 +8,9 @@ import { site } from '../config';
 const ready = Boolean(site.guestEndpoint);
 ---
 
-<Base title="Share a photo" description="Send Ally & Mark your favorite photo of them.">
+<Base title="Share a photo" description="Send Ally & Mark a photo of the two of them, or of you with them.">
   <FloralSection flora="full" label="Share a photo">
-    <SectionHeading eyebrow="join in" title="Share a photo" lead="Your favorite of Ally, of Mark, or of us both." />
+    <SectionHeading eyebrow="join in" title="Share a photo" lead="A photo of us, or of you with us." />
     <PaperCard class="guest-card">
       <form class="guest-form" data-photo-form data-endpoint={site.guestEndpoint}>
         {!ready && <p class="tag guest-form__soon">Opening soon</p>}
@@ -25,9 +25,8 @@ const ready = Boolean(site.guestEndpoint);
           </label>
           <fieldset class="guest-form__choice">
             <legend>Who’s in it?</legend>
-            <label><input type="radio" name="who" value="Both" checked /> Both of us</label>
-            <label><input type="radio" name="who" value="Ally" /> Ally</label>
-            <label><input type="radio" name="who" value="Mark" /> Mark</label>
+            <label><input type="radio" name="who" value="Ally and Mark" checked /> The two of us</label>
+            <label><input type="radio" name="who" value="Guest with us" /> You with us</label>
           </fieldset>
           <label>
             <span class="guest-form__label">The photo</span>

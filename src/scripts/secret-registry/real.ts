@@ -88,8 +88,8 @@ const ODM: DuckSpec = {
   headYaw: 'head_yaw',
   antennas: ['left_antenna', 'right_antenna'],
   step: 0.024,
-  lift: 0.014,
-  lean: 0.13,
+  lift: 0.016,
+  lean: 0.07,
 };
 
 const MICRO: DuckSpec = {
@@ -106,8 +106,8 @@ const MICRO: DuckSpec = {
   neck: ['neck_pitch', 'head_pitch'],
   headYaw: 'head_yaw',
   step: 0.015,
-  lift: 0.012,
-  lean: 0.12,
+  lift: 0.013,
+  lean: 0.06,
 };
 
 export interface RealDuck {
@@ -132,23 +132,38 @@ function duck(model: THREE.Object3D, spec: DuckSpec, scale: number): RealDuck {
   model.scale.setScalar(scale);
   rig.pose(spec.stand);
   root.updateMatrixWorld(true);
-  const box = new THREE.Box3().setFromObject(model);
+  // place the soles on the floor (precise: from the vertices, not rotated bounding boxes)
+  const box = new THREE.Box3().setFromObject(model, true);
   model.position.y = -box.min.y;
   root.updateMatrixWorld(true);
 
   const tmpV = new THREE.Vector3();
-  const tmpQ = new THREE.Quaternion();
-  const bodyQ = new THREE.Quaternion();
   // legs are solved in the root's frame (the floor under the duck), so the body can lean and sway
   const ankleIn = (n: THREE.Object3D, out: THREE.Vector3) => root.worldToLocal(n.getWorldPosition(out));
-  const footQIn = (n: THREE.Object3D, out: THREE.Quaternion) => {
-    root.getWorldQuaternion(bodyQ).invert();
-    return out.copy(bodyQ).multiply(n.getWorldQuaternion(tmpQ));
+
+  /** The foot's toe and heel: its lowest points at the front and the back, in the ankle's own frame. */
+  const solePoints = (ankleNode: THREE.Object3D) => {
+    const pts: THREE.Vector3[] = [];
+    ankleNode.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const pos = m.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) pts.push(root.worldToLocal(new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld)));
+    });
+    pts.sort((a, b) => a.z - b.z);
+    const k = Math.max(1, Math.floor(pts.length * 0.2));
+    const lowest = (list: THREE.Vector3[]) => list.reduce((a, b) => (b.y < a.y ? b : a));
+    const toLocal = (p: THREE.Vector3) => ankleNode.worldToLocal(root.localToWorld(p.clone()));
+    return { heel: toLocal(lowest(pts.slice(0, k))), toe: toLocal(lowest(pts.slice(-k))) };
   };
-  /** rotation of the foot about the left-right axis, relative to standing */
-  const footPitch = (n: THREE.Object3D, q0: THREE.Quaternion) => {
-    const e = footQIn(n, new THREE.Quaternion()).multiply(q0.clone().invert());
-    return 2 * Math.atan2(e.x, e.w);
+  const soleIn = (n: THREE.Object3D, local: THREE.Vector3, out: THREE.Vector3) => root.worldToLocal(n.localToWorld(out.copy(local)));
+  const tmpA = new THREE.Vector3();
+  const tmpB = new THREE.Vector3();
+  /** the sole's tilt along the foot: positive when the toe is higher than the heel */
+  const soleTilt = (leg: { ankle: JointInfo; sole: { toe: THREE.Vector3; heel: THREE.Vector3 } }) => {
+    const t = soleIn(leg.ankle.node, leg.sole.toe, tmpA);
+    const h = soleIn(leg.ankle.node, leg.sole.heel, tmpB);
+    return Math.atan2(t.y - h.y, Math.hypot(t.z - h.z, t.x - h.x) || 1e-6);
   };
 
   const legs = spec.legs.map((l) => {
@@ -156,14 +171,16 @@ function duck(model: THREE.Object3D, spec: DuckSpec, scale: number): RealDuck {
     const knee = rig.joints.get(l.knee)!;
     const ankle = rig.joints.get(l.ankle)!;
     const a0 = ankleIn(ankle.node, new THREE.Vector3());
-    const f0 = footQIn(ankle.node, new THREE.Quaternion());
-    // which way the ankle joint turns the foot
+    const sole = solePoints(ankle.node);
+    const leg = { l, hip, knee, ankle, a0, sole, tiltSign: 1, q: [spec.stand[l.hip], spec.stand[l.knee]], qa: spec.stand[l.ankle] };
+    // which way (and how much) the ankle joint tilts the sole
+    const t0 = soleTilt(leg);
     rig.set(l.ankle, spec.stand[l.ankle] + 0.01);
     hip.node.updateMatrixWorld(true);
-    const ankleSign = footPitch(ankle.node, f0) / 0.01;
+    leg.tiltSign = (soleTilt(leg) - t0) / 0.01 || 1;
     rig.set(l.ankle, spec.stand[l.ankle]);
     hip.node.updateMatrixWorld(true);
-    return { l, hip, knee, ankle, a0, f0, ankleSign, q: [spec.stand[l.hip], spec.stand[l.knee]], qa: spec.stand[l.ankle] };
+    return leg;
   });
 
   const target = new THREE.Vector3();
@@ -199,31 +216,44 @@ function duck(model: THREE.Object3D, spec: DuckSpec, scale: number): RealDuck {
       leg.q[1] = clampTo(leg.knee, leg.q[1] + Math.max(-0.3, Math.min(0.3, (a * g1 - b * g0) / det)));
     }
     at(leg.q[0], leg.q[1]);
-    // keep the foot level
-    for (let it = 0; it < 2; it++) {
-      leg.qa -= footPitch(ankle.node, leg.f0) / leg.ankleSign;
+    // keep the sole flat on the floor, heel and toe level
+    for (let it = 0; it < 3; it++) {
+      leg.qa -= soleTilt(leg) / leg.tiltSign;
       rig.set(l.ankle, leg.qa);
       hip.node.updateMatrixWorld(true);
     }
   };
 
+  // A walk, not a trot: each foot spends DUTY of the cycle planted, moving back at
+  // exactly the body's speed (one stride per cycle, so it never slides), then
+  // swings forward, lifted.
+  const DUTY = 0.62;
+  const reach = (DUTY * 4 * spec.step * scale) / 2;
+  const foot = (u: number) => {
+    if (u < DUTY) return { z: reach - (2 * reach * u) / DUTY, y: 0 };
+    const s = (u - DUTY) / (1 - DUTY);
+    return { z: -reach + 2 * reach * s * s * (3 - 2 * s), y: Math.sin(Math.PI * s) };
+  };
+
   const pose = (phase: number, amount: number, look: number, t: number) => {
-    // lean into the walk and waddle over the standing foot, then solve the legs under that
+    const u = (((phase / (Math.PI * 2)) % 1) + 1) % 1;
+    // lean a little into the walk and waddle over the planted foot (away from the one swinging)
     body.position.y = 0;
-    body.rotation.set(spec.lean * amount, 0, 0.045 * amount * Math.cos(phase));
+    body.rotation.set(spec.lean * amount, 0, 0.045 * amount * Math.cos(Math.PI * 2 * (u - (1 + DUTY) / 2)));
     root.updateMatrixWorld(true);
     legs.forEach((leg, i) => {
-      const p = phase + i * Math.PI;
-      // swing forward with the foot lifted, then push back along the floor; the path sits a
-      // little behind the standing position so the feet pass under and behind the body
+      const f = foot((u + i * 0.5) % 1);
+      // the path sits a little behind the standing position, under the leaning body
       target.copy(leg.a0);
-      target.z += spec.step * scale * amount * (Math.sin(p) - 0.3);
-      target.y += spec.lift * scale * amount * Math.max(0, Math.cos(p));
+      target.z += amount * (f.z - 0.2 * reach);
+      target.y += spec.lift * scale * amount * f.y;
       solveLeg(leg);
     });
-    // settle the standing foot onto the floor
+    // settle the body so the lowest sole rests on the floor
     let low = Infinity;
-    for (const leg of legs) low = Math.min(low, ankleIn(leg.ankle.node, tmpV).y - leg.a0.y);
+    for (const leg of legs) {
+      low = Math.min(low, soleIn(leg.ankle.node, leg.sole.toe, tmpV).y, soleIn(leg.ankle.node, leg.sole.heel, tmpV).y);
+    }
     body.position.y = -low;
     // a duck's head bob while walking; a slow breath and a look about while standing
     rig.set(spec.neck[0], spec.stand[spec.neck[0]] + 0.1 * amount * Math.sin(2 * phase) + 0.04 * (1 - amount) * Math.sin(t * 1.3));

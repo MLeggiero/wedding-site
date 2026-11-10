@@ -16,7 +16,7 @@
 | Area | Decision |
 |---|---|
 | Concept | **A botanical-engraving wedding invitation** (revised twice, from an airy Victorian glasshouse and then a dark, gilded conservatory): fine sage line drawings of southeastern native plants on ivory paper, abundant around every section |
-| Photos | **Four in all:** #35 (home hero, deep-pink blossoms), #20 (the ring), #40 (ring hand on his chest, cropped waist-up), #62 (the stone bridge) |
+| Photos | **Four in all:** #35 (home hero, deep-pink blossoms) and #20 (the ring), plus two of the garden's own: the conservatory (Travel) and a redbud in bloom (Registry) |
 | Guest features | **Share a photo** (to a private Google Drive folder) and **Request a song** (logged to a Google Sheet; the Spotify playlist is shown on the page). Both go through one Apps Script web app (`apps-script/`). |
 | Names | **Ally & Mark**, with an **A & M** monogram |
 | Address | `https://mleggiero.github.io/wedding-site/`, shared as a link and a QR code |
@@ -127,7 +127,7 @@ Warm and brief. **Few words:** a line, not a paragraph, and plain labels. For ex
 ├── /travel/            Getting here · stay · field guide + map ... public
 ├── /registry/          Gifts · funds · giving back ............... public
 ├── /faq/               Questions ................................. public
-├── /share-a-photo/     Send us your favorite photo of us ......... public
+├── /share-a-photo/     A photo of us, or of you with us .......... public
 ├── /songs/             Request a song · our playlist ............. public
 ├── /details/           The Day (schedule) ........................ 🔒 password
 │   ├── /details/map/   Garden map · parking · accessible route ... 🔒
@@ -150,14 +150,14 @@ On phones the menu opens as a full-screen engraved card.
   - SATURDAY · APRIL 24 · 2027, a divider, the venue in italics.
   - Photo #35 in the engraved, plant-wreathed `HeroFrame`.
   - A ruled line counting the days until "I do", and "formal invitation to follow".
-- **Cards:** Our Story (#20), Travel (#62), Registry (#40), with engraved corners hanging over them.
+- **Cards:** Our Story (#20), Travel (the conservatory), Registry (a redbud in bloom), with engraved corners hanging over them.
 - **Join in:** two outline buttons, **Share a photo** and **Request a song**.
 
 ### Share a photo (public)
 
 A ruled paper card with a short form:
 
-- **Fields:** name, optional email, who's in it (both of us · Ally · Mark), the photo, and an optional note.
+- **Fields:** name, optional email, who's in it (the two of us · you with us), the photo, and an optional note.
 - **On the phone:** photos shrink to about 2400 px before sending.
 - **Where it goes:** the private Drive folder, with a row in the "Photos" tab of the Sheet.
 
@@ -536,8 +536,8 @@ checked: 2026-11-10
 |---|---|
 | Home hero and link preview (`public/og.jpg`) | **35**: smiling together beneath deep-pink blossoms |
 | Our Story, and the home "Our Story" card | **20**: Mark on one knee, sliding the ring on as Ally smiles |
-| Registry, and the home "Registry" card | **40**: her ring hand on his chest. Cropped waist-up, and a passer-by removed by the crop. |
-| Travel, and the home "Travel" card | **62**: together on the stone bridge |
+| Travel, and the home "Travel" card | The garden's photo of its glass conservatory, where the wedding is (credited in the footer) |
+| Registry, and the home "Registry" card | The garden's photo of an eastern redbud in bloom (credited in the footer) |
 
 ### Pipeline
 

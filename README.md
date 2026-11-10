@@ -37,7 +37,7 @@ before invitations go out). It's a courtesy prompt, not security; set it to `''`
 
 ## Guest photos and song requests
 
-Guests can send their favorite photo of you (**Share a photo**) and request songs (**Request a song**).
+Guests can send a photo of the two of you, or of themselves with you (**Share a photo**), and request songs (**Request a song**).
 Both post to a small Google Apps Script web app that saves photos to a private Drive folder and logs
 everything to a Google Sheet. Nothing lands in this repo. Until it's set up, both pages say
 "Opening soon".
@@ -90,9 +90,11 @@ npm run check     # type check
 
 ## Photos
 
-The site uses just four photos (#35, #20, #40, #62; see `docs/PLAN.md` §11 and the photo rules in
-`CLAUDE.md`). Web-ready versions live in `src/assets/photos/`. To swap one, download the original
-from Drive and run `npm run photos -- /path/to/originals` (originals are never committed).
+The site uses just four photos: two engagement photos (#35, #20) and two of the garden's own (the
+conservatory for Travel, a redbud in bloom for the Registry). See `docs/PLAN.md` §11 and the photo
+rules in `CLAUDE.md`. Web-ready versions live in `src/assets/photos/`; their alt text, crop focus and
+credits are in `src/lib/photos.ts`. To swap an engagement photo, download the original from Drive and
+run `npm run photos -- /path/to/originals` (originals are never committed).
 
 ## Look
 

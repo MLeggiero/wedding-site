@@ -4,6 +4,7 @@
 // above ends on a bed of them.
 import { nav, guestLinks, site } from '../config';
 import { withBase } from '../lib/url';
+import { photoCredits } from '../lib/photos';
 import Monogram from './Monogram.astro';
 import Divider from './Divider.astro';
 ---
@@ -38,6 +39,7 @@ import Divider from './Divider.astro';
       )
     }
     {site.photoCredit && <p class="site-footer__small">{site.photoCredit}</p>}
+    {photoCredits.length > 0 && <p class="site-footer__small">Garden photos: {photoCredits.join(', ')}</p>}
     <slot />
   </div>
 </footer>

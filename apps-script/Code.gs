@@ -37,7 +37,7 @@ function savePhoto(b) {
   const mime = /^image\/(jpeg|png|webp|heic|heif|gif)$/.test(b.mime) ? b.mime : 'image/jpeg';
   const ext = mime.split('/')[1].replace('jpeg', 'jpg');
   const stamp = Utilities.formatDate(new Date(), 'America/New_York', 'yyyy-MM-dd HHmm');
-  const folder = DriveApp.getFolderById(prop('PHOTO_FOLDER_ID'));
+  const folder = photoFolder();
   const file = folder.createFile(Utilities.newBlob(bytes, mime, stamp + ' ' + name + '.' + ext));
   file.setDescription([clean(b.who, 20), clean(b.note, 300)].filter(String).join(' · '));
   sheet('Photos', ['Time', 'Name', 'Email', 'Who is in it', 'Note', 'File']).appendRow(
@@ -87,10 +87,17 @@ function sheet(name, header) {
   }
   return sh;
 }
-function prop(key) {
-  const v = PropertiesService.getScriptProperties().getProperty(key);
-  if (!v) throw new Error('The site owner still needs to set ' + key + '.');
-  return v;
+/**
+ * The private Drive folder for guests' photos: the one named in the script
+ * property PHOTO_FOLDER_ID if set, otherwise the folder called
+ * "Wedding site: guest photos" (made on the first upload if it isn't there).
+ */
+const PHOTO_FOLDER_NAME = 'Wedding site: guest photos';
+function photoFolder() {
+  const id = PropertiesService.getScriptProperties().getProperty('PHOTO_FOLDER_ID');
+  if (id) return DriveApp.getFolderById(id);
+  const found = DriveApp.getFoldersByName(PHOTO_FOLDER_NAME);
+  return found.hasNext() ? found.next() : DriveApp.createFolder(PHOTO_FOLDER_NAME);
 }
 function clean(v, max) {
   return String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max);

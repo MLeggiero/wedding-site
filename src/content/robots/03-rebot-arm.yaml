@@ -5,12 +5,12 @@ items:
   - id: rebot-motor-kit
     label: Body Motor Kit
     price: 829
-    url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Bundle.html
+    url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Body-Motor-Kit-p-6752.html
     note: Six Damiao motors, CAN board and power board
   - id: rebot-structure-kit
     label: Body Structure Kit
     price: 169
-    url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Bundle.html
+    url: https://www.seeedstudio.com/reBot-Arm-B601-DM-Body-Structure-Kit-p-6753.html
     note: Metal and 3D-printed parts, screws and pins
 chipIn:
   suggested: [50, 100, 250]

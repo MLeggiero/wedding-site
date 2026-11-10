@@ -1,0 +1,54 @@
+---
+// Behind the courtesy password: the day's schedule, garden map, hotel blocks
+// and RSVP. Placeholder until invitations go out.
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PasswordGate from '../../components/PasswordGate.astro';
+import PlantTag from '../../components/PlantTag.astro';
+import { withBase } from '../../lib/url';
+import { site } from '../../config';
+---
+
+<Base title="Details & RSVP" description="Schedule, garden map and RSVP for Ally & Mark’s wedding guests.">
+  <PageHeader kicker="Details & RSVP" title="Inside the glasshouse" />
+
+  <section class="container details">
+    <PasswordGate>
+      <div class="glass soon">
+        <p class="kicker">Almost ready</p>
+        <h2>The doors open with your invitation</h2>
+        <p>
+          The schedule for the day, a map of the garden, hotel-block details and the RSVP will all appear here when
+          invitations go out in {site.invitationsSend}.
+        </p>
+        <PlantTag>{site.dateLong}</PlantTag>
+        <p class="soon__links">
+          Meanwhile: <a href={withBase('/travel/')}>Travel</a> · <a href={withBase('/faq/')}>FAQ</a> · <a
+            href={withBase('/our-story/')}>Our Story</a
+          >
+        </p>
+      </div>
+    </PasswordGate>
+  </section>
+</Base>
+
+<style>
+  .details {
+    padding-bottom: 2rem;
+  }
+  .soon {
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+    max-width: 38rem;
+    margin-inline: auto;
+    padding: clamp(1.6rem, 4vw, 2.6rem);
+    text-align: center;
+  }
+  .soon h2 {
+    font-size: var(--step-3);
+  }
+  .soon__links {
+    font-size: var(--step--1);
+  }
+</style>

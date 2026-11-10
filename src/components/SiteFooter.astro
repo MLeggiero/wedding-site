@@ -1,0 +1,109 @@
+---
+import { nav, site } from '../config';
+import { withBase } from '../lib/url';
+import Monogram from './Monogram.astro';
+import IronworkDivider from './IronworkDivider.astro';
+import Foliage from './Foliage.astro';
+---
+
+<footer class="site-footer band-dark">
+  <Foliage kind="fern-b" tone="fern" class="ff ff--left" style="left:-2.5rem; bottom:-1rem; width:clamp(7rem,16vw,13rem);" />
+  <Foliage kind="fern-a" tone="fern" class="ff ff--right" style="right:-2rem; bottom:-1.5rem; width:clamp(7.5rem,17vw,14rem); --sway-delay:-3s;" />
+
+  <div class="container site-footer__inner">
+    <IronworkDivider class="site-footer__iron" />
+    <Monogram class="site-footer__mono" label="Ally and Mark" />
+    <p class="site-footer__names">Ally <span class="amp">&amp;</span> Mark</p>
+    <p class="kicker">{site.dateKicker}</p>
+    <p class="site-footer__place">{site.venue} · {site.city}</p>
+
+    <nav aria-label="Footer">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={withBase(item.href)}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {
+      site.contactEmail && (
+        <p class="site-footer__small">
+          Questions? <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+        </p>
+      )
+    }
+    {site.photoCredit && <p class="site-footer__small">{site.photoCredit}</p>}
+    <slot />
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    overflow: hidden;
+    margin-top: clamp(3rem, 8vw, 6rem);
+    padding-block: 3.5rem 4.5rem;
+    text-align: center;
+  }
+  .site-footer__inner {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+  }
+  .site-footer__iron {
+    color: var(--sand-500);
+    margin-bottom: 1rem;
+  }
+  .site-footer :global(.site-footer__mono) {
+    width: 3.4rem;
+    color: var(--sand-300);
+  }
+  .site-footer__names {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 2.3rem;
+    line-height: 1.1;
+    color: var(--linen-50);
+  }
+  .site-footer__names .amp {
+    color: var(--sand-500);
+  }
+  .site-footer__place {
+    color: var(--glass-100);
+  }
+  .site-footer ul {
+    list-style: none;
+    margin: 1.2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.4rem;
+  }
+  .site-footer nav a {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.98rem;
+    text-decoration: none;
+  }
+  .site-footer nav a:hover {
+    text-decoration: underline;
+  }
+  .site-footer__small {
+    margin-top: 0.6rem;
+    font-size: var(--step--1);
+    color: var(--glass-100);
+  }
+  .site-footer :global(.ff) {
+    opacity: 0.55;
+    z-index: 1;
+  }
+</style>

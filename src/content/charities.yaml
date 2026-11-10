@@ -1,0 +1,18 @@
+# Charities on the Registry page (Every.org giving links arrive in December).
+# Entries appear in id order — keep the two-digit prefixes (01-, 02-, …).
+
+- id: 01-kiwimbi
+  name: Kiwimbi International
+  url: https://kiwimbi.org/
+  ein: 45-3670761
+  blurb: >-
+    Runs a free public library and the Food for Thought lunch program in
+    Amagoro, Kenya.
+
+- id: 02-chattahoochee-riverkeeper
+  name: Chattahoochee Riverkeeper
+  url: https://chattahoochee.org/
+  ein: 58-2095413
+  blurb: >-
+    Protects and restores the Chattahoochee River and its watershed — the main
+    source of drinking water for metro Atlanta.

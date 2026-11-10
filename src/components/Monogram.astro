@@ -1,0 +1,60 @@
+---
+// "A & M" set inside a little conservatory window.
+interface Props {
+  class?: string;
+  /** accessible name; omit when a visible name sits next to it */
+  label?: string;
+}
+const { class: cls, label } = Astro.props;
+---
+
+<svg
+  class:list={['monogram', cls]}
+  viewBox="0 0 120 150"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  <path class="m-frame" d="M8,146 V62 A52,52 0 0 1 112,62 V146 Z"></path>
+  <path class="m-inner" d="M15,139 V62 A45,45 0 0 1 105,62 V139 Z"></path>
+  <path
+    class="m-bars"
+    d="M15,62 H105 M60,51 V17 M52.2,54.2 L28.2,30.2 M67.8,54.2 L91.8,30.2 M49,62 A11,11 0 0 1 71,62"
+  ></path>
+  <text x="60" y="117" text-anchor="middle" class="m-text">A<tspan class="m-amp" dy="-3">&amp;</tspan><tspan dy="3">M</tspan></text>
+</svg>
+
+<style>
+  .monogram {
+    width: 2.6rem;
+    height: auto;
+    overflow: visible;
+  }
+  .m-frame {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+  }
+  .m-inner {
+    fill: none;
+    stroke: var(--brass-500);
+    stroke-width: 1.4;
+  }
+  .m-bars {
+    fill: none;
+    stroke: var(--brass-500);
+    stroke-width: 1.2;
+    opacity: 0.85;
+  }
+  .m-text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 46px;
+    fill: currentColor;
+  }
+  .m-amp {
+    font-size: 34px;
+    fill: var(--brass-500);
+  }
+</style>

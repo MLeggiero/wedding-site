@@ -1,0 +1,53 @@
+---
+// Responsive photo: WebP srcset + JPEG fallback, optional art-directed
+// phone version (a different photo below 48rem).
+import { getImage } from 'astro:assets';
+import type { Photo } from '../lib/photos';
+
+interface Props {
+  photo: Photo;
+  mobile?: Photo;
+  sizes: string;
+  mobileSizes?: string;
+  widths?: number[];
+  priority?: boolean;
+  alt?: string;
+  class?: string;
+}
+
+const {
+  photo,
+  mobile,
+  sizes,
+  mobileSizes = '100vw',
+  widths = [480, 800, 1200, 1600, 2000, 2400],
+  priority = false,
+  alt,
+  class: cls,
+} = Astro.props;
+
+async function srcset(p: Photo) {
+  const ws = widths.filter((w) => w <= p.src.width);
+  const imgs = await Promise.all(ws.map((width) => getImage({ src: p.src, width, format: 'webp', quality: 78 })));
+  return imgs.map((img, i) => `${img.src} ${ws[i]}w`).join(', ');
+}
+
+const main = await srcset(photo);
+const mob = mobile ? await srcset(mobile) : null;
+const fallback = await getImage({ src: photo.src, width: Math.min(1200, photo.src.width), format: 'jpg', quality: 78 });
+---
+
+<picture class={cls}>
+  {mob && <source media="(max-width: 47.99rem)" type="image/webp" srcset={mob} sizes={mobileSizes} />}
+  <source type="image/webp" srcset={main} sizes={sizes} />
+  <img
+    src={fallback.src}
+    width={photo.src.width}
+    height={photo.src.height}
+    alt={alt ?? photo.alt}
+    loading={priority ? 'eager' : 'lazy'}
+    decoding="async"
+    fetchpriority={priority ? 'high' : undefined}
+    style={`--focus:${photo.focus};--focus-m:${mobile?.focus ?? photo.focus}`}
+  />
+</picture>

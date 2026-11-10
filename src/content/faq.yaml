@@ -1,0 +1,48 @@
+# FAQ page. Answers support [links](/travel/), *italics* and **bold**.
+# Add questions like dress code, children and plus-ones once decided.
+# Entries appear in id order — keep the two-digit prefixes (01-, 02-, …).
+
+- id: 01-when-where
+  question: When and where is the wedding?
+  answer: >-
+    Saturday, April 24, 2027, at the State Botanical Garden of Georgia in Athens.
+    Exact times will be on your invitation and on the [Details](/details/) page.
+
+- id: 02-invitations
+  question: When will invitations go out?
+  answer: >-
+    Formal invitations will arrive in early 2027. The schedule, a garden map and
+    the RSVP open on this site at the same time.
+
+- id: 03-indoors
+  question: Will it be indoors?
+  answer: Mostly under glass — we’ll celebrate in the garden’s conservatory.
+
+- id: 04-parking
+  question: Is there parking?
+  answer: Yes — parking at the garden is free.
+
+- id: 05-accessibility
+  question: Is the venue accessible?
+  answer: >-
+    Yes. An elevator connects the parking area to the garden’s entry plaza. If
+    getting around on foot is hard for you, tell us and we’ll arrange help —
+    the garden has golf carts.
+
+- id: 06-stay
+  question: Where should we stay?
+  answer: >-
+    Downtown Athens is about ten minutes from the garden. We’re arranging hotel
+    room blocks and will post them on the [Travel](/travel/) page soon.
+
+- id: 07-attire
+  question: What should I wear?
+  answer: >-
+    Dress-code details will come with the invitation. Expect a few garden
+    paths, so comfortable shoes are a good idea.
+
+- id: 08-registry
+  question: Do you have a registry?
+  answer: >-
+    Your presence is the gift! For those who’ve asked, our [registry](/registry/)
+    opens in December.

@@ -1,0 +1,56 @@
+# Athens field guide (Travel page). Add your favourites!
+# category: Wander | Eat | Coffee | Drink | Music | Saturday | Shop
+# map: optional Google Maps search text (defaults to "<name>, Athens, GA")
+# Entries appear in id order within each category — keep the two-digit prefixes.
+
+- id: 01-the-arch
+  name: The Arch
+  category: Wander
+  area: Downtown
+  note: UGA’s cast-iron gateway on Broad Street — Victorian ironwork, just like our glasshouse.
+  map: The Arch, University of Georgia, Athens, GA
+
+- id: 02-north-campus
+  name: North Campus
+  category: Wander
+  area: University of Georgia
+  note: Oak-shaded quads and columned old buildings — a lovely morning stroll.
+  map: North Campus, University of Georgia, Athens, GA
+
+- id: 03-founders-memorial-garden
+  name: Founders Memorial Garden
+  category: Wander
+  area: University of Georgia
+  note: A quiet historic garden on campus, honoring the founders of America’s first garden club.
+
+- id: 04-georgia-museum-of-art
+  name: Georgia Museum of Art
+  category: Wander
+  area: East Campus
+  note: The official art museum of the state of Georgia — and admission is free.
+
+- id: 05-botanical-garden-trails
+  name: State Botanical Garden trails
+  category: Wander
+  area: South Milledge Ave
+  note: Woodland and river trails around our wedding venue, worth a wander while you’re in town.
+  map: State Botanical Garden of Georgia, Athens, GA
+
+- id: 06-georgia-theatre
+  name: Georgia Theatre
+  category: Music
+  area: Downtown
+  note: A historic downtown music hall with a rooftop bar.
+
+- id: 07-forty-watt
+  name: 40 Watt Club
+  category: Music
+  area: Downtown
+  note: The legendary little club at the heart of Athens’ music history.
+
+- id: 08-farmers-market
+  name: Athens Farmers Market
+  category: Saturday
+  area: Bishop Park
+  note: Saturdays 8 a.m.–noon at Bishop Park — a perfect wedding-morning wander.
+  map: Athens Farmers Market, Bishop Park, Athens, GA

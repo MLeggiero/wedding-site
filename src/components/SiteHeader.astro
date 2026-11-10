@@ -1,0 +1,229 @@
+---
+import { nav } from '../config';
+import { withBase, isCurrent } from '../lib/url';
+import Monogram from './Monogram.astro';
+
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href={withBase('/')}>
+      <Monogram class="brand__mark" />
+      <span class="brand__name">Ally <span class="amp">&amp;</span> Mark</span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      <span class="menu-toggle__label">Menu</span>
+      <span class="menu-toggle__icon" aria-hidden="true"><span></span></span>
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="Main">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={withBase(item.href)} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+                {item.label}
+                {'locked' in item && (
+                  <svg class="key" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="8" cy="12" r="4" />
+                    <path d="M12 12h9M18 12v3M21 12v2" />
+                  </svg>
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.getElementById('site-nav');
+  const setOpen = (open: boolean) => {
+    btn?.setAttribute('aria-expanded', String(open));
+    document.documentElement.classList.toggle('menu-open', open);
+  };
+  btn?.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  nav?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.documentElement.classList.contains('menu-open')) {
+      setOpen(false);
+      btn?.focus();
+    }
+  });
+</script>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 20;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid rgb(168 130 58 / 0.28);
+    background: rgb(246 241 230 / 0.9);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--green-900);
+    text-decoration: none;
+    position: relative;
+    z-index: 31;
+  }
+  .brand :global(.brand__mark) {
+    width: 2.1rem;
+  }
+  .brand__name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.55rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .site-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: clamp(0.9rem, 2vw, 1.9rem);
+  }
+  .site-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding-block: 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.02rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-900);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .site-nav a:hover {
+    border-bottom-color: var(--brass-500);
+  }
+  .site-nav a[aria-current='page'] {
+    border-bottom-color: var(--green-900);
+  }
+  .key {
+    width: 1em;
+    height: 1em;
+    fill: none;
+    stroke: var(--brass-500);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  @media (max-width: 63.99rem) {
+    .menu-toggle {
+      position: relative;
+      z-index: 31;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-height: 2.75rem;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--brass-500);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--green-900);
+      font: 600 0.98rem/1 var(--font-display);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .menu-toggle__icon,
+    .menu-toggle__icon span,
+    .menu-toggle__icon::before,
+    .menu-toggle__icon::after {
+      display: block;
+      width: 1.1rem;
+      height: 1.5px;
+      background: currentColor;
+      transition:
+        transform 200ms var(--ease),
+        opacity 200ms var(--ease);
+    }
+    .menu-toggle__icon {
+      position: relative;
+      background: none;
+    }
+    .menu-toggle__icon::before,
+    .menu-toggle__icon::after {
+      content: '';
+      position: absolute;
+      left: 0;
+    }
+    .menu-toggle__icon::before {
+      top: -5px;
+    }
+    .menu-toggle__icon::after {
+      top: 5px;
+    }
+    :global(.menu-open) .menu-toggle__icon span {
+      opacity: 0;
+    }
+    :global(.menu-open) .menu-toggle__icon::before {
+      transform: translateY(5px) rotate(45deg);
+    }
+    :global(.menu-open) .menu-toggle__icon::after {
+      transform: translateY(-5px) rotate(-45deg);
+    }
+
+    .site-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 6rem var(--gutter) 3rem;
+      background-color: rgb(246 241 230 / 0.86);
+      background-image: var(--glazing);
+      background-size: 6rem 8rem;
+      backdrop-filter: blur(14px) saturate(1.1);
+      -webkit-backdrop-filter: blur(14px) saturate(1.1);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 220ms var(--ease),
+        visibility 0s 220ms;
+    }
+    :global(.menu-open) .site-nav {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 220ms var(--ease);
+    }
+    :global(.menu-open) {
+      overflow: hidden;
+    }
+    .site-nav ul {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .site-nav a {
+      font-size: 1.6rem;
+      letter-spacing: 0.12em;
+      padding-block: 0.55rem;
+    }
+  }
+</style>

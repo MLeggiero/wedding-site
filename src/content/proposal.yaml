@@ -1,0 +1,25 @@
+# The proposal, told in photos (Our Story → Chapter II).
+# `photo` is the engagement-photo number (ColorGraded-NN).
+# Entries appear in id order — keep the two-digit prefixes (01-, 02-, …).
+
+- id: 01-walk
+  photo: '08'
+  caption: One spring afternoon, beneath a stand of very tall trees…
+- id: 02-knee
+  photo: '10'
+  caption: …Mark got down on one knee.
+- id: 03-question
+  photo: '12'
+  caption: There was a question.
+- id: 04-ring
+  photo: '15'
+  caption: There was a ring.
+- id: 05-fit
+  photo: '16'
+  caption: It fit.
+- id: 06-yes
+  photo: '13'
+  caption: She said yes.
+- id: 07-laughing
+  photo: '18'
+  caption: We haven’t stopped laughing since.

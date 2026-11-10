@@ -1,0 +1,37 @@
+---
+import IronworkDivider from './IronworkDivider.astro';
+
+interface Props {
+  kicker: string;
+  title: string;
+  lead?: string;
+}
+const { kicker, title, lead } = Astro.props;
+---
+
+<header class="page-header container">
+  <p class="kicker">{kicker}</p>
+  <h1>{title}</h1>
+  {lead && <p class="lead">{lead}</p>}
+  <IronworkDivider class="page-header__iron" />
+  <slot />
+</header>
+
+<style>
+  .page-header {
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+    padding-block: clamp(2.5rem, 7vw, 4.5rem) clamp(1.5rem, 4vw, 2.5rem);
+    text-align: center;
+  }
+  .page-header h1 {
+    font-size: var(--step-5);
+  }
+  .page-header .lead {
+    max-width: 38rem;
+  }
+  .page-header :global(.page-header__iron) {
+    margin-top: 0.6rem;
+  }
+</style>

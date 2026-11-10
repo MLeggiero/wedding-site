@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path d="M8,62 V30 A24,24 0 0 1 56,30 V62 Z" fill="#1e3a2b"/>
+  <path d="M12,58 V30 A20,20 0 0 1 52,30 V58" fill="none" stroke="#c9a96a" stroke-width="1.6"/>
+  <path d="M12,30 H52 M32,30 V10 M32,30 L18,16 M32,30 L46,16" stroke="#c9a96a" stroke-width="1.2" opacity=".7"/>
+  <text x="32" y="54" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="24" fill="#f6f1e6">&amp;</text>
+</svg>

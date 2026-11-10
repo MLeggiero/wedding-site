@@ -1,0 +1,222 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ArchFrame from '../components/ArchFrame.astro';
+import PlantTag from '../components/PlantTag.astro';
+import Foliage from '../components/Foliage.astro';
+import { photo } from '../lib/photos';
+import { site } from '../config';
+
+const places = (await getCollection('places')).map((p) => p.data);
+const order = ['Wander', 'Saturday', 'Coffee', 'Eat', 'Drink', 'Music', 'Shop'] as const;
+const groups = order
+  .map((category) => ({ category, items: places.filter((p) => p.category === category) }))
+  .filter((g) => g.items.length);
+const mapsUrl = (query: string) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+const labels: Record<string, string> = {
+  Wander: 'Wander',
+  Saturday: 'Saturday morning',
+  Coffee: 'Coffee',
+  Eat: 'Eat',
+  Drink: 'Drink',
+  Music: 'Music',
+  Shop: 'Shop',
+};
+---
+
+<Base title="Travel" description="How to get to Athens, Georgia for Ally & Mark’s wedding — and what to do while you’re in town.">
+  <PageHeader
+    kicker="Travel"
+    title="Getting to Athens"
+    lead="Athens is a leafy college town about an hour and a half northeast of Atlanta. Here’s how to get here, and what to do once you arrive."
+  />
+
+  <section class="container banner">
+    <ArchFrame
+      photo={photo('59')}
+      shape="segmental"
+      aspect={2.1}
+      panes={3}
+      sizes="(min-width: 74rem) 74rem, 92vw"
+      alt="Ally and Mark at the far end of an old stone bridge lined with spring trees"
+    />
+  </section>
+
+  <section class="section container info-grid">
+    <article class="info glass info--venue reveal">
+      <p class="kicker">The venue</p>
+      <h2>{site.venue}</h2>
+      <p class="info__address">{site.address}</p>
+      <p>Parking at the garden is free. Downtown Athens is about ten minutes away.</p>
+      <a class="btn" href={site.mapsUrl} target="_blank" rel="noopener">Open in Maps</a>
+    </article>
+
+    <article class="info glass reveal">
+      <p class="kicker">Flying in</p>
+      <h3>Hartsfield–Jackson Atlanta (ATL)</h3>
+      <p>Most guests will fly into Atlanta. Athens is about an hour and a half away by car.</p>
+    </article>
+
+    <article class="info glass reveal">
+      <p class="kicker">Where to stay</p>
+      <h3>Hotel blocks, coming soon</h3>
+      <p>We’re reserving rooms in town and will post the details (and any discount codes) here.</p>
+      <PlantTag>Check back in December</PlantTag>
+    </article>
+
+    <article class="info glass reveal">
+      <p class="kicker">Weather</p>
+      <h3>Late-April spring</h3>
+      <p>Usually warm by day and cool in the evening — bring a layer for after sunset.</p>
+    </article>
+  </section>
+
+  <section class="section field-guide band-dark">
+    <Foliage kind="palm-a" tone="fern" class="fg-palm" style="--sway-delay:-2s;" />
+    <div class="container">
+      <header class="fg-head reveal">
+        <p class="kicker">Field guide</p>
+        <h2>Around Athens</h2>
+        <p>A few places worth a visit while you’re in town. We’ll keep adding our favorites.</p>
+      </header>
+
+      {
+        groups.map((g) => (
+          <div class="fg-group">
+            <h3 class="fg-cat">{labels[g.category]}</h3>
+            <ul class="fg-list">
+              {g.items.map((p) => (
+                <li class="fg-place reveal">
+                  <h4>{p.name}</h4>
+                  {p.area && <p class="fg-area">{p.area}</p>}
+                  <p>{p.note}</p>
+                  <a class="arrow-link" href={mapsUrl(p.map ?? `${p.name}, Athens, GA`)} target="_blank" rel="noopener">
+                    Map
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .banner {
+    padding-bottom: 1rem;
+  }
+  .info-grid {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+  }
+  .info {
+    display: grid;
+    align-content: start;
+    gap: 0.6rem;
+    padding: clamp(1.3rem, 3vw, 1.8rem);
+  }
+  .info h2 {
+    font-size: var(--step-3);
+  }
+  .info h3 {
+    font-size: 1.75rem;
+  }
+  .info .btn,
+  .info :global(.plant-tag) {
+    justify-self: start;
+    margin-top: 0.4rem;
+  }
+  .info__address {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--walnut-700);
+  }
+  @media (min-width: 52rem) {
+    .info-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .info--venue {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .field-guide {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: calc(-1 * clamp(3rem, 8vw, 6rem));
+  }
+  .field-guide :global(.fg-palm) {
+    width: clamp(18rem, 40vw, 34rem);
+    right: -14rem;
+    top: -2rem;
+    opacity: 0.35;
+  }
+  .fg-head {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+    max-width: 36rem;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+  }
+  .fg-head h2 {
+    font-size: var(--step-4);
+  }
+  .fg-head p:last-child {
+    color: var(--glass-100);
+  }
+  .fg-group + .fg-group {
+    margin-top: 2.2rem;
+  }
+  .fg-cat {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sand-300);
+    border-bottom: 1px solid rgb(220 199 158 / 0.3);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .fg-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  }
+  .fg-place {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+    padding: 1.2rem 1.3rem;
+    border: 1px solid rgb(220 199 158 / 0.28);
+    border-radius: var(--radius);
+    background: rgb(246 241 230 / 0.05);
+  }
+  .fg-place h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--linen-50);
+  }
+  .fg-area {
+    font-size: var(--step--1);
+    letter-spacing: 0.06em;
+    color: var(--sand-500);
+  }
+  .fg-place p:not(.fg-area) {
+    color: var(--glass-100);
+  }
+  .fg-place .arrow-link {
+    justify-self: start;
+    margin-top: 0.3rem;
+    font-size: 1rem;
+  }
+</style>

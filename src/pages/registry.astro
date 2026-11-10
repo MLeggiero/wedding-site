@@ -1,0 +1,138 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import PlantTag from '../components/PlantTag.astro';
+import ArchFrame from '../components/ArchFrame.astro';
+import { photo } from '../lib/photos';
+import { site } from '../config';
+
+const charities = (await getCollection('charities')).map((c) => c.data);
+const preview = [
+  {
+    kicker: 'Funds',
+    title: 'Adventures ahead',
+    text: 'A honeymoon fund and a few other adventures for our first years together.',
+  },
+  {
+    kicker: 'The collection',
+    title: 'Home & garden',
+    text: 'A short list of things for our first home and, of course, its garden.',
+  },
+  {
+    kicker: 'Give back',
+    title: 'Causes we love',
+    text: 'Gifts to two organizations close to our hearts, made in our honor.',
+  },
+];
+---
+
+<Base title="Registry" description="Ally & Mark’s registry: funds, a few gifts and two causes close to their hearts.">
+  <PageHeader
+    kicker="Registry"
+    title="Gifts & giving"
+    lead={`Your presence is truly the gift. For those who’ve asked, our registry opens in ${site.registryOpens} — here’s a peek at what’s growing.`}
+  />
+
+  <section class="container preview">
+    {
+      preview.map((p) => (
+        <article class="glass preview__card reveal">
+          <p class="kicker">{p.kicker}</p>
+          <h2>{p.title}</h2>
+          <p>{p.text}</p>
+          <PlantTag>Opening in {site.registryOpens}</PlantTag>
+        </article>
+      ))
+    }
+  </section>
+
+  <section class="section container give">
+    <div class="give__photo reveal">
+      <ArchFrame photo={photo('62')} bars="frame" aspect={0.8} sizes="(min-width: 52rem) 22rem, 80vw" />
+    </div>
+    <div class="give__text">
+      <p class="kicker">Give back</p>
+      <h2>Two causes close to our hearts</h2>
+      <p>
+        If you’d like to give in our honor, we’d be thrilled by a gift to either of these. Giving links through our
+        registry arrive in {site.registryOpens}; until then you can visit them directly.
+      </p>
+      <ul class="charities">
+        {
+          charities.map((c) => (
+            <li class="charity glass reveal">
+              <h3>{c.name}</h3>
+              <p>{c.blurb}</p>
+              <a class="arrow-link" href={c.url} target="_blank" rel="noopener">
+                Visit {c.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .preview {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    padding-bottom: 1rem;
+  }
+  .preview__card {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.6rem;
+    padding: clamp(1.4rem, 3vw, 1.9rem);
+  }
+  .preview__card h2 {
+    font-size: 2rem;
+  }
+  .preview__card :global(.plant-tag) {
+    margin-top: 0.5rem;
+  }
+
+  .give {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .give__photo {
+    width: min(100%, 22rem);
+    margin-inline: auto;
+  }
+  .give__text {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .give__text h2 {
+    font-size: var(--step-4);
+  }
+  .charities {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .charity {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.3rem 1.5rem;
+  }
+  .charity h3 {
+    font-size: 1.7rem;
+  }
+  .charity .arrow-link {
+    justify-self: start;
+  }
+  @media (min-width: 52rem) {
+    .give {
+      grid-template-columns: 22rem 1fr;
+    }
+  }
+</style>

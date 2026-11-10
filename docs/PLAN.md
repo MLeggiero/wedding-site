@@ -3,6 +3,7 @@
 **"The Glasshouse"** · Saturday, April 24, 2027 · State Botanical Garden of Georgia, Athens
 
 > Status: plan, written 2026-11-10, with every decision below confirmed in Q&A. Updated the same day to simplify security.
+> **v1 built (2026-11-10):** Home, Our Story, Travel (with field guide), Registry teaser, FAQ, Details (courtesy-password placeholder) and 404, plus save-the-date QR files in `print/`. See the v1 checklist in §15.
 > A **GitHub Pages** site published straight from this repo. Security isn't a goal (it's a wedding website). Everything lives here except RSVP answers and the guest list, which stay in a Google Sheet.
 
 ---
@@ -519,8 +520,8 @@ From the 62 color-graded engagement photos:
 
 | Use | Photos (ColorGraded-NN) |
 |---|---|
-| Home hero, desktop | **16**: the ring moment, with a white glasshouse behind you. Alternatives: 12, 13. |
-| Home hero, mobile (portrait) | **55** or **56**: full-length under pale blossoms |
+| Home hero, all screens | **55**: full-length under pale blossoms. Its faces sit just below the window's spring line and clear of the mullions. #16 was the first pick, but the glazing bars crossed both faces. |
+| Link-preview image (`public/og.jpg`) | **16**: the ring moment, with a white glasshouse behind you |
 | Proposal sequence | 08 → 10 → 12 → 15 → 16 → 20 → 23 → 18 → 13 |
 | Black-and-white accents | 19, 22, 45, 47 |
 | Blossom gallery | 31, 33, 35, 36, 37, 38, 39, 41, 43, 46, 48, 52, 54, 58 |
@@ -541,7 +542,7 @@ From the 62 color-graded engagement photos:
 ## 12. Tech stack and repo layout
 
 - **Astro 7** (static output) with content collections and Zod schemas, in TypeScript.
-- **Tailwind CSS 4** with the palette as CSS variables, plus hand-written CSS for the ornaments.
+- **Plain CSS:** global tokens in `src/styles/global.css` plus Astro scoped styles. Tailwind was dropped during the build, because the bespoke ornaments read better as hand-written CSS.
 - **React islands** only for RSVP and the robot room.
 - **PhotoSwipe 5** lightbox, **Fontsource** fonts, and **qrcode** for print-ready QR codes (SVG/PDF).
 - **3D:** three.js, React Three Fiber, drei, `urdf-loader` and `@gltf-transform/cli` for the asset pipeline. `@mujoco/mujoco` (WASM) and `onnxruntime-web` load only for the live duck (§10).
@@ -555,20 +556,22 @@ From the 62 color-graded engagement photos:
 wedding-site/
 ├── astro.config.mjs        site: https://mleggiero.github.io · base: /wedding-site
 ├── src/
-│   ├── config.ts           details password, RSVP URL, Zola link, Venmo/PayPal handles
+│   ├── config.ts           names, date, details password, contact email (later: RSVP URL, Zola, Venmo/PayPal)
+│   ├── content.config.ts   schemas for the YAML content
 │   ├── assets/photos/      web-ready masters (committed)
-│   ├── assets/botanicals/  SVG foliage, ironwork, monogram
-│   ├── components/         ArchFrame, GlassPanel, PlantTag, FoliageLayer, FundCard, …
-│   ├── content/            story, faq, places, registry/*, robots/*
-│   ├── islands/            RsvpApp.tsx, RobotRoom/*
-│   ├── layouts/            Base.astro, Protected.astro
-│   ├── pages/              index, our-story, travel, registry, faq, details/*, after-hours, 404
-│   └── styles/             tokens.css, global.css
-├── public/models/          compressed robot GLBs
-├── apps-script/            RSVP + robot-claim backend (Code.gs, appsscript.json)
-├── scripts/                prepare-photos, make-qr, build-robots
-├── tests/                  Playwright
-└── .github/workflows/      deploy.yml (push + nightly), links.yml (weekly)
+│   ├── components/         ArchFrame, Foliage, BotanicalSprite, Monogram, IronworkDivider, PlantTag,
+│   │                       Countdown, PasswordGate, Gallery, Photo, PageHeader, SiteHeader, SiteFooter
+│   ├── content/            chapters, proposal, faq, places, charities (.yaml); later registry/*, robots/*
+│   ├── lib/                botanicals.ts (procedural plants), photos.ts, url.ts, inline-md.ts
+│   ├── layouts/            Base.astro
+│   ├── pages/              index, our-story, travel, registry, faq, details/, 404 (later: after-hours)
+│   └── styles/             global.css
+├── public/                 favicon, apple-touch-icon, og.jpg (later: models/ for robot GLBs)
+├── print/                  save-the-date QR (SVG, PNG, PDF)
+├── apps-script/            (later) RSVP + robot-claim backend
+├── scripts/                prepare-photos, make-qr (later: build-robots)
+├── tests/                  (later) Playwright
+└── .github/workflows/      deploy.yml (push + nightly); later links.yml (weekly)
 ```
 
 ## 13. Deploy (GitHub Pages)
@@ -616,16 +619,17 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 
 ### v1 checklist (save-the-date launch)
 
-- [ ] Astro scaffold, tokens, fonts and core components (`ArchFrame`, `GlassPanel`, `PlantTag`, `FoliageLayer`, `Monogram`)
-- [ ] Home: hero, countdown and cards
-- [ ] Our Story: proposal sequence and blossom gallery
-- [ ] Travel v1: getting here, hotel suggestions and a starter field-guide list
-- [ ] FAQ v1
-- [ ] Registry teaser
-- [ ] Photo pipeline and the first ~30 photos
-- [ ] `noindex`, Open Graph, favicon/monogram, 404
-- [ ] GitHub Pages deploy workflow, and the details password prompt (on a placeholder `/details/`)
-- [ ] Print-ready QR files
+- [x] Astro scaffold, tokens, fonts and core components (`ArchFrame`, `Foliage`, `PlantTag`, `Monogram`, `IronworkDivider`)
+- [x] Home: hero, countdown and cards
+- [x] Our Story: proposal sequence and blossom gallery
+- [x] Travel v1: getting here and a starter field-guide list. Hotel suggestions wait for the blocks.
+- [x] FAQ v1
+- [x] Registry teaser, with the two charities linked
+- [x] Photo pipeline and the first 31 photos
+- [x] `noindex`, Open Graph, favicon/monogram, 404
+- [x] GitHub Pages deploy workflow, and the details password prompt (on a placeholder `/details/`)
+- [x] Print-ready QR files (`print/`)
+- [ ] **You:** switch on Pages (Settings → Pages → Source: GitHub Actions)
 
 ## 16. What we need from you two
 

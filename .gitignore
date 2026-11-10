@@ -1,0 +1,13 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# local photo originals (they live in Google Drive)
+originals/
+
+# logs & OS junk
+npm-debug.log*
+.DS_Store

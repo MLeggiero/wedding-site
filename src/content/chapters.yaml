@@ -1,0 +1,29 @@
+# Our Story page text. `body` supports [links](/travel/), *italics* and **bold**.
+# Chapter I is a placeholder — replace it with how you two met.
+
+- id: how-we-met
+  kicker: Chapter I
+  title: How we met
+  body: >-
+    Every glasshouse starts with a seed. Ours is a story we’re saving to tell
+    properly here very soon.
+
+- id: the-question
+  kicker: Chapter II
+  title: Under the tall trees
+  body: >-
+    One spring afternoon, a walk through a garden turned into a question — and
+    a camera caught every second of it.
+
+- id: in-bloom
+  kicker: Chapter III
+  title: In bloom
+  body: >-
+    Then the garden put on a show. Tap any photo to see it larger.
+
+- id: under-glass
+  kicker: Chapter IV
+  title: Under glass
+  body: >-
+    Next spring we’ll say “I do” in the conservatory at the State Botanical
+    Garden of Georgia, and we can’t wait to celebrate with you.

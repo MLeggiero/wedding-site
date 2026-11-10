@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import CozyRoom from '../components/CozyRoom.astro';
+import RoomHeading from '../components/RoomHeading.astro';
+import GiltCard from '../components/GiltCard.astro';
+import { site } from '../config';
+
+const ready = Boolean(site.guestEndpoint);
+const playlistId = site.spotifyPlaylistUrl.match(/playlist\/([A-Za-z0-9]+)/)?.[1];
+---
+
+<Base title="Songs" description="Request a song for Ally & Mark’s wedding playlist.">
+  <CozyRoom flora="full" label="Request a song">
+    <RoomHeading eyebrow="Join in" title="Request a song" lead="What gets you on the dance floor?" />
+    <GiltCard class="guest-card">
+      <form class="guest-form" data-song-form data-endpoint={site.guestEndpoint}>
+        {!ready && <p class="guest-form__soon">Opening soon</p>}
+        <fieldset class="guest-form__fields" disabled={!ready}>
+          <label>
+            <span class="guest-form__label">Song</span>
+            <input name="title" required maxlength="120" />
+          </label>
+          <label>
+            <span class="guest-form__label">Artist</span>
+            <input name="artist" maxlength="120" />
+          </label>
+          <label>
+            <span class="guest-form__label">Your name <span class="opt">optional</span></span>
+            <input name="name" maxlength="80" autocomplete="name" />
+          </label>
+          <label>
+            <span class="guest-form__label">A note <span class="opt">optional</span></span>
+            <input name="note" maxlength="200" />
+          </label>
+          <input class="guest-form__hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button class="btn-plate" type="submit">Request it</button>
+          <p class="guest-form__status" role="status" aria-live="polite"></p>
+        </fieldset>
+      </form>
+      {
+        playlistId && (
+          <div class="songs__playlist">
+            <iframe
+              title="Our wedding playlist on Spotify"
+              src={`https://open.spotify.com/embed/playlist/${playlistId}?theme=0`}
+              width="100%"
+              height="380"
+              loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            ></iframe>
+          </div>
+        )
+      }
+    </GiltCard>
+  </CozyRoom>
+</Base>
+
+<script>
+  import { postGuest } from '../lib/guest-client';
+
+  const form = document.querySelector<HTMLFormElement>('[data-song-form]');
+  const status = form?.querySelector<HTMLElement>('.guest-form__status');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity() || !status) return;
+    const fd = new FormData(form);
+    const button = form.querySelector('button');
+    button?.setAttribute('disabled', '');
+    status.textContent = 'Sending…';
+    try {
+      await postGuest(form.dataset.endpoint!, {
+        action: 'song',
+        title: fd.get('title'),
+        artist: fd.get('artist'),
+        name: fd.get('name'),
+        note: fd.get('note'),
+        hp: fd.get('website'),
+      });
+      form.reset();
+      status.textContent = 'Got it — thank you! Add another?';
+    } catch (err) {
+      status.textContent = (err as Error).message;
+    } finally {
+      button?.removeAttribute('disabled');
+    }
+  });
+</script>
+
+<style>
+  .songs__playlist {
+    margin-top: 2rem;
+  }
+  .songs__playlist iframe {
+    display: block;
+    border: 0;
+    border-radius: 12px;
+  }
+</style>

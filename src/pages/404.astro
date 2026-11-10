@@ -1,57 +1,28 @@
 ---
 import Base from '../layouts/Base.astro';
-import ArchFrame from '../components/ArchFrame.astro';
-import { photo } from '../lib/photos';
+import IronworkDivider from '../components/IronworkDivider.astro';
 import { withBase } from '../lib/url';
 ---
 
 <Base title="Off the path">
   <section class="container lost">
-    <div class="lost__photo">
-      <ArchFrame
-        photo={photo('07')}
-        bars="frame"
-        aspect={1}
-        sizes="(min-width: 48rem) 20rem, 70vw"
-        alt="Mark mid-tumble on the lawn while Ally laughs"
-      />
-    </div>
-    <div class="lost__text">
-      <p class="kicker">Page not found</p>
-      <h1>You’ve wandered off the path</h1>
-      <p class="lead">This corner of the garden hasn’t been planted yet.</p>
-      <a class="btn" href={withBase('/')}>Back to the glasshouse</a>
-    </div>
+    <p class="kicker">Page not found</p>
+    <h1>You’ve wandered off the path</h1>
+    <IronworkDivider />
+    <p class="lead">This corner of the garden hasn’t been planted yet.</p>
+    <a class="btn" href={withBase('/')}>Back to the garden</a>
   </section>
 </Base>
 
 <style>
   .lost {
     display: grid;
-    gap: 2rem;
-    align-items: center;
     justify-items: center;
-    padding-block: clamp(3rem, 8vw, 6rem) 1rem;
+    gap: 1rem;
+    padding-block: clamp(4rem, 10vw, 7rem) 2rem;
     text-align: center;
-  }
-  .lost__photo {
-    width: min(70vw, 20rem);
-  }
-  .lost__text {
-    display: grid;
-    justify-items: center;
-    gap: 0.9rem;
   }
   .lost h1 {
     font-size: var(--step-4);
-  }
-  @media (min-width: 48rem) {
-    .lost {
-      grid-template-columns: auto 1fr;
-      text-align: left;
-    }
-    .lost__text {
-      justify-items: start;
-    }
   }
 </style>

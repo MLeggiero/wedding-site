@@ -1,29 +1,13 @@
-# Our Story page text. `body` supports [links](/travel/), *italics* and **bold**.
-# Chapter I is a placeholder — replace it with how you two met.
+# Our Story page text — keep it short. `body` supports [links](/travel/), *italics*, **bold**.
 
 - id: how-we-met
-  kicker: Chapter I
-  title: How we met
+  kicker: How we met
+  title: A story for the toast
   body: >-
-    Every glasshouse starts with a seed. Ours is a story we’re saving to tell
-    properly here very soon.
+    We'll tell this one properly soon.
 
 - id: the-question
-  kicker: Chapter II
-  title: Under the tall trees
+  kicker: The question
+  title: A spring walk, a ring, a yes
   body: >-
-    One spring afternoon, a walk through a garden turned into a question — and
-    a camera caught every second of it.
-
-- id: in-bloom
-  kicker: Chapter III
-  title: In bloom
-  body: >-
-    Then the garden put on a show. Tap any photo to see it larger.
-
-- id: under-glass
-  kicker: Chapter IV
-  title: Under glass
-  body: >-
-    Next spring we’ll say “I do” in the conservatory at the State Botanical
-    Garden of Georgia, and we can’t wait to celebrate with you.
+    Next spring, we say "I do" at the State Botanical Garden of Georgia.

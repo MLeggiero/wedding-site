@@ -26,6 +26,15 @@ export const site = {
   /** Shown in the FAQ and footer once filled in. */
   contactEmail: '',
 
+  /**
+   * Google Apps Script web-app URL for guest photo uploads and song requests
+   * (setup: apps-script/README.md). Until it's set, those forms say "opening soon".
+   */
+  guestEndpoint: '',
+
+  /** Your Spotify playlist link (https://open.spotify.com/playlist/…), shown on the Songs page. */
+  spotifyPlaylistUrl: '',
+
   /** Footer credit for the engagement photos, e.g. 'Engagement photos by …'. */
   photoCredit: '',
 
@@ -43,4 +52,10 @@ export const nav = [
   { href: '/registry/', label: 'Registry' },
   { href: '/faq/', label: 'FAQ' },
   { href: '/details/', label: 'Details & RSVP', locked: true },
+] as const;
+
+/** Guest participation pages (footer + home page). */
+export const guestLinks = [
+  { href: '/share-a-photo/', label: 'Share a photo' },
+  { href: '/songs/', label: 'Request a song' },
 ] as const;

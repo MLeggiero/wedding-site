@@ -1,5 +1,5 @@
 ---
-import { nav, site } from '../config';
+import { nav, guestLinks, site } from '../config';
 import { withBase } from '../lib/url';
 import Monogram from './Monogram.astro';
 import IronworkDivider from './IronworkDivider.astro';
@@ -20,7 +20,7 @@ import Foliage from './Foliage.astro';
     <nav aria-label="Footer">
       <ul>
         {
-          nav.map((item) => (
+          [...nav, ...guestLinks].map((item) => (
             <li>
               <a href={withBase(item.href)}>{item.label}</a>
             </li>
@@ -48,6 +48,10 @@ import Foliage from './Foliage.astro';
     margin-top: clamp(3rem, 8vw, 6rem);
     padding-block: 3.5rem 4.5rem;
     text-align: center;
+  }
+  /* a page that ends in a dark conservatory room runs straight into the footer */
+  :global(body:has(main > .room:last-child)) .site-footer {
+    margin-top: 0;
   }
   .site-footer__inner {
     position: relative;

@@ -17,7 +17,7 @@ const outDir = 'src/assets/photos';
 const LONG_EDGE = 2400;
 
 // Social-share card (texted links show this): photo + crop focus (0–1).
-const OG = { photo: '16', focusX: 0.52, focusY: 0.42 };
+const OG = { photo: '35', focusX: 0.57, focusY: 0.45 };
 
 await mkdir(outDir, { recursive: true });
 const files = (await readdir(srcDir)).filter((f) => /\.jpe?g$/i.test(f));

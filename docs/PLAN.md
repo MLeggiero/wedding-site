@@ -4,6 +4,7 @@
 
 > Status: plan, written 2026-11-10, with every decision below confirmed in Q&A. Updated the same day to simplify security.
 > **v1 built (2026-11-10):** Home, Our Story, Travel (with field guide), Registry teaser, FAQ, Details (courtesy-password placeholder) and 404, plus save-the-date QR files in `print/`. See the v1 checklist in §15.
+> **Direction revised (2026-11-10, from your feedback):** cozy *maximalist* Southern conservatory, plants native to the southeastern US only, four photos in all, short copy, fancier type. Guests can now send a favorite photo and request songs. §3 describes the new design system; the house rules (and the 100-point rubric every design must clear) live in `CLAUDE.md`. The home hero, guest pages and "Join in" band use it; the other pages switch over next.
 > A **GitHub Pages** site published straight from this repo. Security isn't a goal (it's a wedding website). Everything lives here except RSVP answers and the guest list, which stay in a Google Sheet.
 
 ---
@@ -12,7 +13,9 @@
 
 | Area | Decision |
 |---|---|
-| Concept | **Victorian Glasshouse**: lush, airy, romantic. Dark greens, sandstone, brass, walnut. Museum touches are limited to brass plant labels. |
+| Concept | **Cozy maximalist Southern conservatory** (revised from the original airy Victorian glasshouse): evergreen trellis walls by candlelight, gilt frames, oxblood plates, and southeastern native plants spilling over everything |
+| Photos | **Four in all:** #35 (home hero, deep-pink blossoms), #20 (the ring), #40 (ring hand on his chest, cropped waist-up), #62 (the stone bridge) |
+| Guest features | **Share a photo** (to a private Google Drive folder) and **Request a song** (logged to a Google Sheet; the Spotify playlist is shown on the page). Both go through one Apps Script web app (`apps-script/`). |
 | Names | **Ally & Mark**, with an **A & M** monogram |
 | Address | `https://mleggiero.github.io/wedding-site/`, shared as a link and a QR code |
 | Hosting | **GitHub Pages**, published from this repo by GitHub's standard Pages workflow on every push |
@@ -41,87 +44,83 @@
 
 ### 3.1 Mood
 
-Late-afternoon sun through old glass. Iron arches painted deep green. Ferns and palm fronds spilling over every frame. Brass plant tags and warm sandstone paths. The engagement photos already share this palette: green light, a tweed jacket and a cream dress.
+A Southern conservatory after dark: evergreen trellis walls lit by candlelight, gilded frames, fireflies, and plants native to the Southeast spilling over every edge, from magnolia and dogwood to azaleas, jessamine, ferns and Spanish moss. Maximalist and cozy, never minimal or cold. The couple's rules (style, photos, the grading rubric) are in `CLAUDE.md`.
 
 ### 3.2 Palette
 
-| Token | Name | Hex | Role |
-|---|---|---|---|
-| `--green-900` | Conservatory Green | `#1E3A2B` | Headings, dark bands, footer |
-| `--green-700` | Fern | `#2F5640` | Buttons and links |
-| `--moss-500` | Moss | `#6E7F4A` | Large text and ornament only |
-| `--glass-100` | Frosted Glass | `#DCE3D4` | Glass panels, subtle fills |
-| `--sand-300` | Sandstone | `#DCC79E` | Warm bands, cards, tags |
-| `--sand-500` | Ochre Sandstone | `#C9A96A` | Highlights on dark green |
-| `--brass-500` | Brass | `#A8823A` | Hairlines, ironwork, icons; never body text |
-| `--walnut-700` | Walnut | `#5B4330` | Captions, secondary text |
-| `--soil-900` | Potting Soil | `#2E2219` | Deepest brown; footer variant |
-| `--linen-50` | Linen | `#F6F1E6` | Page background |
-| `--ink` | Ink | `#17201A` | Body text |
+| Role | Hex |
+|---|---|
+| Evergreen wall | `#18301F` (trellis laths `#22432C`) |
+| Gold leaf | gradient `#7A5416 → #F7E3A1 → #8A6119`; flat gold `#D9AB4E` |
+| Amber (eyebrows, notes) | `#E0A84F` |
+| Cream text on dark | `#F3E8CF`; italic leads `#EAD9B4` |
+| Card stock | `#F8EFDC → #F1E3C4` |
+| Oxblood plate | `#8A2D40 → #5E1A29` with a double gold ring |
+| Ink on card | `#1D2A20`; labels `#18301F`; "optional" `#6B4A2E` |
+| Flower accents | azalea pink, flame orange, honeysuckle red, jessamine yellow, maypop lavender |
 
-**Measured WCAG contrast.** Every body-text pairing passes AA:
+**Measured WCAG contrast:**
 
 | Pairing | Contrast |
 |---|---|
-| Ink on Linen | 14.8:1 |
-| Conservatory Green on Linen | 11.0:1 |
-| Walnut on Linen | 8.1:1 |
-| Fern on Linen | 7.4:1 |
-| Ink on Sandstone | 10.1:1 |
-| Green on Sandstone | 7.5:1 |
-| Sandstone on Green | 7.5:1 |
-| Walnut on Sandstone | 5.6:1 |
-| Ochre on Green | 5.5:1 |
-
-Two colors fall short of body-text contrast and are restricted to ornaments and display text of 24px or larger:
-- Brass (3.2 on Linen, 3.5 on Green)
-- Moss (3.9)
-
-**Night palette** (secret robot room only):
-
-| Name | Hex |
-|---|---|
-| Night Glass | `#0F1E17` |
-| Moonlight | `#CFD8C9` |
-| Lantern | `#E2B66B` |
-| Brass | `#A8823A` |
+| Cream on evergreen | 11.6:1 |
+| Leads on evergreen | 10.2:1 |
+| Amber / gold on evergreen | 6.7:1 |
+| Ink on card | 11.8:1 |
+| Labels on card | 11.2:1 |
+| "optional" on card | 6.2:1 |
+| Button text on oxblood | 7.2–11.0:1 |
+| Focus ring (oxblood) on card | 7.7:1 |
+| Input borders on card | 3.1:1 (non-text, ≥ 3:1) |
 
 ### 3.3 Typography
 
-- **Display: Cormorant Garamond** (variable). Names are set in its italic, and the italic ampersand is the signature mark.
-- **Body/UI: Source Sans 3** (variable): 18px base, 1.6 line height, oldstyle figures in running text.
-- **Labels:** Cormorant small caps with +12% tracking, used for plant tags, dates and section kickers.
-- **Scale:** 1.25 ratio. H1 is `clamp(2.75rem, 7vw, 5.5rem)`.
-- **Licensing and hosting:** both families are OFL and self-hosted via Fontsource, so the site makes no Google Fonts requests.
+All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requests.
+
+- **Names and titles:** Ballet, a formal script, in gold leaf.
+- **Dates and headings:** Playfair Display (variable).
+- **Eyebrows, labels and buttons:** IM Fell English SC.
+- **Body, leads and inputs:** EB Garamond (variable), with italics for leads.
+- Pages not yet restyled still use the original Cormorant Garamond and Source Sans 3.
 
 ### 3.4 Motifs and components
 
 | Component | What it is |
 |---|---|
-| `ArchFrame` | A photo inside a conservatory bay window: an SVG clip-path arch with brass glazing bars drawn over the image. |
-| `GlassPanel` | A frosted card: backdrop blur, 1px brass border, soft top highlight. |
-| `FoliageLayer` | Botanical silhouettes (monstera, fern, palm frond, magnolia, ivy) tucked into section edges, with gentle scroll parallax and a slow idle sway. |
-| `IronworkDivider` | Thin-line Victorian scrollwork with fern fronds. |
-| `Monogram` | The A & M crest, used in the header and favicon. |
-| `PlantTag` | Brass plant-marker labels for dates, times and categories. This is the one museum nod. |
-| `SunGlow` | A soft light-shaft gradient behind the hero, plus a faint glazing grid in dark bands. |
+| `CozyRoom` | The dark conservatory wall: trellis wallpaper, candle glow, a double gilt border with corner scrolls, fireflies, and optional native plants (corner swags and beds, plus climbing side vines on wide screens) |
+| `HeroFrame` | A gilded arch around the hero photo, wreathed in magnolia, ferns and blossoms |
+| `GiltCard` | Cream card stock in a double gilt frame, with a native sprig over each corner; holds forms |
+| `RoomHeading` | Small-caps eyebrow, gilded script title, gold flourish, one italic line |
+| `Flora` | Places one plant drawing as an image |
+| `.btn-plate` | The oxblood plate button with a double gold ring |
+| `Flourish` | Gold scrollwork with a dogwood at its heart |
 
-**Botanical art:**
-- Primary source: public-domain Victorian plates (e.g. *Curtis's Botanical Magazine* via the Biodiversity Heritage Library), vectorized and recolored to the palette. Check each image's license.
-- Alternative: custom hand-drawn SVGs.
+**Botanical art** is drawn in code, so it's crisp at any size and recolors easily:
+
+- `src/lib/natives.ts`: the plants
+- `src/lib/flora.ts` and `src/lib/hero-art.ts`: the arrangements
+- At build time, `src/lib/art.ts` writes each arrangement to a cached file in `/flora/*.svg`, so pages stay small and the plants load once for the whole site.
+
+Every plant is native to the southeastern US:
+
+- **Flowers and shrubs:** Southern magnolia, flowering dogwood, Piedmont and flame azaleas, eastern redbud, Sweet Betsy trillium.
+- **Vines:** Carolina jessamine, coral honeysuckle, maypop.
+- **Ferns:** Christmas, maidenhair and cinnamon ferns.
+- **Moss:** Spanish moss.
+- **Butterfly:** the eastern tiger swallowtail, Georgia's state butterfly.
+- **No tropicals.**
 
 ### 3.5 Motion
 
-- Astro view transitions give a quick "frosted glass" cross-fade between pages.
+- Fireflies twinkle softly in the conservatory rooms.
+- Astro view transitions give a quick cross-fade between pages.
 - Reveal-on-scroll is a fade plus an 8px rise, 300ms or less.
 - Parallax uses CSS scroll-driven animations where supported and stays static elsewhere.
 - `prefers-reduced-motion` turns all of it off.
 
 ### 3.6 Voice
 
-Warm, witty, brief. For example:
-- "We're getting married under glass."
-- "The details live inside the glasshouse; the password is on your invitation."
+Warm and brief. **Few words:** a line, not a paragraph. For example: "Join in." · "What gets you on the dance floor?" · "Formal invitation to follow."
 
 ---
 
@@ -134,6 +133,8 @@ Warm, witty, brief. For example:
 ├── /travel/            Getting here · stay · field guide + map ... public
 ├── /registry/          Gifts · funds · giving back ............... public
 ├── /faq/               Questions ................................. public
+├── /share-a-photo/     Send us your favorite photo of us ......... public
+├── /songs/             Request a song · our playlist ............. public
 ├── /details/           The Day (schedule) ........................ 🔒 password
 │   ├── /details/map/   Garden map · parking · accessible route ... 🔒
 │   ├── /details/stay/  Hotel-block codes · shuttle ............... 🔒
@@ -142,7 +143,7 @@ Warm, witty, brief. For example:
 └── 404                 "You've wandered off the path"
 ```
 
-Navigation: **Home · Our Story · Travel · Registry · FAQ · 🔒 Details & RSVP**
+Navigation: **Home · Our Story · Travel · Registry · FAQ · 🔒 Details & RSVP**. The two guest pages are linked from the footer and the home page's "Join in" band.
 
 On phones the menu opens as a full-screen frosted "glass door".
 
@@ -150,23 +151,34 @@ On phones the menu opens as a full-screen frosted "glass door".
 
 ### Home
 
-- **Hero:**
-  - An `ArchFrame` photo with foliage spilling over its edges.
-  - *Ally & Mark* in large Cormorant italic.
-  - SATURDAY · APRIL 24 · 2027 in small caps.
-  - "State Botanical Garden of Georgia · Athens".
-- **Countdown tag:** "_N_ days until we're married under glass."
-- **Welcome:** a short welcome note and three glass cards linking to Our Story, Travel and Registry.
-- **Invited-guest panel:** "Schedule, maps and RSVP are inside the glasshouse." with a button: **Enter the glasshouse →**
-- **v1 extra:** "Formal invitation to follow."
+- **Hero** (a `CozyRoom`):
+  - "Save the date", then *Ally & Mark* in gilded script.
+  - SATURDAY · APRIL 24 · 2027, the venue in italics.
+  - Photo #35 in the gilded, plant-wreathed `HeroFrame`.
+  - An oxblood plate counting the days until "I do", and "Formal invitation to follow".
+- **Cards:** Our Story (#20), Travel (#62), Registry (#40).
+- **Join in:** a small conservatory band with two plate buttons, **Share a photo** and **Request a song**.
+
+### Share a photo (public)
+
+A gilt card with a short form:
+
+- **Fields:** name, optional email, who's in it (both of us · Ally · Mark), the photo, and an optional note.
+- **On the phone:** photos shrink to about 2400 px before sending.
+- **Where it goes:** the private Drive folder, with a row in the "Photos" tab of the Sheet.
+
+### Request a song (public)
+
+- **Fields:** song, artist, and optionally your name and a note.
+- **Where requests go:** the "Songs" tab of the Sheet, each with a ready-made Spotify search link.
+- **The playlist:** embedded under the form once `spotifyPlaylistUrl` is set in `src/config.ts`.
+- **Why there's no auto-add:** Spotify's API now needs the app owner to have Premium and caps unreviewed apps at 5 users.
+
+Both forms say **"Opening soon"** until `guestEndpoint` is set (setup: `apps-script/README.md`).
 
 ### Our Story
 
-- **I. How we met:** your words, plus optional photos.
-- **II. Under the tall trees:** the proposal as a scroll sequence. On desktop a sticky arch frame swaps photos as the captions scroll past; on phones the photos stack.
-- **III. In bloom:** the cherry-blossom gallery, as a masonry grid with a lightbox.
-- **IV. Under glass:** the wedding, with links onward.
-- **Possible hook (please confirm):** a white glasshouse stands behind you in the proposal photos, which suggests "It started beside one glasshouse and ends inside another."
+Short by design: the ring photo (#20) in a gilt arch, one line, and links on to Travel and the Registry. "How we met" waits for your words.
 
 ### Travel (public)
 
@@ -516,18 +528,21 @@ checked: 2026-11-10
 
 ### Selection
 
-From the 62 color-graded engagement photos:
+**Four photos on the whole site,** chosen with you.
 
-| Use | Photos (ColorGraded-NN) |
+**The rules:**
+
+- Natural, relaxed expressions; no mid-expression frames.
+- Ally front-facing or three-quarter, ideally waist-up.
+- No side-profile or leaning-back poses of Ally.
+- When in doubt, ask.
+
+| Use | Photo (ColorGraded-NN) |
 |---|---|
-| Home hero, all screens | **56**: under pale blossoms, Mark smiling and Ally laughing. Both faces sit below the window's spring line and between the mullions. #16 was the first pick, but the glazing bars crossed both faces; #55 is the same tree, but Mark is sticking his tongue out. |
-| Link-preview image (`public/og.jpg`) | **16**: the ring moment, with a white glasshouse behind you |
-| Proposal sequence | 08 → 10 → 12 → 15 → 16 → 20 → 23 → 18 → 13 |
-| Black-and-white accents | 19, 22, 45, 47 |
-| Blossom gallery | 31, 33, 35, 36, 37, 38, 39, 41, 43, 46, 48, 52, 54, 58 |
-| Travel header | 59: the stone-bridge path ("the way here") |
-| Registry header | 61 or 62: the bridge portrait |
-| FAQ / 404 | 18 (laughing) / 07 (the tumble) |
+| Home hero and link preview (`public/og.jpg`) | **35**: smiling together beneath deep-pink blossoms |
+| Our Story, and the home "Our Story" card | **20**: Mark on one knee, sliding the ring on as Ally smiles |
+| Registry, and the home "Registry" card | **40**: her ring hand on his chest. Cropped waist-up, and a passer-by removed by the crop. |
+| Travel, and the home "Travel" card | **62**: together on the stone bridge |
 
 ### Pipeline
 
@@ -629,7 +644,11 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [x] `noindex`, Open Graph, favicon/monogram, 404
 - [x] GitHub Pages deploy workflow, and the details password prompt (on a placeholder `/details/`)
 - [x] Print-ready QR files (`print/`)
+- [x] Direction revised: cozy maximalist conservatory, native plants, four photos, short copy (home hero graded 92/100)
+- [x] Guest pages: Share a photo and Request a song (graded 92 desktop, 91 phone), plus the home "Join in" band (91)
 - [ ] **You:** switch on Pages (Settings → Pages → Source: GitHub Actions)
+- [ ] **You:** set up the Apps Script web app (`apps-script/README.md`) and paste its URL into `guestEndpoint`
+- [ ] Restyle Our Story, Travel, Registry, FAQ, Details, header and footer in the new direction
 
 ## 16. What we need from you two
 
@@ -647,6 +666,9 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
   - your Venmo and PayPal.me handles for chip-ins
 - **The details password:** any easy word, e.g. *greenhouse*. Or no password at all.
 - **A contact email** for guest questions.
+- **Guest uploads and songs:**
+  - run the six-step Apps Script setup in `apps-script/README.md` (a private Drive folder plus a Sheet)
+  - your Spotify playlist link for the Songs page
 
 ## 17. Open items (non-blocking)
 

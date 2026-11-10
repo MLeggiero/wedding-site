@@ -9,10 +9,6 @@ const chapters = defineCollection({
   schema: z.object({ kicker: z.string(), title: z.string(), body: z.string() }),
 });
 
-const proposal = defineCollection({
-  loader: file('src/content/proposal.yaml'),
-  schema: z.object({ photo: z.string().regex(/^\d{2}$/), caption: z.string() }),
-});
 
 const places = defineCollection({
   loader: file('src/content/places.yaml'),
@@ -36,4 +32,4 @@ const charities = defineCollection({
   schema: z.object({ name: z.string(), blurb: z.string(), url: z.string(), ein: z.string().optional() }),
 });
 
-export const collections = { chapters, proposal, places, faq, charities };
+export const collections = { chapters, places, faq, charities };

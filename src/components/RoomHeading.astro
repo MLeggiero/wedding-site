@@ -1,0 +1,64 @@
+---
+// Ornate heading for a CozyRoom: small-caps eyebrow, gilded script title,
+// gold flourish and a short italic line.
+import Flourish from './Flourish.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  /** heading level for the title */
+  level?: 1 | 2;
+}
+const { eyebrow, title, lead, level = 1 } = Astro.props;
+const Title = level === 1 ? 'h1' : 'h2';
+---
+
+<header class="rh">
+  {eyebrow && <p class="rh__eyebrow">{eyebrow}</p>}
+  <Title class="rh__title">{title}</Title>
+  <Flourish class="rh__flourish" />
+  {lead && <p class="rh__lead">{lead}</p>}
+</header>
+
+<style>
+  .rh {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    padding-inline: var(--gutter);
+  }
+  .rh__eyebrow {
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+    letter-spacing: 0.32em;
+    margin-right: -0.32em;
+    color: #e0a84f;
+  }
+  .rh__title {
+    padding: 0.08em 0.4em 0.22em;
+    font-family: 'Ballet', 'Playfair Display Variable', cursive;
+    font-weight: 400;
+    font-size: clamp(3.3rem, 2rem + 5.4vw, 6.4rem);
+    line-height: 1.1;
+    background: linear-gradient(172deg, #fff0bf 6%, #d9ab4e 38%, #f7dc90 56%, #a8772a 86%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 1px rgb(0 0 0 / 0.45));
+  }
+  .rh :global(.rh__flourish) {
+    width: min(17rem, 72%);
+    margin-top: -1rem;
+    color: #d9ab4e;
+  }
+  .rh__lead {
+    max-width: 30rem;
+    font-family: 'EB Garamond Variable', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    line-height: 1.4;
+    color: #ead9b4;
+  }
+</style>

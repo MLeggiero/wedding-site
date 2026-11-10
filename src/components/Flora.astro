@@ -1,0 +1,42 @@
+---
+// A drawing of native plants (lib/art.ts), placed as a decorative image.
+// Size it with --flora-w (the width of the drawing's nominal box) and
+// position it from the parent with a class; `mirror` flips it left↔right.
+import { art, artUrl, artView, type ArtName } from '../lib/art';
+
+interface Props {
+  name: ArtName;
+  class?: string;
+  mirror?: boolean;
+  /** load immediately (art above the fold) */
+  eager?: boolean;
+}
+const { name, class: cls, mirror = false, eager = false } = Astro.props;
+const [, , vw, vh] = artView(name);
+const k = vw / art(name).w;
+---
+
+<img
+  class:list={['flora', cls, { 'flora--mirror': mirror }]}
+  src={artUrl(name)}
+  alt=""
+  width={vw}
+  height={vh}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  style={`--k:${k.toFixed(4)}`}
+/>
+
+<style>
+  .flora {
+    position: absolute;
+    width: calc(var(--flora-w, 200px) * var(--k, 1));
+    height: auto;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+  }
+  .flora--mirror {
+    scale: -1 1;
+  }
+</style>

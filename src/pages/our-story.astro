@@ -3,84 +3,27 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import ArchFrame from '../components/ArchFrame.astro';
-import Gallery from '../components/Gallery.astro';
-import IronworkDivider from '../components/IronworkDivider.astro';
-import Foliage from '../components/Foliage.astro';
 import { photo } from '../lib/photos';
 import { inlineMd } from '../lib/inline-md';
 import { withBase } from '../lib/url';
 
-const chapters = Object.fromEntries((await getCollection('chapters')).map((c) => [c.id, c.data]));
-const steps = (await getCollection('proposal')).map((s) => ({ caption: s.data.caption, img: photo(s.data.photo) }));
-const bloom = ['31', '35', '38', '33', '39', '46', '19', '43', '52', '36', '48', '54', '22', '41', '58', '37'].map(photo);
-
-const ch = (id: string) => chapters[id];
+const ch = Object.fromEntries((await getCollection('chapters')).map((c) => [c.id, c.data]));
+const q = ch['the-question'];
+const met = ch['how-we-met'];
 ---
 
-<Base title="Our Story" description="How Ally & Mark got engaged — a spring walk, a stand of very tall trees, and a question.">
-  <PageHeader
-    kicker="Our Story"
-    title="A garden, a question, a glasshouse"
-    lead="From a spring walk under very tall trees to a conservatory in Athens."
-  />
+<Base title="Our Story" description="How Ally & Mark got engaged.">
+  <PageHeader kicker="Our Story" title={q.title} />
 
-  <!-- Chapter I -->
-  <section class="chapter container">
-    <div class="chapter__head reveal">
-      <p class="kicker">{ch('how-we-met').kicker}</p>
-      <h2>{ch('how-we-met').title}</h2>
-      <p class="lead" set:html={inlineMd(ch('how-we-met').body)} />
+  <section class="container story">
+    <div class="story__photo">
+      <ArchFrame photo={photo('20')} bars="frame" aspect={0.85} sizes="(min-width: 52rem) 26rem, 86vw" />
     </div>
-  </section>
-
-  <!-- Chapter II: the proposal -->
-  <section class="chapter chapter--sequence container">
-    <div class="chapter__head reveal">
-      <p class="kicker">{ch('the-question').kicker}</p>
-      <h2>{ch('the-question').title}</h2>
-      <p class="lead" set:html={inlineMd(ch('the-question').body)} />
-    </div>
-
-    <div class="sequence" data-sequence>
-      <div class="sequence__stage" aria-hidden="true">
-        <div class="sequence__sticky">
-          <Foliage kind="fern-a" class="sequence__fern" style="--sway-delay:-3s;" />
-          <ArchFrame stack={steps.map((s) => s.img)} bars="frame" sizes="(min-width: 64rem) 27rem, 1px" />
-        </div>
-      </div>
-      <ol class="sequence__steps">
-        {
-          steps.map((s, i) => (
-            <li class:list={['step', { 'is-current': i === 0 }]} data-step={i}>
-              <div class="step__photo">
-                <ArchFrame photo={s.img} bars="frame" sizes="88vw" />
-              </div>
-              <p class="step__caption">{s.caption}</p>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  <!-- Chapter III: in bloom -->
-  <section class="chapter container">
-    <div class="chapter__head reveal">
-      <p class="kicker">{ch('in-bloom').kicker}</p>
-      <h2>{ch('in-bloom').title}</h2>
-      <p class="lead" set:html={inlineMd(ch('in-bloom').body)} />
-    </div>
-    <Gallery photos={bloom} />
-  </section>
-
-  <!-- Chapter IV: under glass -->
-  <section class="chapter container">
-    <div class="chapter__head reveal">
-      <IronworkDivider />
-      <p class="kicker">{ch('under-glass').kicker}</p>
-      <h2>{ch('under-glass').title}</h2>
-      <p class="lead" set:html={inlineMd(ch('under-glass').body)} />
-      <div class="chapter__actions">
+    <div class="story__text">
+      <p class="lead" set:html={inlineMd(q.body)} />
+      <p class="kicker">{met.kicker}</p>
+      <p set:html={inlineMd(met.body)} />
+      <div class="story__actions">
         <a class="btn" href={withBase('/travel/')}>Plan your trip</a>
         <a class="btn btn--ghost" href={withBase('/registry/')}>Registry</a>
       </div>
@@ -88,118 +31,37 @@ const ch = (id: string) => chapters[id];
   </section>
 </Base>
 
-<script>
-  const seq = document.querySelector<HTMLElement>('[data-sequence]');
-  if (seq) {
-    const layers = [...seq.querySelectorAll<HTMLElement>('.arch__layer')];
-    const steps = [...seq.querySelectorAll<HTMLElement>('[data-step]')];
-    const show = (i: number) => {
-      layers.forEach((l, j) => l.classList.toggle('is-active', j === i));
-      steps.forEach((s, j) => s.classList.toggle('is-current', j === i));
-    };
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) if (e.isIntersecting) show(Number((e.target as HTMLElement).dataset.step));
-      },
-      { rootMargin: '-45% 0px -45% 0px' },
-    );
-    steps.forEach((s) => io.observe(s));
-  }
-</script>
-
 <style>
-  .chapter {
-    padding-block: clamp(2.5rem, 6vw, 4.5rem);
-  }
-  .chapter__head {
+  .story {
     display: grid;
-    justify-items: center;
+    gap: clamp(1.5rem, 5vw, 3.5rem);
+    align-items: center;
+    padding-bottom: 2rem;
+  }
+  .story__photo {
+    width: min(100%, 26rem);
+    margin-inline: auto;
+  }
+  .story__text {
+    display: grid;
     gap: 0.8rem;
-    max-width: 40rem;
-    margin: 0 auto clamp(1.5rem, 4vw, 2.5rem);
+    justify-items: center;
     text-align: center;
   }
-  .chapter__head h2 {
-    font-size: var(--step-4);
-  }
-  .chapter__actions {
+  .story__actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 0.8rem;
-    margin-top: 0.8rem;
+    justify-content: center;
+    margin-top: 0.6rem;
   }
-
-  /* ---------- proposal sequence ---------- */
-  .sequence__steps {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: clamp(2.5rem, 8vw, 4rem);
-  }
-  .step {
-    display: grid;
-    gap: 1.2rem;
-    justify-items: center;
-  }
-  .step__photo {
-    width: min(100%, 26rem);
-  }
-  .step__caption {
-    max-width: 22rem;
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: clamp(1.8rem, 1.4rem + 1.6vw, 2.5rem);
-    line-height: 1.2;
-    color: var(--green-900);
-    text-align: center;
-  }
-  .sequence__stage {
-    display: none;
-  }
-
-  @media (min-width: 64rem) {
-    .sequence {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
+  @media (min-width: 52rem) {
+    .story {
+      grid-template-columns: 26rem 1fr;
     }
-    .sequence__stage {
-      display: block;
-      height: 100%;
-    }
-    .sequence__sticky {
-      position: sticky;
-      top: 9vh;
-      width: min(100%, 27rem);
-      margin-left: auto;
-    }
-    .sequence__sticky :global(.sequence__fern) {
-      width: 42%;
-      left: -22%;
-      bottom: -6%;
-    }
-    .step__photo {
-      display: none;
-    }
-    .sequence__steps {
-      gap: 0;
-      padding-block: 18vh 28vh;
-    }
-    .step {
-      min-height: 58vh;
-      align-content: center;
+    .story__text {
       justify-items: start;
-    }
-    .step__caption {
       text-align: left;
-      opacity: 0.28;
-      transition: opacity 400ms var(--ease);
-    }
-    .step.is-current .step__caption {
-      opacity: 1;
     }
   }
 </style>

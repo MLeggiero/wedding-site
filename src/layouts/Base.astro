@@ -2,11 +2,18 @@
 import '@fontsource-variable/cormorant-garamond/wght.css';
 import '@fontsource-variable/cormorant-garamond/wght-italic.css';
 import '@fontsource-variable/source-sans-3/wght.css';
+import '@fontsource/ballet/400.css';
+import '@fontsource-variable/playfair-display/wght.css';
+import '@fontsource-variable/playfair-display/wght-italic.css';
+import '@fontsource/im-fell-english-sc/400.css';
+import '@fontsource-variable/eb-garamond/wght.css';
+import '@fontsource-variable/eb-garamond/wght-italic.css';
 import '../styles/global.css';
 
 import cormorantItalic from '@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-italic.woff2?url';
 import cormorantNormal from '@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-normal.woff2?url';
 import sourceSans from '@fontsource-variable/source-sans-3/files/source-sans-3-latin-wght-normal.woff2?url';
+import ballet from '@fontsource/ballet/files/ballet-latin-400-normal.woff2?url';
 
 import { site } from '../config';
 import { withBase } from '../lib/url';
@@ -41,6 +48,7 @@ const ogImage = new URL(withBase('/og.jpg'), Astro.site);
     <link rel="preload" href={cormorantItalic} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={cormorantNormal} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={sourceSans} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={ballet} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Ally & Mark" />
@@ -50,7 +58,7 @@ const ogImage = new URL(withBase('/og.jpg'), Astro.site);
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Mark slips the ring onto Ally’s finger beneath tall trees" />
+    <meta property="og:image:alt" content="Ally and Mark smiling together beneath deep pink blossoms" />
     <meta name="twitter:card" content="summary_large_image" />
     <slot name="head" />
   </head>

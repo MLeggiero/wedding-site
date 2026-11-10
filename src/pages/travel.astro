@@ -34,12 +34,12 @@ const labels: Record<string, string> = {
 
   <section class="container banner">
     <ArchFrame
-      photo={photo('59')}
+      photo={photo('62')}
       shape="segmental"
       aspect={2.1}
-      panes={3}
+      bars="frame"
       sizes="(min-width: 74rem) 74rem, 92vw"
-      alt="Ally and Mark at the far end of an old stone bridge lined with spring trees"
+      alt="Ally and Mark smiling together on a stone bridge"
     />
   </section>
 
@@ -73,7 +73,7 @@ const labels: Record<string, string> = {
   </section>
 
   <section class="section field-guide band-dark">
-    <Foliage kind="palm-a" tone="fern" class="fg-palm" style="--sway-delay:-2s;" />
+    <Foliage kind="fern-a" tone="fern" class="fg-fern" style="--sway-delay:-2s;" />
     <div class="container">
       <header class="fg-head reveal">
         <p class="kicker">Field guide</p>
@@ -148,10 +148,10 @@ const labels: Record<string, string> = {
     overflow: hidden;
     margin-bottom: calc(-1 * clamp(3rem, 8vw, 6rem));
   }
-  .field-guide :global(.fg-palm) {
-    width: clamp(18rem, 40vw, 34rem);
-    right: -14rem;
-    top: -2rem;
+  .field-guide :global(.fg-fern) {
+    width: clamp(10rem, 22vw, 18rem);
+    right: -3rem;
+    bottom: -2rem;
     opacity: 0.35;
   }
   .fg-head {

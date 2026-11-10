@@ -1,0 +1,21 @@
+---
+// Gold scrollwork with a four-petal dogwood at its heart.
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+---
+
+<svg class:list={['flourish', cls]} viewBox="0 0 320 40" aria-hidden="true" focusable="false">
+  <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <path d="M146,21 C134,21 128,9 116,9 C106,9 104,20 111,22 C116,23.4 118,17.5 114.5,16 M110,21 Q70,24 18,21"></path>
+    <path d="M174,21 C186,21 192,9 204,9 C214,9 216,20 209,22 C204,23.4 202,17.5 205.5,16 M210,21 Q250,24 302,21"></path>
+  </g>
+  <g fill="currentColor">
+    <circle cx="14" cy="21" r="2.6"></circle><circle cx="306" cy="21" r="2.6"></circle>
+    <path
+      d="M160,21 C156,15 156,9 160,5 C164,9 164,15 160,21Z M160,21 C166,17 172,17 176,21 C172,25 166,25 160,21Z M160,21 C164,27 164,33 160,37 C156,33 156,27 160,21Z M160,21 C154,25 148,25 144,21 C148,17 154,17 160,21Z"
+    ></path>
+  </g>
+  <circle cx="160" cy="21" r="2.4" fill="#7a2335"></circle>
+</svg>

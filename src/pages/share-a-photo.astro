@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import CozyRoom from '../components/CozyRoom.astro';
+import RoomHeading from '../components/RoomHeading.astro';
+import GiltCard from '../components/GiltCard.astro';
+import { site } from '../config';
+
+const ready = Boolean(site.guestEndpoint);
+---
+
+<Base title="Share a photo" description="Send Ally & Mark your favorite photo of them.">
+  <CozyRoom flora="full" label="Share a photo">
+    <RoomHeading eyebrow="Join in" title="Share a photo" lead="Your favorite of Ally, of Mark, or of us both." />
+    <GiltCard class="guest-card">
+      <form class="guest-form" data-photo-form data-endpoint={site.guestEndpoint}>
+        {!ready && <p class="guest-form__soon">Opening soon</p>}
+        <fieldset class="guest-form__fields" disabled={!ready}>
+          <label>
+            <span class="guest-form__label">Your name</span>
+            <input name="name" required maxlength="80" autocomplete="name" />
+          </label>
+          <label>
+            <span class="guest-form__label">Email <span class="opt">optional</span></span>
+            <input name="email" type="email" maxlength="120" autocomplete="email" />
+          </label>
+          <fieldset class="guest-form__choice">
+            <legend>Who’s in it?</legend>
+            <label><input type="radio" name="who" value="Both" checked /> Both of us</label>
+            <label><input type="radio" name="who" value="Ally" /> Ally</label>
+            <label><input type="radio" name="who" value="Mark" /> Mark</label>
+          </fieldset>
+          <label>
+            <span class="guest-form__label">The photo</span>
+            <input name="photo" type="file" accept="image/*" required />
+          </label>
+          <img class="guest-form__preview" alt="Preview of the chosen photo" hidden />
+          <label>
+            <span class="guest-form__label">A note <span class="opt">optional</span></span>
+            <textarea name="note" rows="3" maxlength="300"></textarea>
+          </label>
+          <input class="guest-form__hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <button class="btn-plate" type="submit">Send photo</button>
+          <p class="guest-form__status" role="status" aria-live="polite"></p>
+        </fieldset>
+      </form>
+    </GiltCard>
+  </CozyRoom>
+</Base>
+
+<script>
+  import { postGuest, prepareImage } from '../lib/guest-client';
+
+  const form = document.querySelector<HTMLFormElement>('[data-photo-form]');
+  const status = form?.querySelector<HTMLElement>('.guest-form__status');
+  const preview = form?.querySelector<HTMLImageElement>('.guest-form__preview');
+  const fileInput = form?.querySelector<HTMLInputElement>('input[name="photo"]');
+
+  fileInput?.addEventListener('change', () => {
+    const f = fileInput.files?.[0];
+    if (!f || !preview) return;
+    preview.src = URL.createObjectURL(f);
+    preview.hidden = false;
+  });
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity() || !status) return;
+    const fd = new FormData(form);
+    const file = fileInput?.files?.[0];
+    if (!file) return;
+    const button = form.querySelector('button');
+    button?.setAttribute('disabled', '');
+    status.textContent = 'Sending…';
+    try {
+      const img = await prepareImage(file);
+      await postGuest(form.dataset.endpoint!, {
+        action: 'photo',
+        name: fd.get('name'),
+        email: fd.get('email'),
+        who: fd.get('who'),
+        note: fd.get('note'),
+        hp: fd.get('website'),
+        ...img,
+      });
+      form.reset();
+      if (preview) preview.hidden = true;
+      status.textContent = 'Thank you! Your photo is on its way to us.';
+    } catch (err) {
+      status.textContent = (err as Error).message;
+    } finally {
+      button?.removeAttribute('disabled');
+    }
+  });
+</script>

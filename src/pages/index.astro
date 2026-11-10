@@ -1,91 +1,60 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroFrame from '../components/HeroFrame.astro';
 import ArchFrame from '../components/ArchFrame.astro';
-import Foliage from '../components/Foliage.astro';
 import Countdown from '../components/Countdown.astro';
-import IronworkDivider from '../components/IronworkDivider.astro';
+import CozyRoom from '../components/CozyRoom.astro';
+import Flourish from '../components/Flourish.astro';
 import { photo } from '../lib/photos';
 import { withBase } from '../lib/url';
-import { site } from '../config';
+import { guestLinks, site } from '../config';
 
 const cards = [
-  {
-    href: '/our-story/',
-    kicker: 'Our Story',
-    title: 'Under the tall trees',
-    text: 'How a spring walk turned into a question.',
-    cta: 'Read our story',
-    photo: photo('13'),
-  },
-  {
-    href: '/travel/',
-    kicker: 'Travel',
-    title: 'Getting to Athens',
-    text: 'How to get here, where to stay and what to do around town.',
-    cta: 'Plan your trip',
-    photo: photo('59'),
-  },
-  {
-    href: '/registry/',
-    kicker: 'Registry',
-    title: 'Gifts & giving',
-    text: `Our registry opens in ${site.registryOpens}.`,
-    cta: 'Take a look',
-    photo: photo('61'),
-  },
+  { href: '/our-story/', kicker: 'Our Story', title: 'The question', photo: photo('20'), cta: 'Read it' },
+  { href: '/travel/', kicker: 'Travel', title: 'Getting to Athens', photo: photo('62'), cta: 'Plan your trip' },
+  { href: '/registry/', kicker: 'Registry', title: 'Gifts & giving', photo: photo('40'), cta: 'Take a look' },
 ];
 ---
 
 <Base>
-  <section class="hero">
-    <div class="hero__glow" aria-hidden="true"></div>
+  <CozyRoom
+    class="hero"
+    glow="70% 42%"
+    fireflies={[
+      [52, 14, 3.6, 0],
+      [61, 30, 5.1, 1.2],
+      [94, 22, 4.4, 0.6],
+      [88, 58, 3.9, 2.1],
+      [57, 72, 4.8, 0.3],
+      [96, 82, 5.4, 1.7],
+      [46, 46, 4.2, 2.6],
+      [72, 6, 4.6, 1],
+      [8, 88, 5, 0.8],
+      [36, 8, 4.1, 1.9],
+    ]}
+  >
     <div class="container hero__grid">
-      <div class="hero__visual">
-        <Foliage kind="palm-a" tone="fern" flip class="hero__palm" style="--sway-from:-1deg; --sway-to:1.6deg;" />
-        <Foliage kind="ivy-a" class="hero__ivy" style="--sway-duration:9s; --sway-delay:-2s;" />
-        <ArchFrame
-          photo={photo('56')}
-          panes={1}
-          priority
-          sizes="(min-width: 64rem) 30rem, 88vw"
-          alt="Ally and Mark laughing together beneath a flowering tree in full bloom"
-          class="hero__arch"
-        />
-        <Foliage kind="fern-b" class="hero__fern" style="--sway-delay:-4s;" />
-        <Foliage kind="monstera-a" tone="fern" class="hero__monstera" style="--sway-duration:8s; --sway-delay:-1s;" />
+      <div class="hero__art">
+        <HeroFrame photo={photo('35')} />
       </div>
 
       <div class="hero__text">
-        <p class="kicker">Save the date</p>
+        <p class="hero__eyebrow">Save the date</p>
         <h1 class="hero__names">
           <span>Ally</span>
-          <span class="amp">&amp;</span>
+          <span class="hero__amp">&amp;</span>
           <span>Mark</span>
         </h1>
+        <Flourish class="hero__flourish" />
         <p class="hero__date">{site.dateKicker}</p>
         <p class="hero__venue">{site.venue}<br />{site.city}</p>
-        <Countdown />
+        <div class="hero__plate"><Countdown variant="plain" /></div>
         <p class="hero__note">Formal invitation to follow</p>
       </div>
     </div>
-  </section>
+  </CozyRoom>
 
-  <section class="section welcome">
-    <div class="container prose center reveal">
-      <IronworkDivider />
-      <h2>We’re getting married under glass</h2>
-      <p>
-        Next spring we’ll say “I do” in the conservatory at the State Botanical Garden of Georgia, and we would love for
-        you to be there. Formal invitations will follow in {site.invitationsSend}.
-      </p>
-      <p>
-        Until then, this little glasshouse is where you’ll find our story, travel tips for Athens and, soon, our
-        registry.
-      </p>
-    </div>
-  </section>
-
-  <section class="cards-section" aria-label="Explore">
+  <section class="section cards-section" aria-label="Explore">
     <div class="container cards">
       {
         cards.map((c) => (
@@ -98,7 +67,6 @@ const cards = [
                   {c.title}
                 </a>
               </h3>
-              <p>{c.text}</p>
               <span class="arrow-link" aria-hidden="true">
                 {c.cta}
               </span>
@@ -109,145 +77,178 @@ const cards = [
     </div>
   </section>
 
-  <section class="section guests band-dark">
-    <Foliage kind="fern-a" tone="fern" class="guests__fern" style="--sway-delay:-2s;" />
-    <div class="container guests__inner reveal">
-      <p class="kicker">For invited guests</p>
-      <h2>The details live inside the glasshouse</h2>
-      <p>
-        The schedule, a map of the garden and the RSVP open here when invitations go out in {site.invitationsSend}. Your
-        invitation will include the password.
-      </p>
-      <a class="btn btn--ghost" href={withBase('/details/')}>Details &amp; RSVP</a>
+  <CozyRoom
+    class="join"
+    label="Join in"
+    flora="small"
+    fireflies={[
+      [30, 20, 4.4, 0.5],
+      [70, 78, 5, 1.4],
+      [62, 14, 4, 2.2],
+      [22, 70, 4.8, 1.1],
+      [80, 30, 4.2, 0.2],
+    ]}
+  >
+    <div class="join__inner">
+      <h2 class="join__title">Join in</h2>
+      <Flourish class="join__flourish" />
+      <div class="join__links">
+        {
+          guestLinks.map((l) => (
+            <a class="btn-plate" href={withBase(l.href)}>
+              {l.label}
+            </a>
+          ))
+        }
+      </div>
     </div>
-  </section>
+  </CozyRoom>
 </Base>
 
 <style>
-  /* ---------- hero ---------- */
+  /* ---------- hero: cozy maximalist (room, border and fireflies come from CozyRoom) ---------- */
   .hero {
-    position: relative;
-    overflow: hidden;
-    padding-block: clamp(2rem, 5vw, 4rem) clamp(3rem, 7vw, 5rem);
-  }
-  .hero__glow {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(52% 58% at 72% 42%, rgb(220 199 158 / 0.5), transparent 72%);
-    pointer-events: none;
+    --room-pad: clamp(1.5rem, 4vw, 3.5rem) clamp(2.5rem, 6vw, 4.5rem);
   }
   .hero__grid {
     position: relative;
+    z-index: 2;
     display: grid;
-    gap: clamp(2.5rem, 6vw, 4rem);
+    gap: clamp(1.5rem, 4vw, 3rem);
     align-items: center;
   }
-  .hero__visual {
-    position: relative;
-    width: min(100%, 27rem);
+  .hero__art {
+    width: min(100%, 40rem);
     margin-inline: auto;
-    padding-top: 6%;
   }
-  .hero__visual :global(.hero__arch) {
-    z-index: 1;
-    filter: drop-shadow(0 26px 36px rgb(30 58 43 / 0.25));
-  }
-  .hero__visual :global(.hero__palm) {
-    width: 118%;
-    left: 31%;
-    top: -9%;
-    opacity: 0.92;
-  }
-  .hero__visual :global(.hero__ivy) {
-    width: 17%;
-    left: -15%;
-    top: 14%;
-  }
-  .hero__visual :global(.hero__fern) {
-    width: 48%;
-    left: -25%;
-    bottom: -7%;
-  }
-  .hero__visual :global(.hero__monstera) {
-    width: 48%;
-    right: -33%;
-    bottom: -11%;
-  }
-
   .hero__text {
     display: grid;
     justify-items: center;
-    gap: 0.9rem;
+    gap: 0.7rem;
     text-align: center;
+  }
+  .hero__eyebrow {
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: 1.35rem;
+    letter-spacing: 0.32em;
+    color: #e0a84f;
   }
   .hero__names {
     display: grid;
     justify-items: center;
-    font-size: clamp(4rem, 2.6rem + 7vw, 7.4rem);
-    font-style: italic;
+    padding: 0.12em 0.45em 0.32em;
+    font-family: 'Ballet', 'Pinyon Script', cursive;
     font-weight: 400;
-    line-height: 0.92;
-    letter-spacing: -0.01em;
+    font-size: clamp(4.6rem, 2.6rem + 7.5vw, 9.2rem);
+    line-height: 1.02;
+    background: linear-gradient(172deg, #fff0bf 6%, #d9ab4e 38%, #f7dc90 56%, #a8772a 86%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 1px rgb(0 0 0 / 0.45));
   }
-  .hero__names .amp {
-    font-size: 0.55em;
-    line-height: 1.1;
+  .hero__amp {
+    font-size: 0.58em;
+    line-height: 0.95;
+  }
+  .hero__text :global(.hero__flourish) {
+    width: min(19rem, 80%);
+    color: #d9ab4e;
+    margin-top: -1.4rem;
   }
   .hero__date {
-    font-family: var(--font-display);
+    font-family: 'Playfair Display Variable', Georgia, serif;
     font-weight: 600;
-    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem);
+    font-size: clamp(1.15rem, 0.95rem + 0.8vw, 1.55rem);
     letter-spacing: 0.24em;
     text-transform: uppercase;
     font-variant-numeric: lining-nums;
-    color: var(--green-900);
+    color: #f6ead0;
   }
   .hero__venue {
-    font-family: var(--font-display);
-    font-size: 1.35rem;
+    font-family: 'EB Garamond Variable', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.3rem, 1.15rem + 0.5vw, 1.6rem);
     line-height: 1.35;
-    color: var(--walnut-700);
+    color: #e8d9b6;
+  }
+  .hero__plate {
+    margin-top: 0.4rem;
+    padding: 0.7rem 1.6rem 0.8rem;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #7a2637, #561826);
+    box-shadow:
+      0 0 0 2px #c79d40,
+      0 0 0 6px #561826,
+      0 0 0 7.5px #e9cf85,
+      0 14px 30px -12px rgb(0 0 0 / 0.75);
+    font-family: 'IM Fell English SC', Georgia, serif;
+    font-size: clamp(1.2rem, 1.05rem + 0.45vw, 1.42rem);
+    letter-spacing: 0.05em;
+    color: #f8ead0;
+  }
+  .hero__plate :global(strong) {
+    font-family: 'Playfair Display Variable', Georgia, serif;
+    font-weight: 700;
+    font-size: 1.55em;
+    color: #f2d27e;
+    margin-right: 0.15em;
+    font-variant-numeric: lining-nums;
   }
   .hero__note {
-    font-family: var(--font-display);
+    margin-top: 0.3rem;
+    font-family: 'Playfair Display Variable', Georgia, serif;
     font-style: italic;
-    font-size: 1.25rem;
-    color: var(--walnut-700);
+    font-size: 1.3rem;
+    color: #e0a84f;
   }
-
   @media (min-width: 64rem) {
     .hero__grid {
-      grid-template-columns: 1.05fr 1fr;
+      grid-template-columns: 0.9fr 1.2fr;
     }
-    .hero__visual {
+    .hero__art {
       order: 2;
-      width: min(100%, 30rem);
-    }
-    .hero__text {
-      order: 1;
     }
   }
 
-  /* ---------- welcome ---------- */
-  .welcome {
-    padding-top: clamp(1rem, 4vw, 3rem);
+  /* ---------- join in ---------- */
+  .join {
+    --room-pad: clamp(3rem, 7vw, 4.5rem);
   }
-  .welcome .prose {
+  .join__inner {
     display: grid;
-    gap: 1.1rem;
     justify-items: center;
+    gap: 1.6rem;
+    text-align: center;
   }
-  .welcome h2 {
-    font-size: var(--step-4);
+  .join__title {
+    padding: 0.05em 0.4em 0.2em;
+    font-family: 'Ballet', 'Playfair Display Variable', cursive;
+    font-weight: 400;
+    font-size: clamp(3.2rem, 2.2rem + 4vw, 5rem);
+    line-height: 1.1;
+    background: linear-gradient(172deg, #fff0bf 6%, #d9ab4e 38%, #f7dc90 56%, #a8772a 86%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 1px rgb(0 0 0 / 0.45));
   }
-  .welcome p {
-    font-size: 1.2rem;
+  .join__inner :global(.join__flourish) {
+    width: min(15rem, 66%);
+    margin-top: -1.9rem;
+    color: #d9ab4e;
+  }
+  .join__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.6rem 2rem;
+  }
+  .join__links .btn-plate {
+    min-width: 15rem;
   }
 
   /* ---------- cards ---------- */
-  .cards-section {
-    padding-bottom: clamp(3.5rem, 8vw, 6rem);
-  }
   .cards {
     display: grid;
     gap: clamp(1.25rem, 3vw, 2rem);
@@ -255,19 +256,12 @@ const cards = [
   }
   .card {
     display: grid;
-    gap: 1.1rem;
-    padding: 1.1rem 1.1rem 1.5rem;
-    transition:
-      transform 300ms var(--ease),
-      box-shadow 300ms var(--ease);
-  }
-  .card:hover {
-    transform: translateY(-4px);
+    gap: 1rem;
+    padding: 1.1rem 1.1rem 1.4rem;
   }
   .card__body {
     display: grid;
-    gap: 0.45rem;
-    padding-inline: 0.4rem;
+    gap: 0.35rem;
     text-align: center;
   }
   .card h3 {
@@ -282,45 +276,8 @@ const cards = [
     position: absolute;
     inset: 0;
     z-index: 3;
-    border-radius: var(--radius);
-  }
-  .card__link:focus-visible {
-    outline: none;
-  }
-  .card__link:focus-visible::after {
-    outline: 2px solid var(--brass-500);
-    outline-offset: 4px;
   }
   .card .arrow-link {
     color: var(--green-700);
-    margin-top: 0.3rem;
-  }
-
-  /* ---------- invited guests ---------- */
-  .guests {
-    position: relative;
-    overflow: hidden;
-    margin-bottom: calc(-1 * clamp(3rem, 8vw, 6rem));
-  }
-  .guests__inner {
-    position: relative;
-    z-index: 3;
-    display: grid;
-    justify-items: center;
-    gap: 1rem;
-    max-width: 40rem;
-    text-align: center;
-  }
-  .guests h2 {
-    font-size: var(--step-4);
-  }
-  .guests p {
-    color: var(--glass-100);
-  }
-  .guests :global(.guests__fern) {
-    width: clamp(9rem, 22vw, 17rem);
-    left: -3rem;
-    bottom: -2rem;
-    opacity: 0.45;
   }
 </style>

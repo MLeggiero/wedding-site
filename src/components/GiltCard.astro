@@ -1,0 +1,83 @@
+---
+// A cream card-stock panel in a double gilt frame, with native sprigs tucked
+// over each corner. Holds forms and short notes inside a CozyRoom.
+import Flora from './Flora.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+---
+
+<div class:list={['gilt-card', cls]}>
+  <div class="gilt-card__sprigs" aria-hidden="true">
+    <Flora name="sprig-magnolia" eager class="gilt-card__sprig gilt-card__sprig--tl" />
+    <Flora name="sprig-jessamine" eager class="gilt-card__sprig gilt-card__sprig--tr" />
+    <Flora name="sprig-fern" class="gilt-card__sprig gilt-card__sprig--bl" />
+    <Flora name="sprig-azalea" class="gilt-card__sprig gilt-card__sprig--br" />
+  </div>
+  <div class="gilt-card__body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .gilt-card {
+    position: relative;
+    width: min(100% - 2 * max(var(--gutter), 1.75rem), 40rem);
+    margin-inline: auto;
+    border-radius: 3px;
+    background:
+      radial-gradient(ellipse at 50% 35%, rgb(255 251 240 / 0.9), transparent 70%),
+      linear-gradient(180deg, #f8efdc, #f1e3c4);
+    color: #1d2a20;
+    box-shadow:
+      0 0 0 2px #c79d40,
+      0 0 0 7px #18301f,
+      0 0 0 8.5px #e9cf85,
+      0 30px 60px -18px rgb(0 0 0 / 0.75);
+  }
+  .gilt-card::before {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgb(168 130 58 / 0.75);
+    outline: 1px solid rgb(168 130 58 / 0.35);
+    outline-offset: 3px;
+    pointer-events: none;
+  }
+  .gilt-card__body {
+    position: relative;
+    z-index: 1;
+    padding: clamp(2.6rem, 6vw, 3.4rem) clamp(1.5rem, 5vw, 3.2rem) clamp(2.4rem, 5vw, 3rem);
+  }
+  .gilt-card__sprigs {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .gilt-card :global(.gilt-card__sprig) {
+    --flora-w: clamp(168px, 19vw, 270px);
+  }
+  .gilt-card :global(.gilt-card__sprig--tl) {
+    left: 0;
+    top: 0;
+    translate: -50% -50%;
+  }
+  .gilt-card :global(.gilt-card__sprig--tr) {
+    right: 0;
+    top: 0;
+    translate: 50% -50%;
+  }
+  .gilt-card :global(.gilt-card__sprig--bl) {
+    left: 0;
+    bottom: 0;
+    translate: -50% 50%;
+  }
+  .gilt-card :global(.gilt-card__sprig--br) {
+    right: 0;
+    bottom: 0;
+    translate: 50% 50%;
+  }
+</style>

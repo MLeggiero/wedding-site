@@ -1,0 +1,78 @@
+---
+// The hero "frame": a gilded arch holding a photo, wreathed in plants native to
+// the southeastern US. Three stacked layers share one 1000×1300 coordinate
+// system (lib/hero-art.ts): plants behind → the photo (HTML, responsive) →
+// gilt frame + plants in front. The two art layers are cached SVG files.
+import Photo from './Photo.astro';
+import type { Photo as PhotoT } from '../lib/photos';
+import { HERO_BOX as VB, HERO_WINDOW as W } from '../lib/hero-art';
+import { artUrl, artView, type ArtName } from '../lib/art';
+
+interface Props {
+  photo: PhotoT;
+  alt?: string;
+  sizes?: string;
+}
+const { photo, alt, sizes = '(min-width: 64rem) 34rem, 92vw' } = Astro.props;
+
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const winStyle = [
+  `left:${pct(W.left, VB.w)}`,
+  `top:${pct(W.top, VB.h)}`,
+  `width:${pct(W.right - W.left, VB.w)}`,
+  `height:${pct(W.bottom - W.top, VB.h)}`,
+  `--ry:${pct(W.r, W.bottom - W.top)}`,
+].join(';');
+// each art file covers a little more than the drawing; place it to line up
+const layerStyle = (name: ArtName) => {
+  const [x, y, w, h] = artView(name);
+  return `left:${pct(x, VB.w)};top:${pct(y, VB.h)};width:${pct(w, VB.w)};height:${pct(h, VB.h)}`;
+};
+---
+
+<figure class="hf">
+  <img class="hf__layer" src={artUrl('hero-back')} alt="" style={layerStyle('hero-back')} decoding="async" />
+  <div class="hf__window" style={winStyle}>
+    <Photo photo={photo} alt={alt} sizes={sizes} priority widths={[600, 900, 1200, 1600]} />
+    <span class="hf__glow" aria-hidden="true"></span>
+  </div>
+  <img class="hf__layer" src={artUrl('hero-front')} alt="" style={layerStyle('hero-front')} decoding="async" />
+</figure>
+
+<style>
+  .hf {
+    position: relative;
+    aspect-ratio: 1000 / 1300;
+    margin: 0;
+  }
+  .hf__layer {
+    position: absolute;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+  }
+  .hf__window {
+    position: absolute;
+    overflow: hidden;
+    border-radius: 50% 50% 0 0 / var(--ry) var(--ry) 0 0;
+    background: #2a3a2c;
+  }
+  .hf__window :global(picture),
+  .hf__window :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .hf__window :global(img) {
+    object-fit: cover;
+    object-position: var(--focus);
+  }
+  .hf__glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgb(255 236 190 / 0.18), transparent 55%),
+      linear-gradient(180deg, transparent 70%, rgb(24 48 31 / 0.35));
+    mix-blend-mode: soft-light;
+    box-shadow: inset 0 0 40px 6px rgb(16 30 20 / 0.55);
+  }
+</style>

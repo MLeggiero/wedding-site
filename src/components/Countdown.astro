@@ -4,6 +4,12 @@
 import { site } from '../config';
 import PlantTag from './PlantTag.astro';
 
+interface Props {
+  /** 'tag' = brass plant tag (default); 'plain' = just the text, for custom frames */
+  variant?: 'tag' | 'plain';
+}
+const { variant = 'tag' } = Astro.props;
+
 function daysUntil(now: Date): number {
   const today = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/New_York',
@@ -16,23 +22,39 @@ function daysUntil(now: Date): number {
 const days = daysUntil(new Date());
 ---
 
-<PlantTag class="countdown">
-  <span data-countdown data-date={site.date}>
-    {
-      days > 1 ? (
+{
+  variant === 'plain' ? (
+    <span class="countdown" data-countdown data-date={site.date}>
+      {days > 1 ? (
         <>
-          <strong>{days}</strong> days until we’re married under glass
+          <strong>{days}</strong> days until “I do”
         </>
       ) : days === 1 ? (
-        'Tomorrow, we’re married under glass'
+        'Tomorrow, we say “I do”'
       ) : days === 0 ? (
-        'Today, we’re married under glass'
+        'Today, we say “I do”'
       ) : (
-        'Married under glass · April 24, 2027'
-      )
-    }
-  </span>
-</PlantTag>
+        'Married April 24, 2027'
+      )}
+    </span>
+  ) : (
+    <PlantTag class="countdown">
+      <span data-countdown data-date={site.date}>
+        {days > 1 ? (
+          <>
+            <strong>{days}</strong> days until “I do”
+          </>
+        ) : days === 1 ? (
+          'Tomorrow, we say “I do”'
+        ) : days === 0 ? (
+          'Today, we say “I do”'
+        ) : (
+          'Married April 24, 2027'
+        )}
+      </span>
+    </PlantTag>
+  )
+}
 
 <script>
   for (const el of document.querySelectorAll<HTMLElement>('[data-countdown]')) {
@@ -44,10 +66,10 @@ const days = daysUntil(new Date());
       day: '2-digit',
     }).format(new Date());
     const days = Math.round((Date.parse(`${target}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86_400_000);
-    if (days > 1) el.innerHTML = `<strong>${days}</strong> days until we’re married under glass`;
-    else if (days === 1) el.textContent = 'Tomorrow, we’re married under glass';
-    else if (days === 0) el.textContent = 'Today, we’re married under glass';
-    else el.textContent = 'Married under glass · April 24, 2027';
+    if (days > 1) el.innerHTML = `<strong>${days}</strong> days until “I do”`;
+    else if (days === 1) el.textContent = 'Tomorrow, we say “I do”';
+    else if (days === 0) el.textContent = 'Today, we say “I do”';
+    else el.textContent = 'Married April 24, 2027';
   }
 </script>
 

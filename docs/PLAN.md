@@ -2,8 +2,8 @@
 
 **"The Glasshouse"** · Saturday, April 24, 2027 · State Botanical Garden of Georgia, Athens
 
-> Status: plan, written 2026-11-10, with every decision below confirmed in Q&A.
-> This repository is **public**. Event logistics, guest data, budgets and passwords must never be committed here. §6 explains where they live instead.
+> Status: plan, written 2026-11-10, with every decision below confirmed in Q&A. Updated the same day to simplify security.
+> A **GitHub Pages** site published straight from this repo. Security isn't a goal (it's a wedding website). Everything lives here except RSVP answers and the guest list, which stay in a Google Sheet.
 
 ---
 
@@ -14,16 +14,16 @@
 | Concept | **Victorian Glasshouse**: lush, airy, romantic. Dark greens, sandstone, brass, walnut. Museum touches are limited to brass plant labels. |
 | Names | **Ally & Mark**, with an **A & M** monogram |
 | Address | `https://mleggiero.github.io/wedding-site/`, shared as a link and a QR code |
-| Hosting | GitHub Pages, built and deployed by GitHub Actions |
+| Hosting | **GitHub Pages**, published from this repo by GitHub's standard Pages workflow on every push |
 | Framework | Astro (static output) with two small React islands |
-| Privacy | **Public:** home, story, photos, travel and field guide, FAQ, registry. **Password:** schedule, garden map and parking, hotel-block details, RSVP |
-| Password mechanism | StatiCrypt encrypts at build time (AES-256, 600k PBKDF2). The protected source lives in a **private** repo. |
+| Privacy | Simple, not secure. **Public:** home, story, photos, travel and field guide, FAQ, registry. **Behind a courtesy password prompt:** schedule, garden map and parking, hotel-block details, RSVP |
+| Password mechanism | A browser-side prompt, not encryption. The invitation QR unlocks it automatically, and one setting turns it off. |
 | RSVP | Custom form → Google Apps Script → Google Sheet |
 | Items and cash funds | **Zola** is the system of record: items from any store, plus cash funds with the 2.5% fee absorbed by us. The site shows a themed gallery that links out to Zola. |
 | Charities | Every.org donate pop-up on our own page, for **Kiwimbi International** and **Chattahoochee Riverkeeper** |
 | Extra feature | Athens field guide and illustrated garden map |
 | Secret page | **"After Hours"** (§10), a 3D night glasshouse that doubles as a robot registry:<br>• **Door:** a brass duck hidden in the footer<br>• **Residents:** Microduck, Open Duck Mini v2, and the reBot Arm B601-DM with its leader arm<br>• **Motion:** animated robots, plus a live-physics Microduck you can steer<br>• **Gifts:** store links with an "I'm getting this" claim, plus Venmo/PayPal chip-in |
-| Editing | Markdown/YAML files in the repo; protected copy lives in the private repo |
+| Editing | Markdown/YAML files in this repo. Edits made in GitHub's web editor publish automatically. |
 | Timeline | The QR code exists on day 1; v1 goes live within ~2 weeks so save-the-dates can go out |
 
 ## 2. Goals and principles
@@ -31,7 +31,7 @@
 1. **It should feel like stepping into a sunlit Victorian glasshouse:** classy, never kitschy.
 2. **Phone-first and kind to older guests:** 18px+ body text, 44px tap targets, and no gate in front of public pages.
 3. **Fast.** Public pages ship almost no JavaScript, and the 3D room only loads when someone opens it.
-4. **Private by design.** The repo is public, details are encrypted, and guest data lives only in Google Sheets.
+4. **Simple over secure.** It's a wedding website. Everything lives in this repo; only RSVP answers and the guest list live in a Google Sheet.
 5. **Low maintenance:** YAML/Markdown content, no servers to babysit, and one nightly rebuild.
 
 ---
@@ -210,45 +210,20 @@ A playful photo (ColorGraded-07) and the line "You've wandered off the path." wi
 
 ---
 
-## 6. Privacy and the password gate
+## 6. The details password (a courtesy, not security)
 
-**The problem.** Two constraints rule out the obvious approaches:
-- GitHub Pages is static and this repo is public, so plaintext details can't be committed.
-- A JavaScript-only password check would still ship every detail in the page source.
+It's a wedding website, so the goal is convenience, not secrecy. Everything, the details included, lives in this public repo.
 
-**The solution:**
+- **How it works.** The Details and RSVP pages open with a friendly glasshouse-door prompt: "The password is on your invitation."
+  - The check happens in the browser and simply reveals the page.
+  - It keeps casual visitors out of the schedule. Anyone who views the page source can still read it, and that's fine.
+- **Typed once.** After the first correct entry, the browser remembers it.
+- **The QR unlocks it.** The invitation QR points to `…/details/?key=<password>`, which unlocks and remembers in one step. The password is also printed for anyone typing the address.
+- **One setting.** `detailsPassword` lives in `src/config.ts`. Set it to an empty string and the prompt disappears.
+- **Kept out of Google.** A `noindex` tag on every page keeps the site out of search results. It's one line.
+- **The one thing not in the repo: your guest list.** It stays in the Google Sheet, and the RSVP lookup returns only the household that was searched for. This isn't about security; it just avoids publishing everyone's names, at no extra cost.
 
-1. **Private content repo.** Protected Markdown lives in `MLeggiero/wedding-site-private`:
-   - `details.md`
-   - `map.md`
-   - `stay.yaml`
-   - RSVP config
-
-   You edit it on GitHub's web editor exactly like this repo.
-2. **Build, then encrypt.** The deploy workflow runs these steps:
-   - Check out the private repo into `private/` using a read-only fine-grained token (`PRIVATE_CONTENT_TOKEN`).
-   - Run `astro build`.
-   - Encrypt every protected page:
-     ```sh
-     npx staticrypt dist/details -r -d dist/details \
-       --template src/staticrypt/glasshouse.html --remember 90
-     ```
-     The password comes from the `SITE_PASSWORD` Actions secret.
-   - A fixed, non-secret salt in `.staticrypt.json` means one unlock carries across every protected page.
-3. **Themed password page.** It is styled as a glasshouse door: "Enter the password from your invitation."
-4. **QR code that unlocks.** The invitation QR uses StatiCrypt's share link (`/details/#staticrypt_pwd=…&remember_me`), so scanning it unlocks automatically. The typed password is printed too, for anyone typing the URL.
-5. **Safety nets:**
-   - Private content contains a canary string. CI **fails** if that string appears anywhere in `dist/` after encryption.
-   - `private/` is gitignored.
-   - Local builds without access use placeholder content.
-6. **General hygiene:**
-   - `noindex, nofollow` on every page. Project sites can't use a root `robots.txt`.
-   - No third-party trackers.
-   - EXIF/GPS stripped from all photos.
-   - No guest data anywhere in the repo.
-7. **Password:** a 3-word passphrase, easy to type and hard to brute-force.
-
-Public on purpose: the date, the venue name and city (already on the save-the-dates), the story, the photos and the registry.
+**Behind the prompt:** schedule, garden map, hotel-block codes, RSVP. **Public:** everything else.
 
 ---
 
@@ -281,19 +256,17 @@ Households and Guests are imported once from the existing guest list after it's 
 
 ### Backend
 
-A Google Apps Script web app bound to that Sheet. The source lives in `apps-script/` and is deployed with `clasp`.
+A Google Apps Script web app attached to that Sheet. It's free and needs no server. The source lives in `apps-script/`; deploy it with `clasp` or paste it into the Apps Script editor.
 
 - **Endpoints:**
-  - `doGet`: lookup. Returns **only** the matched household.
-  - `doPost`: upsert under `LockService`, then a `MailApp` confirmation email.
-- **Auth and settings.** Every request carries an RSVP key that is injected into the *encrypted* page at build time. The key and the deadline live in Script Properties, never in the repo.
-- **Robustness:**
-  - A `text/plain` POST avoids the CORS preflight.
-  - A honeypot field catches bots.
-  - A per-household rate limit runs through `CacheService`.
-  - Apps Script quotas are far above what a wedding needs.
-- **Email sender.** Confirmation emails come from whichever of you deploys the script.
-- **Fallback.** A "Having trouble? Email us" link is always visible.
+  - `doGet`: looks up a name and returns that household.
+  - `doPost`: saves the answers, with a lock so simultaneous RSVPs don't collide, then sends a confirmation email.
+- **Spam:** a hidden honeypot field keeps bots out.
+- **Deadline:** a Script Property you can change anytime.
+- **Endpoint URL:** lives in `src/config.ts`. It's fine for it to be public.
+- **Talking to GitHub Pages:** requests go out as `text/plain`, so Apps Script accepts them without CORS trouble.
+- **Email sender:** confirmation emails come from whichever of you deploys the script.
+- **Fallback:** a "Having trouble? Email us" link is always visible.
 
 ---
 
@@ -439,10 +412,11 @@ Tapping a robot slides up a brass-framed plant-tag panel with:
 
 - **Store links.** Each item links directly to Seeed, Pollen, RobotShop and so on.
   - Prefer US-warehouse listings. The US de minimis duty exemption has been suspended since August 2025, so parts shipped from China can carry duties.
-- **Claims.** "I'm getting this" calls the RSVP Apps Script's `claim` action, which appends a row to a `RobotClaims` tab.
-  - **What's recorded:** item id, time, and an optional name and email.
-  - **What the room shows:** on load it fetches only claimed ids, then marks those items "Claimed ✓".
-  - **Protection.** The room is public, so this endpoint carries no RSVP key. Instead it accepts known item ids only, uses a honeypot and a rate limit, and emails you on each claim. Un-claiming is done by hand in the Sheet.
+- **Claims.** "I'm getting this" calls the same Apps Script (a `claim` action), which adds a row to the `RobotClaims` tab.
+  - **What's recorded:** the item, the time, and an optional name and email.
+  - **What the room shows:** claimed items are marked "Claimed ✓".
+  - **Mistakes or pranks:** delete the row in the Sheet.
+  - **Optional:** an email to you on each claim.
 - **Chip-in links:**
   - Venmo: `venmo.com/<handle>?txn=pay&amount=<n>&note=<robot>%20fund`
   - PayPal: `paypal.me/<handle>/<n>USD`
@@ -556,12 +530,11 @@ From the 62 color-graded engagement photos:
 
 ### Pipeline
 
-1. **Download the originals.** Pull the chosen originals from the shared Drive folder. Originals are never committed.
+1. **Download the originals.** Pull the chosen originals from the shared Drive folder. They stay in Drive, since at 10–26 MB each they're too big for git.
 2. **Create masters.** `scripts/prepare-photos.mjs` uses sharp to make 2560px long-edge masters at quality 82 with metadata stripped, saved to `src/assets/photos/`. That's about 25 MB, committed.
 3. **Responsive images.** Astro's `<Picture>` generates AVIF, WebP and JPEG at 480–2400w with lazy-loading. The hero is preloaded at roughly 150–250 KB AVIF.
 4. **Art direction.** Desktop and mobile get separate hero crops; focal points are stored in data.
 5. **Credit.** The photographer is credited in the footer. Confirm the wording and permission.
-6. **Keep Drive IDs private.** File IDs stay out of this public repo, because they would expose all 62 full-resolution originals.
 
 ---
 
@@ -582,6 +555,7 @@ From the 62 color-graded engagement photos:
 wedding-site/
 ├── astro.config.mjs        site: https://mleggiero.github.io · base: /wedding-site
 ├── src/
+│   ├── config.ts           details password, RSVP URL, Zola link, Venmo/PayPal handles
 │   ├── assets/photos/      web-ready masters (committed)
 │   ├── assets/botanicals/  SVG foliage, ironwork, monogram
 │   ├── components/         ArchFrame, GlassPanel, PlantTag, FoliageLayer, FundCard, …
@@ -589,25 +563,21 @@ wedding-site/
 │   ├── islands/            RsvpApp.tsx, RobotRoom/*
 │   ├── layouts/            Base.astro, Protected.astro
 │   ├── pages/              index, our-story, travel, registry, faq, details/*, after-hours, 404
-│   ├── staticrypt/         glasshouse.html (password-page template)
 │   └── styles/             tokens.css, global.css
 ├── public/models/          compressed robot GLBs
-├── apps-script/            RSVP backend (Code.gs, appsscript.json); no secrets
-├── scripts/                prepare-photos, make-qr, build-robots, check-protected
-├── private/                gitignored; the private repo is checked out here in CI
+├── apps-script/            RSVP + robot-claim backend (Code.gs, appsscript.json)
+├── scripts/                prepare-photos, make-qr, build-robots
 ├── tests/                  Playwright
 └── .github/workflows/      deploy.yml (push + nightly), links.yml (weekly)
 ```
 
-## 13. Deploy and secrets
+## 13. Deploy (GitHub Pages)
 
-- **Pages source.** GitHub Pages is set to "GitHub Actions". The site deploys on every push to `main` and on a nightly cron.
-- **Actions secrets:**
-  - `SITE_PASSWORD`
-  - `PRIVATE_CONTENT_TOKEN`
-  - `RSVP_ENDPOINT`
-  - `RSVP_KEY`
-  - the Every.org public API key
+- **One-time setup:** in the repo, go to Settings → Pages → Source and choose **GitHub Actions**.
+- **Workflow:** Astro's official GitHub Pages workflow, one small YAML file.
+  - Every push to `main` rebuilds and publishes the site in about two minutes. That includes edits made in GitHub's web editor.
+  - A nightly run refreshes the Every.org totals.
+- **No secrets to manage.** The Apps Script URL, the Zola link and the Every.org public key all live in `src/config.ts`.
 - **URL stability.** Printed QR codes are permanent, so never rename this repo or the GitHub account. If you add a custom domain later, GitHub redirects the `github.io` address automatically.
 
 ## 14. Accessibility, performance, sharing
@@ -654,14 +624,14 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [ ] Registry teaser
 - [ ] Photo pipeline and the first ~30 photos
 - [ ] `noindex`, Open Graph, favicon/monogram, 404
-- [ ] GitHub Actions deploy; private-repo checkout and StatiCrypt wired up (placeholder `/details/`)
+- [ ] GitHub Pages deploy workflow, and the details password prompt (on a placeholder `/details/`)
 - [ ] Print-ready QR files
 
 ## 16. What we need from you two
 
 - **Our Story:** how you met, the proposal (where and when), and 2–4 milestones.
 - **Photo picks:** confirm or swap the picks in §11, plus the photographer credit wording.
-- **Travel:** hotel suggestions now. Block names, links, codes and cutoff dates later (these go in the private repo).
+- **Travel:** hotel suggestions now. Block names, links, codes and cutoff dates later.
 - **FAQ answers:** dress code, children, plus-ones, unplugged ceremony.
 - **Registry:**
   - Zola registry URL and fund list
@@ -671,7 +641,7 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
   - a sentence about why you love each robot
   - any parts you already own (to leave off the list)
   - your Venmo and PayPal.me handles for chip-ins
-- **The site password:** a 3-word passphrase.
+- **The details password:** any easy word, e.g. *greenhouse*. Or no password at all.
 - **A contact email** for guest questions.
 
 ## 17. Open items (non-blocking)

@@ -30,7 +30,7 @@ export const site = {
    * Google Apps Script web-app URL for guest photo uploads and song requests
    * (setup: apps-script/README.md). Until it's set, those forms say "opening soon".
    */
-  guestEndpoint: '',
+  guestEndpoint: 'https://script.google.com/macros/s/AKfycbxE41oUVWB28-4elEBQx9dPsSssTMD0rCp0W8QiNRe0rs3sIdBevpr6NLrpgUgZm8MQ/exec',
 
   /** Your Spotify playlist link (https://open.spotify.com/playlist/…), shown on the Songs page. */
   spotifyPlaylistUrl: '',

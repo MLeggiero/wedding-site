@@ -27,7 +27,12 @@ chipIn:
   suggested: [25, 50, 100]
   note: Microduck fund
 project:
-  label: Pollen Robotics
+  label: About Microduck
   url: https://pollen-robotics.com/microduck/blog/introducing-microduck/
-credit: Microduck is by Pollen Robotics and Hugging Face. Shown here as a stylized portrait.
+credit: Microduck is by Pollen Robotics and Hugging Face.
+model:
+  by: Pollen Robotics
+  license: CC BY-NC-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-nc-sa/4.0/
+  source: https://github.com/pollen-robotics/microduck_rl
 checked: 2026-11-10

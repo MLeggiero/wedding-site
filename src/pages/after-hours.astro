@@ -112,7 +112,14 @@ const checked = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', year
                 </div>
               )}
               <p class="ah-card__credit">
-                {d.credit} <a href={d.project.url} target="_blank" rel="noopener">{d.project.label}</a>. Prices checked {checked(d.checked)}.
+                {d.credit}{' '}
+                {d.model && (
+                  <>
+                    3D model: <a href={d.model.source} target="_blank" rel="noopener">{d.model.by}</a>,{' '}
+                    <a href={d.model.licenseUrl} target="_blank" rel="noopener">{d.model.license}</a>, simplified for the web.{' '}
+                  </>
+                )}
+                <a href={d.project.url} target="_blank" rel="noopener">{d.project.label}</a> · Prices checked {checked(d.checked)}.
               </p>
             </article>
           );

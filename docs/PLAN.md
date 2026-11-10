@@ -5,7 +5,7 @@
 > Status: plan, written 2026-11-10, with every decision below confirmed in Q&A. Updated the same day to simplify security.
 > **v1 built (2026-11-10):** Home, Our Story, Travel (with field guide), Registry teaser, FAQ, Details (courtesy-password placeholder) and 404, plus save-the-date QR files in `print/`. See the v1 checklist in §15.
 > **Direction revised (2026-11-10, from your feedback):** cozy *maximalist* Southern conservatory, plants native to the southeastern US only, four photos in all, short copy, fancier type. Guests can now send a favorite photo and request songs. §3 describes the new design system; the house rules (and the 100-point rubric every design must clear) live in `CLAUDE.md`. Every page now uses it.
-> **Robot room built (2026-11-10):** After Hours is live behind a brass duck on the Registry page (your request: that's the only way in). Built as stylized three.js portraits with a steerable Microduck. The official meshes and the live MuJoCo duck remain follow-ups; see §10.6.
+> **Robot room built (2026-11-10):** After Hours is live behind a brass duck on the Registry page (your request: that's the only way in). The robots are their makers' official 3D models, simplified and moving on their real joints, with a steerable Microduck. The live MuJoCo duck remains a follow-up; see §10.6.
 > A **GitHub Pages** site published straight from this repo. Security isn't a goal (it's a wedding website). Everything lives here except RSVP answers and the guest list, which stay in a Google Sheet.
 
 ---
@@ -443,9 +443,10 @@ Tapping a robot slides up a brass-framed plant-tag panel with:
 #### What's built (v1, Nov 10)
 
 - **Stack:** plain three.js 0.186 (no React), loaded only on `/after-hours/`. That's about 155 KB gzipped, plus the site's cached plant drawings.
-- **Robots:** stylized low-poly portraits built from simple shapes, with each robot's real proportions and joints, rather than the official meshes. That means no mesh pipeline and no license questions.
-  - The ducks walk the brick loop with a procedural waddle; the duckling follows its parent.
-  - The arm runs a small IK solver to repot a fern seedling between two pots, with the leader arm mirroring it.
+- **Robots:** the official models, converted by `scripts/robot-models.mjs` from each robot's MuJoCo description (MJCF + STL parts): parts merged per body and colour, simplified with meshoptimizer and compressed. That gives 134–148 KB per robot, each joint kept as a named node. Credits and licences are in `public/models/LICENSES.md` and on each gift card.
+  - The ducks start from their own standing poses (Microduck's `STAND` keyframe, Open Duck Mini's runtime pose). A small numeric leg solver walks them within their real joint limits: feet lift 2–3 cm, stay level, and the standing foot stays planted. The duckling follows its parent.
+  - The arm's solver works on the B601's real kinematics (base yaw, three pitch joints, wrist swing, gripper roll). It repots a fern seedling between two pots, gripper pointing down, and the stand-in leader arm mirrors it.
+  - If a model fails to load, that robot falls back to its stylized portrait.
 - **Scene:**
   - The night glasshouse: glazed iron bays with the moon behind them, lanterns, string lights and fireflies.
   - A brass armillary sphere stands in the middle of the loop.
@@ -666,7 +667,8 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [x] Restyle Our Story, Travel, Registry, FAQ, Details, 404, header and footer in the new direction (each graded 91–92)
 - [x] After Hours robot room (graded 92): stylized 3D robots, gift cards, claims, chip-in, steerable Microduck, list fallback
 - [ ] **You:** Venmo/PayPal handles for robot chip-ins (`venmoHandle`, `paypalHandle`)
-- [ ] Later: official robot meshes and the live MuJoCo Microduck (§10.6)
+- [x] Official robot models in the room, moving on their real joints
+- [ ] Later: the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two
 

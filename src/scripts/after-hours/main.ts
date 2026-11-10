@@ -4,7 +4,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { buildWorld, blobShadow, LAYOUT } from './world';
-import { buildDuck, poseDuck, buildArm, armIK, setArm, type Duck } from './robots';
+import { buildDuck, poseDuck, buildArm, armIK, setArm } from './robots';
+import { loadRealRobots } from './real';
 import { initUI, type RobotId } from './ui';
 
 const root = document.querySelector<HTMLElement>('[data-after-hours]')!;
@@ -47,7 +48,11 @@ async function start() {
   stage.prepend(renderer.domElement);
   renderer.domElement.setAttribute('aria-hidden', 'true');
 
-  const world = await buildWorld(artUrl, (f) => (bar.style.width = `${Math.round(f * 100)}%`));
+  // the plant drawings and the robots' own 3D models load side by side
+  const [world, real] = await Promise.all([
+    buildWorld(artUrl, (f) => (bar.style.width = `${Math.round(f * 100)}%`)),
+    loadRealRobots(base),
+  ]);
   const { scene } = world;
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -58,12 +63,19 @@ async function start() {
   const loopAt = (t: number) => new THREE.Vector3(loop.cx + loop.rx * Math.cos(t), 0, loop.cz + loop.rz * Math.sin(t));
   const loopSpeed = (t: number) => Math.hypot(loop.rx * Math.sin(t), loop.rz * Math.cos(t));
 
-  const odm = buildDuck('odm');
-  const micro = buildDuck('micro');
-  odm.root.scale.multiplyScalar(0.55);
-  micro.root.scale.multiplyScalar(0.6);
-  odm.stride *= 0.55;
-  micro.stride *= 0.6;
+  // the official models where they loaded; the stylized portraits otherwise
+  interface DuckLike {
+    root: THREE.Object3D;
+    stride: number;
+    pose: (phase: number, amount: number, look: number, t: number) => void;
+  }
+  const portrait = (kind: 'odm' | 'micro', k: number): DuckLike => {
+    const d = buildDuck(kind);
+    d.root.scale.multiplyScalar(k);
+    return { root: d.root, stride: d.stride * k, pose: (p, a, l, t) => poseDuck(d, p, a, l, t) };
+  };
+  const odm: DuckLike = real.odm ?? portrait('odm', 0.55);
+  const micro: DuckLike = real.micro ?? portrait('micro', 0.6);
   for (const d of [odm, micro]) {
     scene.add(d.root);
     const sh = blobShadow(d === odm ? 0.75 : 0.5, d === odm ? 0.75 : 0.5);
@@ -72,18 +84,52 @@ async function start() {
     sh.scale.setScalar(1 / d.root.scale.x);
   }
 
-  const arm = buildArm('follower');
-  const leader = buildArm('leader');
+  // the reBot arm on the bench, with its Star Arm 102 leader (a portrait: no public model) beside it
   const armBase = new THREE.Vector3(bench.x + 0.1, world.benchTop, bench.z - 0.15);
-  arm.root.position.copy(armBase);
-  arm.root.scale.setScalar(1.15);
+  const ARM_K = 1.15; // world units per unit of the arm program below
+  interface ArmLike {
+    root: THREE.Object3D;
+    tip: THREE.Object3D;
+    /** move the fingertips to `local` (relative to the base, program units); returns joint angles to echo */
+    move: (local: THREE.Vector3, roll: number, grip: number) => number[] | null;
+  }
+  let arm: ArmLike;
+  if (real.arm) {
+    const r = real.arm;
+    r.root.position.copy(armBase);
+    const toWorld = (local: THREE.Vector3) => local.clone().multiplyScalar(ARM_K).add(armBase);
+    r.warm(toWorld(new THREE.Vector3(0.2, 0.36, 0.12)));
+    arm = {
+      root: r.root,
+      tip: r.tip,
+      move: (local, roll, grip) => {
+        r.reach(toWorld(local), roll);
+        r.grip(grip);
+        return null;
+      },
+    };
+  } else {
+    const a = buildArm('follower');
+    a.root.position.copy(armBase);
+    a.root.scale.setScalar(ARM_K);
+    arm = {
+      root: a.root,
+      tip: a.tip,
+      move: (local, roll, grip) => {
+        const q = armIK(a, local, roll);
+        setArm(a, q, grip);
+        return q;
+      },
+    };
+  }
+  const leader = buildArm('leader');
   leader.root.position.set(bench.x - 0.5, world.benchTop, bench.z - 0.05);
-  leader.root.scale.setScalar(1.15);
+  leader.root.scale.setScalar(ARM_K);
   scene.add(arm.root, leader.root);
 
   // two pots for the arm to repot a fern seedling between
   const local = (x: number, z: number) => new THREE.Vector3(x, 0, z);
-  const potSpots = [local(0.45, 0.05), local(0.24, 0.3)];
+  const potSpots = [local(0.3, 0.06), local(0.12, 0.3)];
   const potH = 0.17;
   for (const p of potSpots) {
     const pot = world.potFactory(0.085, potH);
@@ -156,7 +202,7 @@ async function start() {
 
   // ---------------------------------------------------------------- behaviour
   interface Walker {
-    duck: Duck;
+    duck: DuckLike;
     t: number;
     phase: number;
     amount: number;
@@ -168,7 +214,7 @@ async function start() {
   let walking = !reduceMotion;
   let stateTimer = 3;
   let lookGoal = 0;
-  const speed = 0.32;
+  const speed = real.odm ? 0.2 : 0.32;
 
   // steering Microduck by hand
   const steer = { on: false, heading: 0, pos: new THREE.Vector3(), input: new THREE.Vector2(), returning: false };
@@ -194,7 +240,7 @@ async function start() {
     odmW.phase += (dist / odm.stride) * Math.PI * 2;
     odmW.look += ((walking ? 0 : lookGoal) - odmW.look) * Math.min(1, dt * 2);
     placeOnLoop(odmW);
-    poseDuck(odm, odmW.phase, odmW.amount, odmW.look, t);
+    odm.pose(odmW.phase, odmW.amount, odmW.look, t);
 
     if (!steer.on && !steer.returning) {
       // the duckling keeps its place behind its parent
@@ -204,7 +250,7 @@ async function start() {
       microW.phase += (Math.abs(d) / micro.stride) * Math.PI * 2;
       microW.look += ((walking ? 0 : -lookGoal * 0.7) - microW.look) * Math.min(1, dt * 1.6);
       placeOnLoop(microW);
-      poseDuck(micro, microW.phase, odmW.amount, microW.look, t + 1);
+      micro.pose(microW.phase, odmW.amount, microW.look, t + 1);
     } else {
       updateSteer(dt, t);
     }
@@ -239,14 +285,14 @@ async function start() {
     microW.phase += ((Math.abs(step) + Math.abs(turn) * 0.004) / micro.stride) * Math.PI * 2;
     micro.root.position.copy(steer.pos);
     micro.root.rotation.y = steer.heading;
-    poseDuck(micro, microW.phase, microW.amount, 0, t);
+    micro.pose(microW.phase, microW.amount, 0, t);
   }
   const angleDiff = (a: number, b: number) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
   // the arm repots a fern seedling back and forth, then shows it off
   const toLocal = (spot: THREE.Vector3, y: number) => new THREE.Vector3(spot.x, y, spot.z);
   const graspY = (soilY - world.benchTop + 0.07) / 1.15;
-  const highY = graspY + 0.22;
+  const highY = graspY + 0.13;
   let from = 0;
   type Step = { to?: THREE.Vector3; dur: number; grip: number; act?: 'grab' | 'drop'; roll?: number };
   const program = (): Step[] => {
@@ -261,15 +307,15 @@ async function start() {
       { to: toLocal(b, graspY + 0.01), dur: 1.1, grip: 0 },
       { dur: 0.6, grip: 1, act: 'drop' },
       { to: toLocal(b, highY), dur: 1.0, grip: 1 },
-      { to: new THREE.Vector3(0.1, 0.55, 0.42), dur: 1.8, grip: 1, roll: -0.4 },
+      { to: new THREE.Vector3(0.05, 0.34, 0.34), dur: 1.8, grip: 1, roll: -0.4 },
       { dur: 1.6, grip: 0.4 },
-      { to: new THREE.Vector3(0.28, 0.45, 0.1), dur: 1.6, grip: 1 },
+      { to: new THREE.Vector3(0.2, 0.36, 0.12), dur: 1.6, grip: 1 },
     ];
   };
   let steps = program();
   let stepI = 0;
   let stepT = 0;
-  let cur = new THREE.Vector3(0.28, 0.45, 0.1);
+  let cur = new THREE.Vector3(0.2, 0.36, 0.12);
   let startP = cur.clone();
   let grip = 1;
   let startGrip = 1;
@@ -290,9 +336,9 @@ async function start() {
     }
     grip = startGrip + (s.grip - startGrip) * k;
     roll = startRoll + ((s.roll ?? 0) - startRoll) * k;
-    const q = armIK(arm, cur, roll);
-    setArm(arm, q, grip);
-    // the leader arm moves first, as if a hand were guiding it
+    const echoed = arm.move(cur, roll, grip);
+    // the leader arm leads, as if a hand were guiding it: the same path at its own smaller size
+    const q = echoed ?? armIK(leader, cur.clone().multiplyScalar(0.62), roll);
     for (let i = 0; i < 6; i++) leaderQ[i] += (q[i] - leaderQ[i]) * Math.min(1, dt * 9);
     leaderGrip += (grip - leaderGrip) * Math.min(1, dt * 9);
     setArm(leader, leaderQ, leaderGrip);
@@ -434,12 +480,12 @@ async function start() {
   if (reduceMotion) {
     // a still life: everyone in a pleasant pose
     placeOnLoop(odmW);
-    poseDuck(odm, 0, 0, 0.3, 0);
+    odm.pose(0, 0, 0.3, 0);
     microW.t = odmW.t - gap;
     placeOnLoop(microW);
-    poseDuck(micro, 0, 0, -0.3, 0);
-    setArm(arm, armIK(arm, cur, 0), 1);
-    setArm(leader, armIK(arm, cur, 0), 1);
+    micro.pose(0, 0, -0.3, 0);
+    arm.move(cur, 0, 1);
+    setArm(leader, armIK(leader, cur.clone().multiplyScalar(0.62), 0), 1);
   }
 
   new ResizeObserver(frame).observe(stage);

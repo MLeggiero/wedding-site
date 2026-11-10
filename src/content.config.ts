@@ -55,6 +55,10 @@ const robots = defineCollection({
     chipIn: z.object({ suggested: z.array(z.number().positive()).min(1), note: z.string() }),
     project: z.object({ label: z.string(), url: z.url() }),
     credit: z.string(),
+    /** attribution for the 3D model shown in the room */
+    model: z
+      .object({ by: z.string(), license: z.string(), licenseUrl: z.url(), source: z.url() })
+      .optional(),
     checked: z.coerce.date(),
   }),
 });

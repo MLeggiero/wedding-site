@@ -53,9 +53,12 @@ A secret page: the glasshouse at night, where the robots come out. The only way 
 **brass duck** hiding in the flower bed at the bottom of the Registry page (or the direct link,
 `/after-hours/`, for robot friends). It's unlisted and `noindex`.
 
-- **The robots:** stylized 3D portraits of Microduck, Open Duck Mini v2 and the reBot Arm
-  B601-DM with its Star Arm 102 leader. They walk the brick path, repot a fern, and Microduck can
-  be steered (joystick on phones, arrow keys or WASD on a computer).
+- **The robots:** the makers' own 3D models of Microduck, Open Duck Mini v2 and the reBot Arm
+  B601-DM, simplified for the web and moving on their real joints. The ducks walk the brick path
+  and the arm repots a fern. The Star Arm 102 leader beside it is a stand-in, since no public model
+  exists. Microduck can be steered (joystick on phones, arrow keys or WASD on a computer).
+- **Model files:** `public/models/*.glb`, made by `npm run models -- <dir>` from clones of the three
+  source repositories; credits and licences are in `public/models/LICENSES.md`.
 - **Gift cards:** tapping a robot opens its card, with store links and prices from
   `src/content/robots/*.yaml`.
 - **Claims:** "I'm getting this" buttons appear once `guestEndpoint` is set; claims land in the

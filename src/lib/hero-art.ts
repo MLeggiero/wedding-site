@@ -4,7 +4,7 @@
 // written out as SVG files at build time (see lib/art.ts) and stacked around
 // the photo by HeroFrame.astro.
 import {
-  place, magnoliaLeaf, magnoliaFlower, magnoliaBud, dogwoodLeaf, dogwoodFlower, dogwoodBranch, azalea,
+  place, magnoliaLeaf, magnoliaFlower, magnoliaBudTwig, dogwoodLeaf, dogwoodFlower, dogwoodBranch, azalea,
   christmasFern, passionflower, passionLeaf, tendril, jessamine, sprig,
 } from './engrave';
 import { PEN, sway, type Arrangement } from './flora';
@@ -43,7 +43,8 @@ const heroFrontArt = (p: number) =>
     // top-left: Southern magnolia in bloom, a bud, dogwood along the arch, jessamine over the top
     place(dogwoodBranch(300, p, 520), 300, 250, 62),
     place(jessamine(280, p, 521), 540, 205, 22),
-    place(magnoliaBud(96, p, 522), 330, 176, 58),
+    // a bud on its twig, rising out of the cluster behind the flower
+    place(magnoliaBudTwig(92, 150, p, 522, -0.12), 236, 330, -32),
     place(magnoliaLeaf(150, p, 523, 1), 236, 338, 168),
     place(magnoliaFlower(118, p, 524), 236, 330),
     // right: a maypop near the top of the fern, with its leaf and a tendril
@@ -76,7 +77,7 @@ const archFrontArt = (p: number) =>
   [
     place(jessamine(300, p, 611), 290, 290, -42),
     place(jessamine(250, p, 612), 520, 212, 30),
-    place(magnoliaBud(80, p, 614), 318, 196, 56),
+    place(magnoliaBudTwig(78, 118, p, 614, 0.1), 236, 346, -14),
     place(magnoliaFlower(90, p, 613), 236, 346),
     place(dogwoodLeaf(120, p, 615, -1), 772, 1064, -96),
     place(dogwoodLeaf(106, p, 616, 1), 772, 1064, -128),

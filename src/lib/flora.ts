@@ -4,7 +4,7 @@
 // sprigs, leaves) are kept apart as `sway` layers, so they can move in a
 // gentle breeze while the rest of the drawing stays still.
 import {
-  place, ink, INK_STYLE, magnoliaLeaf, magnoliaFlower, magnoliaBud, dogwoodLeaf, dogwoodFlower, dogwoodBranch,
+  place, ink, INK_STYLE, magnoliaLeaf, magnoliaFlower, magnoliaBudTwig, dogwoodLeaf, dogwoodFlower, dogwoodBranch,
   azalea, christmasFern, trillium, passionflower, passionLeaf, tendril, jessamine, sprig, leaf,
 } from './engrave';
 
@@ -76,7 +76,8 @@ export function corner(): Arrangement {
   const parts = [
     place(magnoliaLeaf(140, p, 31), 70, 70, 74),
     // in front: the flower, a bud and a small sprig
-    place(magnoliaBud(76, p, 32), 168, 128, 128),
+    // a bud on its twig, reaching out from behind the flower at the cluster's edge
+    place(magnoliaBudTwig(72, 110, p, 32, 0.1), 92, 94, 152),
     place(magnoliaFlower(84, p, 33), 92, 94),
     place(sprig(120, p, 34, 4), 40, 168, 196),
     place(tendril(70, 1.6, p, 35), 330, 30, 12),

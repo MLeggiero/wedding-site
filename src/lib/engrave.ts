@@ -395,6 +395,32 @@ export function magnoliaBud(L: number, pen: number, seed = 1) {
   void r;
   return pl.toString();
 }
+/**
+ * A magnolia bud where it grows: at the tip of a stout twig. The twig rises
+ * from (0,0) along -y for `stemL` (curving by `bend`), ringed by a couple of
+ * leaf scars, and the bud stands on its end. Set the base behind a flower or
+ * leaves so the twig seems to come out of the cluster.
+ */
+export function magnoliaBudTwig(L: number, stemL: number, pen: number, seed = 1, bend = 0.12) {
+  const pts: Pt[] = [];
+  for (let i = 0; i <= 5; i++) {
+    const t = i / 5;
+    pts.push([bend * stemL * t * t, -stemL * t]);
+  }
+  let s = twig(pts, L * 0.06, L * 0.042, pen, seed);
+  // leaf scars ring the twig just below the bud
+  let rings = '';
+  for (const t of [0.72, 0.88]) {
+    const [x, y] = [bend * stemL * t * t, -stemL * t];
+    const w = L * (0.06 - 0.018 * t);
+    rings += quad([x - w, y + w * 0.15], [x, y - w * 0.35], [x + w, y + w * 0.15]);
+  }
+  s += new Plate(pen).lines(rings, 0.4).toString();
+  const [ex, ey] = pts[5];
+  const [px, py] = pts[4];
+  const rot = (Math.atan2(ex - px, -(ey - py)) * 180) / Math.PI;
+  return s + place(magnoliaBud(L, pen, seed), ex, ey, rot);
+}
 
 // ------------------------------------------------------------------ flowering dogwood
 

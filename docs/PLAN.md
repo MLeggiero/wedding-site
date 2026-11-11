@@ -83,9 +83,9 @@ All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requ
 
 | Component | What it is |
 |---|---|
-| `FloralSection` | A section framed by engraved plants: corner clusters hanging from the top and rising from the bottom, climbing jessamine down the sides on wide screens. Between two sections, a hairline the plants tuck behind. |
+| `FloralSection` | A section framed by engraved plants: clusters hang from the line at the top and rise from the line at the foot. The section keeps clear ground for them (and, on phones, starts its heading below the hanging clusters), so plants never sit behind text, cards or buttons. Between two sections, a hairline the plants tuck behind. |
 | `HeroFrame` | A fine double-ruled arch around a photo, wreathed in engraved magnolia, dogwood, jessamine, fern, azalea and maypop |
-| `PaperCard` | A card ruled like an invitation (an outer line and an inner rule), with an engraved sprig over its corners |
+| `PaperCard` | A card ruled like an invitation (an outer line and an inner rule), with engraved sprigs over its corners: all four, a diagonal pair, or the two top ones for a card that stands between a section's bottom clusters |
 | `SectionHeading` | Lowercase italic eyebrow, script title, engraved divider, one italic line |
 | `Divider` | A small dogwood blossom with a leafy sprig to each side |
 | `Flora` | Places one plant drawing as an image |

@@ -6,8 +6,8 @@ import Flora from './Flora.astro';
 
 interface Props {
   class?: string;
-  /** engraved sprigs over the corners: all four, two (top-left and bottom-right), or none */
-  sprigs?: 'four' | 'two' | 'none';
+  /** engraved sprigs over the corners: all four, two (top-left and bottom-right), the two top ones, or none */
+  sprigs?: 'four' | 'two' | 'top' | 'none';
   /** 'page': centred, up to 40rem wide; 'fill': fill its grid cell */
   width?: 'page' | 'fill';
   /** semantic element for the card */
@@ -21,9 +21,9 @@ const { class: cls, sprigs = 'four', width = 'page', as: Tag = 'div' } = Astro.p
     sprigs !== 'none' && (
       <div class="paper-card__sprigs" aria-hidden="true">
         <Flora name="sprig-magnolia" class="paper-card__sprig paper-card__sprig--tl" />
-        {sprigs === 'four' && <Flora name="sprig-dogwood" class="paper-card__sprig paper-card__sprig--tr" />}
+        {(sprigs === 'four' || sprigs === 'top') && <Flora name="sprig-dogwood" class="paper-card__sprig paper-card__sprig--tr" />}
         {sprigs === 'four' && <Flora name="sprig-fern" class="paper-card__sprig paper-card__sprig--bl" />}
-        <Flora name="sprig-maypop" class="paper-card__sprig paper-card__sprig--br" />
+        {(sprigs === 'four' || sprigs === 'two') && <Flora name="sprig-maypop" class="paper-card__sprig paper-card__sprig--br" />}
       </div>
     )
   }

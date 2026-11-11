@@ -1,7 +1,9 @@
 ---
 // A section of the page framed by engraved plants at its corners, like the
-// border of an invitation (lib/flora.ts). 'full' adds climbing jessamine down
-// the sides on wide screens; 'small' uses smaller corners.
+// border of an invitation (lib/flora.ts): clusters hang from the line at the
+// top and rise from the line at the foot. 'full' and 'small' set their size.
+// The section keeps clear space at its foot so the rising plants never slip
+// behind cards, buttons or text.
 import Flora from './Flora.astro';
 
 interface Props {
@@ -18,12 +20,14 @@ const top = corners !== 'bottom';
 const bottom = corners !== 'top';
 ---
 
-<section class:list={['room', cls, flora && `room--${flora}`]} aria-label={label} style={style}>
+<section
+  class:list={['room', cls, flora && `room--${flora}`, flora && top && 'room--hanging', flora && bottom && 'room--rising']}
+  aria-label={label}
+  style={style}
+>
   {
     flora && (
       <div class="room__flora" aria-hidden="true">
-        {flora === 'full' && <Flora name="vine" class="room__plant room__vine room__vine--l" />}
-        {flora === 'full' && <Flora name="vine" mirror class="room__plant room__vine room__vine--r" />}
         {top && <Flora name="corner" eager={flora === 'full'} class="room__plant room__plant--tl" />}
         {top && <Flora name="corner" eager={flora === 'full'} mirror class="room__plant room__plant--tr" />}
         {bottom && <Flora name="corner-low" class="room__plant room__plant--bl" />}
@@ -82,26 +86,20 @@ const bottom = corners !== 'top';
     bottom: 0;
     right: 0;
   }
-  /* climbing jessamine down the sides (wide screens only) */
-  .room :global(.room__vine) {
-    display: none;
-    top: 50%;
-    --flora-w: clamp(110px, 10vw, 170px);
-    translate: 0 -50%;
-  }
-  .room :global(.room__vine--l) {
-    left: 0;
-  }
-  .room :global(.room__vine--r) {
-    right: 0;
-  }
-  @media (min-width: 64rem) {
-    .room :global(.room__vine) {
-      display: block;
-    }
-  }
   .room__inner {
     position: relative;
     z-index: 2;
+  }
+  /* phones: the hanging clusters span most of the width, so the heading starts below them */
+  @media (max-width: 39.99rem) {
+    .room--hanging {
+      padding-top: calc(var(--plant-w) * 0.66);
+    }
+  }
+  /* clear ground at the foot for the rising clusters (they stand about 0.8 of --plant-w tall) */
+  .room--rising .room__inner::after {
+    content: '';
+    display: block;
+    height: calc(var(--plant-w) * 0.62);
   }
 </style>

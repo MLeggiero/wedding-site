@@ -134,6 +134,13 @@ const registry = [
     left: calc(50% + min(6rem, 8vw));
     bottom: calc(-0.15rem - 3px);
   }
+  /* phones: a short walk in the open ground between the two clusters of plants */
+  @media (max-width: 47.99rem) {
+    :global(.gifts__duck) {
+      left: calc(50% - 1.2rem);
+      --duck-walk: 2rem;
+    }
+  }
   @media (min-width: 52rem) {
     .gifts {
       grid-template-columns: 28rem 1fr;

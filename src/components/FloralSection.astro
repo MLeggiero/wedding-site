@@ -3,8 +3,15 @@
 // border of an invitation (lib/flora.ts): clusters hang from the line at the
 // top and rise from the line at the foot. 'full' and 'small' set their size.
 // The section keeps clear space at its foot so the rising plants never slip
-// behind cards, buttons or text.
+// behind cards, buttons or text. Mushrooms come up at the foot of the rising
+// clusters (a different mix each side), and a butterfly or moth can rest on
+// the plants (lib/woodland.ts).
 import Flora from './Flora.astro';
+import Butterfly from './Butterfly.astro';
+import { artView, type ArtName } from '../lib/art';
+import type { ButterflyKind } from '../lib/insects';
+
+type Floor = Extract<ArtName, `floor-${string}`>;
 
 interface Props {
   class?: string;
@@ -13,11 +20,22 @@ interface Props {
   flora?: 'full' | 'small' | false;
   /** which corners carry plants: hanging from the top, rising from the bottom, or both */
   corners?: 'both' | 'top' | 'bottom';
+  /** what comes up at the foot of the left and right clusters */
+  floor?: [Floor, Floor];
+  /** a butterfly or moth resting on the top-right cluster (the bottom-right if the top has none) */
+  butterfly?: ButterflyKind;
+  /** or on the top-left cluster, by the end of the jessamine */
+  butterflyLeft?: boolean;
   style?: string;
 }
-const { class: cls, label, flora = false, corners = 'both', style } = Astro.props;
+const { class: cls, label, flora = false, corners = 'both', floor = ['floor-morels', 'floor-log'], butterfly, butterflyLeft = false, style } = Astro.props;
 const top = corners !== 'bottom';
 const bottom = corners !== 'top';
+// where it rests, in the cluster's own units: at the tip of the lowest dogwood leaf, at the end of
+// the jessamine, or on the maypop at the foot
+const restTop = { at: [398, 258], size: 150, rot: -28 } as const;
+const restVine = { at: [512, 96], size: 140, rot: 58 } as const;
+const restLow = { at: [392, 296], size: 140, rot: 24 } as const;
 ---
 
 <section
@@ -28,10 +46,22 @@ const bottom = corners !== 'top';
   {
     flora && (
       <div class="room__flora" aria-hidden="true">
-        {top && <Flora name="corner" eager={flora === 'full'} class="room__plant room__plant--tl" />}
-        {top && <Flora name="corner" eager={flora === 'full'} mirror class="room__plant room__plant--tr" />}
-        {bottom && <Flora name="corner-low" class="room__plant room__plant--bl" />}
-        {bottom && <Flora name="corner-low" mirror class="room__plant room__plant--br" />}
+        {top && (
+          <Flora name="corner" eager={flora === 'full'} class="room__plant room__plant--tl">
+            {butterfly && butterflyLeft && <Butterfly kind={butterfly} view={artView('corner')} {...restVine} eager={flora === 'full'} />}
+          </Flora>
+        )}
+        {top && (
+          <Flora name="corner" eager={flora === 'full'} mirror class="room__plant room__plant--tr">
+            {butterfly && !butterflyLeft && <Butterfly kind={butterfly} view={artView('corner')} {...restTop} eager={flora === 'full'} />}
+          </Flora>
+        )}
+        {bottom && <Flora name="corner-low" extra={[floor[0]]} class="room__plant room__plant--bl" />}
+        {bottom && (
+          <Flora name="corner-low" extra={[floor[1]]} mirror class="room__plant room__plant--br">
+            {butterfly && !top && <Butterfly kind={butterfly} view={artView('corner-low')} {...restLow} />}
+          </Flora>
+        )}
       </div>
     )
   }
@@ -85,6 +115,10 @@ const bottom = corners !== 'top';
   .room :global(.room__plant--br) {
     bottom: 0;
     right: 0;
+  }
+  /* on small screens a butterfly keeps a size you can make out */
+  .room :global(.room__plant) {
+    --bf-min: 3.5rem;
   }
   .room__inner {
     position: relative;

@@ -5,7 +5,9 @@
 // leaf its own swaying image), then the photo (HTML, responsive), then the
 // ruled frame and the plants in front. The art layers are cached SVG files.
 import Photo from './Photo.astro';
+import Butterfly from './Butterfly.astro';
 import type { Photo as PhotoT } from '../lib/photos';
+import type { ButterflyKind } from '../lib/insects';
 import { HERO_BOX as VB, HERO_WINDOW as W } from '../lib/hero-art';
 import { artUrl, artView, artLayers, type ArtName } from '../lib/art';
 
@@ -19,9 +21,11 @@ interface Props {
   mirror?: boolean;
   /** load the photo first (above the fold) */
   priority?: boolean;
+  /** a butterfly or moth resting on the frame's plants, placed in the frame's 1000×1300 units (before any mirroring) */
+  butterfly?: { kind: ButterflyKind; at: [number, number]; size?: number; rot?: number };
   class?: string;
 }
-const { photo, alt, sizes = '(min-width: 64rem) 34rem, 92vw', art = 'hero', mirror = false, priority = art === 'hero', class: cls } = Astro.props;
+const { photo, alt, sizes = '(min-width: 64rem) 34rem, 92vw', art = 'hero', mirror = false, priority = art === 'hero', butterfly, class: cls } = Astro.props;
 const back = `${art}-back` as ArtName;
 const front = `${art}-front` as ArtName;
 
@@ -57,6 +61,18 @@ const swayStyle = (s: (typeof backLayers.sways)[number]) => {
     <Photo photo={photo} alt={alt} sizes={sizes} priority={priority} widths={[600, 900, 1200, 1600]} />
   </div>
   <img class="hf__layer" src={artUrl(front)} alt="" style={layerStyle(front)} decoding="async" loading={priority ? 'eager' : 'lazy'} />
+  {
+    butterfly && (
+      <Butterfly
+        kind={butterfly.kind}
+        view={[0, 0, VB.w, VB.h]}
+        at={mirror ? [VB.w - butterfly.at[0], butterfly.at[1]] : butterfly.at}
+        size={butterfly.size ?? 150}
+        rot={(mirror ? -1 : 1) * (butterfly.rot ?? 0)}
+        eager={priority}
+      />
+    )
+  }
 </figure>
 
 <style>

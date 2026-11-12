@@ -14,12 +14,12 @@ const notes = [ch['the-question'], ch['how-we-met']];
 ---
 
 <Base title="Our Story" description="How Ally & Mark got engaged.">
-  <FloralSection flora="full" label="Our story">
+  <FloralSection flora="full" label="Our story" floor={['floor-log', 'floor-morels']}>
     <SectionHeading eyebrow="our story" title="The question" />
 
     <div class="story container">
       <div class="story__photo">
-        <HeroFrame photo={photo('20')} art="arch" mirror priority sizes="(min-width: 60rem) 28rem, 84vw" />
+        <HeroFrame photo={photo('20')} art="arch" mirror priority sizes="(min-width: 60rem) 28rem, 84vw" butterfly={{ kind: 'luna-moth', at: [852, 282], size: 190, rot: 24 }} />
       </div>
       <div class="story__notes">
         {

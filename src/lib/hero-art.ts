@@ -8,6 +8,7 @@ import {
   christmasFern, passionflower, passionLeaf, tendril, jessamine, sprig,
 } from './engrave';
 import { PEN, sway, type Arrangement } from './flora';
+import { fritillaryCaterpillar, bumblebee } from './insects';
 
 export const HERO_WINDOW = { left: 220, right: 780, top: 220, spring: 500, bottom: 1000, r: 280 };
 export const HERO_BOX = { w: 1000, h: 1300 };
@@ -51,11 +52,15 @@ const heroFrontArt = (p: number) =>
     place(passionLeaf(112, p, 526), 846, 712, 58),
     place(tendril(96, 1.8, p, 527), 830, 650, -64),
     place(passionflower(56, p, 528), 824, 704),
+    // a gulf fritillary caterpillar feeding on the maypop leaf (its host plant)
+    place(fritillaryCaterpillar(54, p, 534), 872, 706, -40),
     // the foot of the right side: azalea, dogwood leaves and a dogwood blossom along the base
     place(dogwoodLeaf(132, p, 529, -1), 772, 1064, -96),
     place(dogwoodLeaf(116, p, 530, 1), 772, 1064, -128),
     place(azalea(100, p, 531), 842, 1032, 122),
     place(dogwoodFlower(46, p, 533), 690, 1066),
+    // a bumblebee at the azalea
+    place(bumblebee(46, p, 535), 986, 936, -14),
   ].join('');
 
 export function heroBack(): Arrangement {

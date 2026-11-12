@@ -12,7 +12,7 @@
 export const INK = '#61746a';
 export const PAPER = '#efede6';
 
-type Pt = [number, number];
+export type Pt = [number, number];
 
 export function rng(seed: number) {
   let s = seed >>> 0;
@@ -23,8 +23,8 @@ export function rng(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-const f = (v: number) => (Math.round(v * 10) / 10).toString();
-const P = (p: Pt) => `${f(p[0])},${f(p[1])}`;
+export const f = (v: number) => (Math.round(v * 10) / 10).toString();
+export const P = (p: Pt) => `${f(p[0])},${f(p[1])}`;
 
 /** Wrap markup in a transform: translate, rotate (deg), uniform scale, optional mirror. */
 export function place(markup: string, x: number, y: number, rot = 0, scale = 1, mirror = false): string {
@@ -33,14 +33,14 @@ export function place(markup: string, x: number, y: number, rot = 0, scale = 1, 
 }
 
 // ------------------------------------------------------------------ geometry
-const add = (a: Pt, b: Pt): Pt => [a[0] + b[0], a[1] + b[1]];
-const mul = (a: Pt, k: number): Pt => [a[0] * k, a[1] * k];
-const lerp = (a: Pt, b: Pt, t: number): Pt => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-const rot = (p: Pt, deg: number): Pt => {
+export const add = (a: Pt, b: Pt): Pt => [a[0] + b[0], a[1] + b[1]];
+export const mul = (a: Pt, k: number): Pt => [a[0] * k, a[1] * k];
+export const lerp = (a: Pt, b: Pt, t: number): Pt => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+export const rot = (p: Pt, deg: number): Pt => {
   const a = (deg * Math.PI) / 180;
   return [p[0] * Math.cos(a) - p[1] * Math.sin(a), p[0] * Math.sin(a) + p[1] * Math.cos(a)];
 };
-const polar = (r: number, deg: number): Pt => [Math.cos((deg * Math.PI) / 180) * r, Math.sin((deg * Math.PI) / 180) * r];
+export const polar = (r: number, deg: number): Pt => [Math.cos((deg * Math.PI) / 180) * r, Math.sin((deg * Math.PI) / 180) * r];
 
 /** A smooth curve through the points (Catmull-Rom as cubic Béziers). */
 export function spline(pts: Pt[], closed = false): string {
@@ -60,11 +60,119 @@ export function spline(pts: Pt[], closed = false): string {
   }
   return closed ? d + 'Z' : d;
 }
-const line = (a: Pt, b: Pt) => `M${P(a)}L${P(b)}`;
-const quad = (a: Pt, c: Pt, b: Pt) => `M${P(a)}Q${P(c)} ${P(b)}`;
+/** Points along the curve that `spline` draws through the same points (for clipping). */
+export function splinePts(pts: Pt[], closed = false, per = 8): Pt[] {
+  const N = pts.length;
+  const at = (i: number) => (closed ? pts[(i + N) % N] : pts[Math.max(0, Math.min(N - 1, i))]);
+  const out: Pt[] = [];
+  for (let i = 0; i < (closed ? N : N - 1); i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const c1: Pt = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2: Pt = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    for (let k = 0; k < per; k++) {
+      const t = k / per;
+      const u = 1 - t;
+      const b = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+      out.push([b[0] * p1[0] + b[1] * c1[0] + b[2] * c2[0] + b[3] * p2[0], b[0] * p1[1] + b[1] * c1[1] + b[2] * c2[1] + b[3] * p2[1]]);
+    }
+  }
+  if (!closed) out.push(pts[N - 1]);
+  return out;
+}
+
+// ------------------------------------------------------------------ hatching inside a shape
+
+type Span = [number, number];
+/** Where a line (all points p with p·n = o) runs inside a polygon, as spans of p·d (even-odd). */
+function spansOn(poly: Pt[], o: number, n: Pt, d: Pt): Span[] {
+  const ts: number[] = [];
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i];
+    const b = poly[(i + 1) % poly.length];
+    const an = a[0] * n[0] + a[1] * n[1] - o;
+    const bn = b[0] * n[0] + b[1] * n[1] - o;
+    if (an < 0 !== bn < 0) {
+      const s = an / (an - bn);
+      ts.push((a[0] + s * (b[0] - a[0])) * d[0] + (a[1] + s * (b[1] - a[1])) * d[1]);
+    }
+  }
+  ts.sort((x, y) => x - y);
+  const out: Span[] = [];
+  for (let i = 0; i + 1 < ts.length; i += 2) out.push([ts[i], ts[i + 1]]);
+  return out;
+}
+function both(a: Span[], b: Span[]): Span[] {
+  const out: Span[] = [];
+  for (const [a0, a1] of a) for (const [b0, b1] of b) if (Math.min(a1, b1) > Math.max(a0, b0)) out.push([Math.max(a0, b0), Math.min(a1, b1)]);
+  return out.sort((x, y) => x[0] - y[0]);
+}
+function without(a: Span[], b: Span[]): Span[] {
+  let cur = a;
+  for (const [b0, b1] of b) {
+    const next: Span[] = [];
+    for (const [a0, a1] of cur) {
+      if (b1 <= a0 || b0 >= a1) next.push([a0, a1]);
+      else {
+        if (b0 > a0) next.push([a0, b0]);
+        if (b1 < a1) next.push([b1, a1]);
+      }
+    }
+    cur = next;
+  }
+  return cur;
+}
+
+export interface HatchSpec {
+  /** direction of the strokes, in degrees */
+  angle: number;
+  /** distance between strokes */
+  gap: number;
+  /** areas left clear */
+  holes?: Pt[][];
+  /** trim stroke ends at random by up to this fraction of the gap, as a hand-cut line would */
+  ragged?: number;
+  seed?: number;
+}
+
+/**
+ * Engraver's hatching: parallel strokes filling the area that lies inside
+ * every polygon in `within` and outside every hole. Returns path data.
+ */
+export function hatch(within: Pt[][], h: HatchSpec): string {
+  const r = rng(h.seed ?? 1);
+  const a = (h.angle * Math.PI) / 180;
+  const d: Pt = [Math.cos(a), Math.sin(a)];
+  const n: Pt = [-d[1], d[0]];
+  const proj = within[0].map((p) => p[0] * n[0] + p[1] * n[1]);
+  const hi = Math.max(...proj);
+  let s = '';
+  for (let o = Math.min(...proj) + h.gap * (0.3 + r() * 0.4); o < hi; o += h.gap) {
+    let spans = spansOn(within[0], o, n, d);
+    for (const poly of within.slice(1)) spans = both(spans, spansOn(poly, o, n, d));
+    for (const hole of h.holes ?? []) spans = without(spans, spansOn(hole, o, n, d));
+    for (const [t0, t1] of spans) {
+      const rag = (h.ragged ?? 0.25) * h.gap;
+      const a0 = t0 + r() * rag;
+      const a1 = t1 - r() * rag;
+      if (a1 - a0 > h.gap * 0.4) s += line(add(mul(n, o), mul(d, a0)), add(mul(n, o), mul(d, a1)));
+    }
+  }
+  return s;
+}
+
+/** An ellipse as a polygon (for holes and clipping). */
+export function ellipsePts(c: Pt, rx: number, ry: number, deg = 0, n = 24): Pt[] {
+  return Array.from({ length: n }, (_, i) => add(c, rot([Math.cos((i / n) * Math.PI * 2) * rx, Math.sin((i / n) * Math.PI * 2) * ry], deg)));
+}
+
+export const line = (a: Pt, b: Pt) => `M${P(a)}L${P(b)}`;
+export const quad = (a: Pt, c: Pt, b: Pt) => `M${P(a)}Q${P(c)} ${P(b)}`;
 
 /** One engraved element: a paper-filled outline, then its interior lines. */
-class Plate {
+export class Plate {
   out: string[] = [];
   pen: number;
   constructor(pen: number) {
@@ -72,6 +180,11 @@ class Plate {
   }
   shape(d: string, k = 1) {
     if (d) this.out.push(`<path d="${d}" fill="${PAPER}" stroke-width="${f(this.pen * k)}"/>`);
+    return this;
+  }
+  /** paper only, no outline (to hide what lies behind a soft or hairy edge) */
+  fill(d: string) {
+    if (d) this.out.push(`<path d="${d}" fill="${PAPER}" stroke="none"/>`);
     return this;
   }
   lines(d: string, k = 0.55) {

@@ -31,12 +31,12 @@ const tips = [
 ---
 
 <Base title="Travel" description="How to get to Athens, Georgia for Ally & Mark’s wedding, and what to do while you’re in town.">
-  <FloralSection flora="full" label="Travel">
+  <FloralSection flora="full" label="Travel" floor={['floor-chanterelles', 'floor-log']}>
     <SectionHeading eyebrow="travel" title="Getting to Athens" lead="Ninety minutes from Atlanta." />
 
     <div class="trip container">
       <div class="trip__photo">
-        <HeroFrame photo={photo('garden-conservatory')} art="arch" priority sizes="(min-width: 60rem) 26rem, 80vw" />
+        <HeroFrame photo={photo('garden-conservatory')} art="arch" priority sizes="(min-width: 60rem) 26rem, 80vw" butterfly={{ kind: 'gulf-fritillary', at: [778, 258], size: 180, rot: 28 }} />
       </div>
       <PaperCard sprigs="two" width="fill" as="section" class="venue">
         <p class="cc-kicker">The venue</p>

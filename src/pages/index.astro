@@ -22,7 +22,7 @@ const cards = [
   <FloralSection class="hero" label="Save the date">
     <div class="container hero__grid">
       <div class="hero__art">
-        <HeroFrame photo={photo('35')} />
+        <HeroFrame photo={photo('35')} butterfly={{ kind: 'tiger-swallowtail', at: [908, 584], size: 190, rot: -20 }} />
       </div>
 
       <div class="hero__text">
@@ -61,7 +61,7 @@ const cards = [
     </div>
   </FloralSection>
 
-  <FloralSection class="join" label="Join in" flora="small" corners="bottom">
+  <FloralSection class="join" label="Join in" flora="small" corners="bottom" floor={['floor-log', 'floor-chanterelles']}>
     <SectionHeading level={2} size="section" title="Join in" />
     <div class="join__links">
       {

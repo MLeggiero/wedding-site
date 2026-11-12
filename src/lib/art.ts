@@ -1,4 +1,5 @@
-// Every decorative drawing on the site, by name. Each is written to
+// Every decorative drawing on the site, by name (plants, and the mushrooms
+// and insects among them). Each is written to
 // /flora/<name>.svg at build time (pages/flora/[name].svg.ts) so pages stay
 // light and browsers cache the art across pages; Flora.astro and
 // HeroFrame.astro place the files as images. A drawing with swaying parts
@@ -9,6 +10,7 @@ import {
   svgDocument, baseDocument, swayDocument, swayView, type Arrangement,
 } from './flora';
 import { heroBack, heroFront, archBack, archFront } from './hero-art';
+import { floorMorels, floorLog, floorChanterelles, butterflyWingsArt as wings, butterflyBodyArt as body } from './woodland';
 import { withBase } from './url';
 
 const builders = {
@@ -24,6 +26,17 @@ const builders = {
   'hero-front': heroFront,
   'arch-back': archBack,
   'arch-front': archFront,
+  // the forest floor at the foot of a section, laid over corner-low
+  'floor-morels': floorMorels,
+  'floor-log': floorLog,
+  'floor-chanterelles': floorChanterelles,
+  // butterflies and a moth, wings and body apart
+  'tiger-swallowtail-wings': () => wings('tiger-swallowtail'),
+  'tiger-swallowtail-body': () => body('tiger-swallowtail'),
+  'luna-moth-wings': () => wings('luna-moth'),
+  'luna-moth-body': () => body('luna-moth'),
+  'gulf-fritillary-wings': () => wings('gulf-fritillary'),
+  'gulf-fritillary-body': () => body('gulf-fritillary'),
 } satisfies Record<string, () => Arrangement>;
 
 export type ArtName = keyof typeof builders;

@@ -1,0 +1,76 @@
+---
+// A butterfly or moth resting on the plant art. Now and then it slowly opens
+// and closes its wings, as one does basking in the sun; with reduced motion it
+// simply rests. Place it inside a drawing's box (Flora's slot, HeroFrame):
+// `view` is that drawing's view, `at` the point it rests on and `size` the
+// width of its drawing, both in the drawing's units. A page can keep it from
+// getting too small to make out with --bf-min.
+import { artUrl, artView } from '../lib/art';
+import type { ButterflyKind } from '../lib/insects';
+
+interface Props {
+  kind: ButterflyKind;
+  view: readonly [number, number, number, number];
+  at: readonly [number, number];
+  size: number;
+  /** degrees; 0 = head up */
+  rot?: number;
+  /** seconds into its cycle, so two on one screen never move together */
+  delay?: number;
+  eager?: boolean;
+}
+const { kind, view, at, size, rot = 0, delay = 0, eager = false } = Astro.props;
+const [vx, vy, vw, vh] = view;
+const [, , bw, bh] = artView(`${kind}-wings`);
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const style = `left:${pct(at[0] - vx, vw)};top:${pct(at[1] - vy, vh)};width:max(var(--bf-min, 0px), ${pct(size, vw)});rotate:${rot}deg;--bf-delay:${(-delay).toFixed(2)}s`;
+const loading = eager ? 'eager' : 'lazy';
+---
+
+<span class="bf" style={style}>
+  <img class="bf__wings" src={artUrl(`${kind}-wings`)} alt="" width={bw} height={bh} loading={loading} decoding="async" />
+  <img class="bf__body" src={artUrl(`${kind}-body`)} alt="" width={bw} height={bh} loading={loading} decoding="async" />
+</span>
+
+<style>
+  .bf {
+    position: absolute;
+    display: block;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    pointer-events: none;
+    user-select: none;
+  }
+  .bf img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .bf__wings {
+      animation: bf-bask 12s ease-in-out var(--bf-delay, 0s) infinite;
+    }
+  }
+  /* wings open for a long while, then two slow beats: closing up over the back and opening again */
+  @keyframes bf-bask {
+    0%,
+    62%,
+    100% {
+      scale: 1 1;
+    }
+    66% {
+      scale: 0.3 1;
+    }
+    70.5% {
+      scale: 1 1;
+    }
+    74.5% {
+      scale: 0.45 1;
+    }
+    79% {
+      scale: 1 1;
+    }
+  }
+</style>

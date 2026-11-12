@@ -3,8 +3,10 @@
 // Size it with --flora-w (the width of the drawing's nominal box) and
 // position it from the parent with a class; `mirror` flips it left↔right.
 // Its fronds, sprigs and leaves sit on their own layers behind the rest and
-// sway in a gentle breeze (the .sway styles in global.css).
-import { art, artView, artLayers, type ArtName } from '../lib/art';
+// sway in a gentle breeze (the .sway styles in global.css). `extra` lays more
+// drawings drawn in the same coordinates over it (mushrooms at the foot), and
+// the slot takes anything placed in those coordinates (a resting butterfly).
+import { art, artUrl, artView, artLayers, type ArtName } from '../lib/art';
 
 interface Props {
   name: ArtName;
@@ -12,13 +14,18 @@ interface Props {
   mirror?: boolean;
   /** load immediately (art above the fold) */
   eager?: boolean;
+  /** drawings in the same coordinates, laid on top */
+  extra?: ArtName[];
 }
-const { name, class: cls, mirror = false, eager = false } = Astro.props;
+const { name, class: cls, mirror = false, eager = false, extra = [] } = Astro.props;
 const [vx, vy, vw, vh] = artView(name);
 const k = vw / art(name).w;
 const { base, sways } = artLayers(name);
 const loading = eager ? 'eager' : 'lazy';
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+for (const x of extra) {
+  if (artView(x).join() !== artView(name).join()) throw new Error(`${x} must share ${name}'s view to lie over it`);
+}
 ---
 
 <span class:list={['flora', cls, { 'flora--mirror': mirror }]} style={`--k:${k.toFixed(4)};aspect-ratio:${vw} / ${vh}`}>
@@ -37,6 +44,8 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
     ))
   }
   {base && <img class="flora__base" src={base} alt="" width={vw} height={vh} loading={loading} decoding="async" />}
+  {extra.map((x) => <img class="flora__base" src={artUrl(x)} alt="" width={vw} height={vh} loading={loading} decoding="async" />)}
+  <slot />
 </span>
 
 <style>

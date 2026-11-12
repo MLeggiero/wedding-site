@@ -83,12 +83,13 @@ All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requ
 
 | Component | What it is |
 |---|---|
-| `FloralSection` | A section framed by engraved plants: clusters hang from the line at the top and rise from the line at the foot. The section keeps clear ground for them (and, on phones, starts its heading below the hanging clusters), so plants never sit behind text, cards or buttons. Between two sections, a hairline the plants tuck behind. |
+| `FloralSection` | A section framed by engraved plants: clusters hang from the line at the top and rise from the line at the foot. The section keeps clear ground for them (and, on phones, starts its heading below the hanging clusters), so plants never sit behind text, cards or buttons. Between two sections, a hairline the plants tuck behind. Mushrooms come up at the foot (`floor`, a different mix each side), and a butterfly can rest on a top cluster (`butterfly`). |
 | `HeroFrame` | A fine double-ruled arch around a photo, wreathed in engraved magnolia, dogwood, jessamine, fern, azalea and maypop |
 | `PaperCard` | A card ruled like an invitation (an outer line and an inner rule), with engraved sprigs over its corners: all four, a diagonal pair, or the two top ones for a card that stands between a section's bottom clusters |
 | `SectionHeading` | Lowercase italic eyebrow, script title, engraved divider, one italic line |
 | `Divider` | A small dogwood blossom with a leafy sprig to each side |
-| `Flora` | Places one plant drawing as an image |
+| `Flora` | Places one plant drawing as an image, with any drawings laid over it in the same coordinates (the mushrooms at the foot) |
+| `Butterfly` | A butterfly or moth resting on the plants; now and then it slowly opens and closes its wings (still with reduced motion) |
 | `SecretDuck` | The engraved duck that walks the line at the foot of the Registry page; the only link to the Secret Registry |
 | `.btn` | A double-ruled outline button in spaced capitals |
 
@@ -96,6 +97,7 @@ All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requ
 
 - `src/lib/engrave.ts`: the drawing tools (leaves, petals, stems, hatching) and the species
 - `src/lib/flora.ts` and `src/lib/hero-art.ts`: the arrangements
+- `src/lib/fungi.ts` and `src/lib/insects.ts`: native mushrooms and insects, drawn the same way; `src/lib/woodland.ts` sets them among the plants
 - At build time, `src/lib/art.ts` writes each arrangement to a cached file in `/flora/*.svg`, so pages stay small and the plants load once for the whole site. The pen keeps the same weight on screen at every size.
 
 Every plant is native to the southeastern US:
@@ -104,6 +106,12 @@ Every plant is native to the southeastern US:
 - **Vines:** Carolina jessamine, maypop.
 - **Ferns:** Christmas fern.
 - **No tropicals.**
+
+And among them, native mushrooms and insects (Ally's idea), each where it would really be:
+
+- **Mushrooms, at the foot of every page:** yellow morels (up in Georgia woods in April), chanterelles, and turkey tail on a mossy fallen log. Each page has its own mix, and the two sides differ.
+- **On the plants:** a common eastern bumblebee at the maypop and the azalea, a native convergent lady beetle on a dogwood leaf, and a gulf fritillary caterpillar on the maypop, its host plant.
+- **One butterfly or moth per page,** resting at the edge of a cluster or on a photo frame: an eastern tiger swallowtail (Georgia's state butterfly), a gulf fritillary or a luna moth. Every so often it slowly opens and closes its wings; with reduced motion it stays still.
 
 ### 3.5 Motion
 
@@ -648,6 +656,7 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [ ] **You:** Venmo/PayPal handles for robot chip-ins (`venmoHandle`, `paypalHandle`)
 - [x] Official robot models in the room, moving on their real joints
 - [x] Redesign as a botanical-engraving invitation: sage on ivory, engraved native plants, the Secret Registry by day, the walking duck
+- [x] Native mushrooms and insects among the plants, one resting butterfly or moth per page (graded 93)
 - [ ] Later: the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two

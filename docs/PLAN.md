@@ -111,7 +111,7 @@ And among them, native mushrooms and insects (Ally's idea), each where it would 
 
 - **Mushrooms, at the foot of every page:** yellow morels (up in Georgia woods in April), chanterelles, and turkey tail on a mossy fallen log. Each page has its own mix, and the two sides differ.
 - **On the plants:** a common eastern bumblebee at the maypop and the azalea, a native convergent lady beetle on a dogwood leaf, and a gulf fritillary caterpillar on the maypop, its host plant.
-- **One butterfly or moth per page,** perched at the edge of a cluster or on a photo frame: an eastern tiger swallowtail (Georgia's state butterfly) or a luna moth with its wings spread, seen at a slant, or a gulf fritillary at rest with its wings closed, showing its silver-spotted underside (standing on a jessamine flower, drinking at a maypop, or hanging under a dogwood leaf). Every so often it slowly moves its wings; with reduced motion it stays still.
+- **One butterfly or moth per page,** perched at the edge of a cluster or on a photo frame: an eastern tiger swallowtail (Georgia's state butterfly), a luna moth or a gulf fritillary with its wings spread, seen at a slant, or the gulf fritillary at rest with its wings closed, showing its silver-spotted underside (standing on a jessamine flower, or drinking at a maypop). Every so often it slowly moves its wings; with reduced motion it stays still.
 
 ### 3.5 Motion
 

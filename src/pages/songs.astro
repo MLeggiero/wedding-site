@@ -10,7 +10,7 @@ const playlistId = site.spotifyPlaylistUrl.match(/playlist\/([A-Za-z0-9]+)/)?.[1
 ---
 
 <Base title="Songs" description="Request a song for Ally & Mark’s wedding playlist.">
-  <FloralSection flora="full" label="Request a song" butterfly="luna-moth" butterflyLeft floor={['floor-morels', 'floor-chanterelles']}>
+  <FloralSection flora="full" label="Request a song" butterfly={{ kind: 'luna-moth', perch: 'vine', tilt: [26, 20] }} floor={['floor-morels', 'floor-chanterelles']}>
     <SectionHeading eyebrow="join in" title="Request a song" lead="What gets you dancing?" />
     <PaperCard class="guest-card" sprigs="top">
       <form class="guest-form" data-song-form data-endpoint={site.guestEndpoint}>

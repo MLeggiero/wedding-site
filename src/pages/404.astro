@@ -6,7 +6,7 @@ import { withBase } from '../lib/url';
 ---
 
 <Base title="Page not found">
-  <FloralSection flora="full" corners="bottom" label="Page not found" class="lost" butterfly="gulf-fritillary" floor={['floor-log', 'floor-morels']}>
+  <FloralSection flora="full" corners="bottom" label="Page not found" class="lost" butterfly={{ kind: 'gulf-fritillary', pose: 'closed' }} floor={['floor-log', 'floor-morels']}>
     <SectionHeading eyebrow="page not found" title="Off the path" />
     <p class="lost__home"><a class="btn" href={withBase('/')}>Home</a></p>
   </FloralSection>

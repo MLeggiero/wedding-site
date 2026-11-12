@@ -1,35 +1,58 @@
 ---
-// A butterfly or moth resting on the plant art. Now and then it slowly opens
-// and closes its wings, as one does basking in the sun; with reduced motion it
-// simply rests. Place it inside a drawing's box (Flora's slot, HeroFrame):
-// `view` is that drawing's view, `at` the point it rests on and `size` the
-// width of its drawing, both in the drawing's units. A page can keep it from
-// getting too small to make out with --bf-min.
-import { artUrl, artView } from '../lib/art';
-import type { ButterflyKind } from '../lib/insects';
+// A butterfly or moth resting on the plant art. With its wings spread
+// ('open') it is seen from above, tipped a little by `tilt` as if lying on a
+// leaf seen at a slant; now and then it slowly closes and opens its wings, as
+// one does basking in the sun. At rest with its wings closed ('closed') it is
+// seen from the side, and now and then lifts them a little. With reduced
+// motion it simply rests.
+//
+// Place it inside a drawing's box (Flora's slot, HeroFrame): `view` is that
+// drawing's view, `at` its thorax and `size` the width of its drawing, both
+// in the drawing's units. A page can keep it from getting too small to make
+// out with --bf-min.
+import { artUrl, artView, type ArtName } from '../lib/art';
+import { SIDE_ROOT, BUTTERFLY_REACH, type ButterflyKind } from '../lib/insects';
 
 interface Props {
   kind: ButterflyKind;
+  pose?: 'open' | 'closed';
   view: readonly [number, number, number, number];
   at: readonly [number, number];
   size: number;
-  /** degrees; 0 = head up */
+  /** degrees; 0 = head up for an open butterfly, head to the left for a closed one */
   rot?: number;
+  /** degrees it is tipped away from us, about its width and its length (open pose) */
+  tilt?: readonly [number, number];
+  /** face the other way */
+  flip?: boolean;
   /** seconds into its cycle, so two on one screen never move together */
   delay?: number;
   eager?: boolean;
 }
-const { kind, view, at, size, rot = 0, delay = 0, eager = false } = Astro.props;
+const { kind, pose = 'open', view, at, size, rot = 0, tilt = [0, 0], flip = false, delay = 0, eager = false } = Astro.props;
 const [vx, vy, vw, vh] = view;
-const [, , bw, bh] = artView(`${kind}-wings`);
+const name = (part: 'wings' | 'body') => (pose === 'closed' ? `${kind}-closed-${part}` : `${kind}-${part}`) as ArtName;
+const [, , bw, bh] = artView(name('wings'));
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
-const style = `left:${pct(at[0] - vx, vw)};top:${pct(at[1] - vy, vh)};width:max(var(--bf-min, 0px), ${pct(size, vw)});rotate:${rot}deg;--bf-delay:${(-delay).toFixed(2)}s`;
+// closed wings pivot where they meet the body
+const root = SIDE_ROOT.map((v) => `${(50 + (v / (BUTTERFLY_REACH * 2)) * 100).toFixed(2)}%`).join(' ');
+const style = [
+  `left:${pct(at[0] - vx, vw)}`,
+  `top:${pct(at[1] - vy, vh)}`,
+  `width:max(var(--bf-min, 0px), ${pct(size, vw)})`,
+  `rotate:${rot}deg`,
+  `--bf-delay:${(-delay).toFixed(2)}s`,
+  `--bf-plane:${flip ? 'scaleX(-1) ' : ''}rotateX(${tilt[0]}deg) rotateY(${tilt[1]}deg)`,
+  `--bf-root:${root}`,
+].join(';');
 const loading = eager ? 'eager' : 'lazy';
 ---
 
-<span class="bf" style={style}>
-  <img class="bf__wings" src={artUrl(`${kind}-wings`)} alt="" width={bw} height={bh} loading={loading} decoding="async" />
-  <img class="bf__body" src={artUrl(`${kind}-body`)} alt="" width={bw} height={bh} loading={loading} decoding="async" />
+<span class:list={['bf', `bf--${pose}`]} style={style}>
+  <span class="bf__plane">
+    <img class="bf__wings" src={artUrl(name('wings'))} alt="" width={bw} height={bh} loading={loading} decoding="async" />
+    <img class="bf__body" src={artUrl(name('body'))} alt="" width={bw} height={bh} loading={loading} decoding="async" />
+  </span>
 </span>
 
 <style>
@@ -41,6 +64,11 @@ const loading = eager ? 'eager' : 'lazy';
     pointer-events: none;
     user-select: none;
   }
+  .bf__plane {
+    position: absolute;
+    inset: 0;
+    transform: var(--bf-plane);
+  }
   .bf img {
     position: absolute;
     inset: 0;
@@ -48,9 +76,15 @@ const loading = eager ? 'eager' : 'lazy';
     height: 100%;
     max-width: none;
   }
+  .bf--closed .bf__wings {
+    transform-origin: var(--bf-root);
+  }
   @media (prefers-reduced-motion: no-preference) {
-    .bf__wings {
+    .bf--open .bf__wings {
       animation: bf-bask 12s ease-in-out var(--bf-delay, 0s) infinite;
+    }
+    .bf--closed .bf__wings {
+      animation: bf-lift 11s ease-in-out var(--bf-delay, 0s) infinite;
     }
   }
   /* wings open for a long while, then two slow beats: closing up over the back and opening again */
@@ -71,6 +105,26 @@ const loading = eager ? 'eager' : 'lazy';
     }
     79% {
       scale: 1 1;
+    }
+  }
+  /* closed wings lift a little apart, twice, and settle */
+  @keyframes bf-lift {
+    0%,
+    60%,
+    100% {
+      rotate: 0deg;
+    }
+    65% {
+      rotate: -8deg;
+    }
+    70% {
+      rotate: 0deg;
+    }
+    74% {
+      rotate: -5deg;
+    }
+    78% {
+      rotate: 0deg;
     }
   }
 </style>

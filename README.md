@@ -113,7 +113,7 @@ Native mushrooms and insects live among them, drawn the same way: morels, chante
 turkey tail on a mossy log (`src/lib/fungi.ts`); a tiger swallowtail, a gulf fritillary and its
 caterpillar, a luna moth, a bumblebee and a lady beetle (`src/lib/insects.ts`). They are placed
 in `src/lib/woodland.ts`: the mushrooms come up at the foot of each page (a different mix each
-side), and one butterfly or moth rests on each page, slowly opening and closing its wings
+side), and one butterfly or moth perches on each page, now and then slowly moving its wings
 (`Butterfly.astro`; still for anyone who prefers less motion).
 
 > RSVP answers and the guest list will live in a Google Sheet, never in this public repo.

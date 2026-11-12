@@ -89,7 +89,7 @@ All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requ
 | `SectionHeading` | Lowercase italic eyebrow, script title, engraved divider, one italic line |
 | `Divider` | A small dogwood blossom with a leafy sprig to each side |
 | `Flora` | Places one plant drawing as an image, with any drawings laid over it in the same coordinates (the mushrooms at the foot) |
-| `Butterfly` | A butterfly or moth resting on the plants; now and then it slowly opens and closes its wings (still with reduced motion) |
+| `Butterfly` | A butterfly or moth perched on the plants, wings spread (seen at a slant) or closed (seen from the side); now and then it slowly moves its wings (still with reduced motion) |
 | `SecretDuck` | The engraved duck that walks the line at the foot of the Registry page; the only link to the Secret Registry |
 | `.btn` | A double-ruled outline button in spaced capitals |
 
@@ -111,7 +111,7 @@ And among them, native mushrooms and insects (Ally's idea), each where it would 
 
 - **Mushrooms, at the foot of every page:** yellow morels (up in Georgia woods in April), chanterelles, and turkey tail on a mossy fallen log. Each page has its own mix, and the two sides differ.
 - **On the plants:** a common eastern bumblebee at the maypop and the azalea, a native convergent lady beetle on a dogwood leaf, and a gulf fritillary caterpillar on the maypop, its host plant.
-- **One butterfly or moth per page,** resting at the edge of a cluster or on a photo frame: an eastern tiger swallowtail (Georgia's state butterfly), a gulf fritillary or a luna moth. Every so often it slowly opens and closes its wings; with reduced motion it stays still.
+- **One butterfly or moth per page,** perched at the edge of a cluster or on a photo frame: an eastern tiger swallowtail (Georgia's state butterfly) or a luna moth with its wings spread, seen at a slant, or a gulf fritillary at rest with its wings closed, showing its silver-spotted underside (standing on a jessamine flower, drinking at a maypop, or hanging under a dogwood leaf). Every so often it slowly moves its wings; with reduced motion it stays still.
 
 ### 3.5 Motion
 
@@ -656,7 +656,7 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [ ] **You:** Venmo/PayPal handles for robot chip-ins (`venmoHandle`, `paypalHandle`)
 - [x] Official robot models in the room, moving on their real joints
 - [x] Redesign as a botanical-engraving invitation: sage on ivory, engraved native plants, the Secret Registry by day, the walking duck
-- [x] Native mushrooms and insects among the plants, one resting butterfly or moth per page (graded 93)
+- [x] Native mushrooms and insects among the plants, one resting butterfly or moth per page (graded 93; 91 on style and coherence alone)
 - [ ] Later: the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two

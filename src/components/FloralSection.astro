@@ -12,6 +12,7 @@ import { artView, type ArtName } from '../lib/art';
 import type { ButterflyKind } from '../lib/insects';
 
 type Floor = Extract<ArtName, `floor-${string}`>;
+type Perch = 'leaf' | 'vine' | 'maypop';
 
 interface Props {
   class?: string;
@@ -22,20 +23,36 @@ interface Props {
   corners?: 'both' | 'top' | 'bottom';
   /** what comes up at the foot of the left and right clusters */
   floor?: [Floor, Floor];
-  /** a butterfly or moth resting on the top-right cluster (the bottom-right if the top has none) */
-  butterfly?: ButterflyKind;
-  /** or on the top-left cluster, by the end of the jessamine */
-  butterflyLeft?: boolean;
+  /**
+   * A butterfly or moth resting on the plants: at the tip of the lowest dogwood
+   * leaf on the right ('leaf', the default), at the end of the jessamine on the
+   * left ('vine'), or on the maypop at the foot ('maypop', the default when the
+   * top has no plants). Spread ('open') or at rest with its wings closed.
+   */
+  butterfly?: { kind: ButterflyKind; pose?: 'open' | 'closed'; perch?: Perch; tilt?: [number, number] };
   style?: string;
 }
-const { class: cls, label, flora = false, corners = 'both', floor = ['floor-morels', 'floor-log'], butterfly, butterflyLeft = false, style } = Astro.props;
+const { class: cls, label, flora = false, corners = 'both', floor = ['floor-morels', 'floor-log'], butterfly, style } = Astro.props;
 const top = corners !== 'bottom';
 const bottom = corners !== 'top';
-// where it rests, in the cluster's own units: at the tip of the lowest dogwood leaf, at the end of
-// the jessamine, or on the maypop at the foot
-const restTop = { at: [398, 258], size: 150, rot: -28 } as const;
-const restVine = { at: [512, 96], size: 140, rot: 58 } as const;
-const restLow = { at: [392, 296], size: 140, rot: 24 } as const;
+// where it rests, in the cluster's own units. Spread, it sits at the leaf tip or the end of the vine
+// with its wings over open paper; with its wings closed it hangs under the leaf, stands on the vine's
+// end, or stands on the maypop's petals to drink.
+const perches: Record<Perch, { art: 'corner' | 'corner-low'; open: object; closed: object }> = {
+  leaf: { art: 'corner', open: { at: [398, 258], size: 150, rot: -28 }, closed: { at: [386, 252], size: 140, rot: 172 } },
+  vine: { art: 'corner', open: { at: [512, 96], size: 140, rot: 58 }, closed: { at: [505, 80], size: 140, rot: -8 } },
+  maypop: { art: 'corner-low', open: { at: [392, 296], size: 140, rot: 24 }, closed: { at: [345, 316], size: 140, rot: 0 } },
+};
+const perch = butterfly ? (butterfly.perch ?? (top ? 'leaf' : 'maypop')) : null;
+const bf = butterfly &&
+  perch && {
+    kind: butterfly.kind,
+    pose: butterfly.pose,
+    tilt: butterfly.tilt,
+    view: artView(perches[perch].art),
+    eager: flora === 'full' && perch !== 'maypop',
+    ...(perches[perch][butterfly.pose ?? 'open'] as { at: [number, number]; size: number; rot: number }),
+  };
 ---
 
 <section
@@ -48,18 +65,18 @@ const restLow = { at: [392, 296], size: 140, rot: 24 } as const;
       <div class="room__flora" aria-hidden="true">
         {top && (
           <Flora name="corner" eager={flora === 'full'} class="room__plant room__plant--tl">
-            {butterfly && butterflyLeft && <Butterfly kind={butterfly} view={artView('corner')} {...restVine} eager={flora === 'full'} />}
+            {bf && perch === 'vine' && <Butterfly {...bf} />}
           </Flora>
         )}
         {top && (
           <Flora name="corner" eager={flora === 'full'} mirror class="room__plant room__plant--tr">
-            {butterfly && !butterflyLeft && <Butterfly kind={butterfly} view={artView('corner')} {...restTop} eager={flora === 'full'} />}
+            {bf && perch === 'leaf' && <Butterfly {...bf} />}
           </Flora>
         )}
         {bottom && <Flora name="corner-low" extra={[floor[0]]} class="room__plant room__plant--bl" />}
         {bottom && (
           <Flora name="corner-low" extra={[floor[1]]} mirror class="room__plant room__plant--br">
-            {butterfly && !top && <Butterfly kind={butterfly} view={artView('corner-low')} {...restLow} />}
+            {bf && perch === 'maypop' && <Butterfly {...bf} />}
           </Flora>
         )}
       </div>

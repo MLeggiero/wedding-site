@@ -4,9 +4,9 @@
 // each page can have its own mix at the foot without redrawing the plants.
 // Butterflies are drawn in two parts, wings and body, so the wings can open
 // and close (Butterfly.astro).
-import { place, rng } from './engrave';
+import { place, rng, leaf } from './engrave';
 import { morel, chanterelle, mossyLog } from './fungi';
-import { butterflyWings, butterflyBody, bumblebee, ladyBeetle, BUTTERFLY_REACH, type ButterflyKind } from './insects';
+import { butterflyWings, butterflyBody, fritillaryClosedWings, fritillaryClosedBody, bumblebee, ladyBeetle, BUTTERFLY_REACH, type ButterflyKind } from './insects';
 import { PEN, type Arrangement } from './flora';
 
 /** The bottom-corner cluster's box and view (see cornerLow): the floor drawings must match it. */
@@ -29,14 +29,20 @@ function litter(x0: number, x1: number, seed: number) {
   return s;
 }
 
-/** Morels coming up at the edge of the cluster, and a lady beetle on a dogwood leaf. */
+/** A fallen leaf lying in the litter, seen at a slant. */
+const fallenLeaf = (x: number, rot: number, seed: number) =>
+  place(leaf({ L: 40, W: 10, widest: 0.42, acuminate: 0.6, veins: 3, shade: 1, stalk: 4, seed }, PEN), x, H - 4, rot, 1);
+
+/** A clump of morels at the edge of the cluster (one behind, two in front, a little one coming up), and a lady beetle on a dogwood leaf. */
 export function floorMorels(): Arrangement {
   const p = PEN;
   const parts = [
-    litter(300, 440, 701),
-    place(morel(58, p, 702, -0.05), 352, H),
-    place(morel(78, p, 703, 0.03), 384, H + 2),
-    place(morel(42, p, 704, 0.06), 414, H + 1),
+    litter(300, 446, 701),
+    place(morel(80, p, 703, 0.02), 380, H - 6),
+    fallenLeaf(336, 76, 706),
+    place(morel(56, p, 702, -0.06), 356, H + 1),
+    place(morel(42, p, 704, 0.07), 401, H + 1),
+    place(morel(24, p, 707, -0.03), 424, H + 1),
     // on the upper dogwood leaf, heading for its tip
     place(ladyBeetle(17, p, 705), 82, H - 84, 30),
   ];
@@ -53,14 +59,15 @@ export function floorLog(): Arrangement {
   return { ...LOW, markup: parts.join('') };
 }
 
-/** Chanterelles in the leaf litter. */
+/** A clump of chanterelles in the leaf litter, one behind the others. */
 export function floorChanterelles(): Arrangement {
   const p = PEN;
   const parts = [
     litter(296, 446, 721),
-    place(chanterelle(50, p, 722, -0.02), 336, H + 1),
-    place(chanterelle(66, p, 723, 0.03), 380, H + 2),
-    place(chanterelle(40, p, 724, 0.02), 420, H + 1),
+    place(chanterelle(62, p, 723, 0.03), 374, H - 6),
+    fallenLeaf(416, 78, 725),
+    place(chanterelle(48, p, 722, -0.03), 346, H + 1),
+    place(chanterelle(38, p, 724, 0.035), 402, H + 1),
   ];
   return { ...LOW, markup: parts.join('') };
 }
@@ -79,3 +86,6 @@ export function butterflyWingsArt(kind: ButterflyKind): Arrangement {
 export function butterflyBodyArt(kind: ButterflyKind): Arrangement {
   return { w: reach * 2, h: reach * 2, view: bfView, markup: butterflyBody(kind, F, PEN, 31) };
 }
+/** The gulf fritillary at rest, wings closed, seen from the side. */
+export const fritillaryClosedWingsArt = (): Arrangement => ({ w: reach * 2, h: reach * 2, view: bfView, markup: fritillaryClosedWings(F, PEN, 31) });
+export const fritillaryClosedBodyArt = (): Arrangement => ({ w: reach * 2, h: reach * 2, view: bfView, markup: fritillaryClosedBody(F, PEN, 31) });

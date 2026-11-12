@@ -9,7 +9,7 @@ const ready = Boolean(site.guestEndpoint);
 ---
 
 <Base title="Share a photo" description="Send Ally & Mark a photo of the two of them, or of you with them.">
-  <FloralSection flora="full" label="Share a photo" butterfly="tiger-swallowtail" floor={['floor-log', 'floor-chanterelles']}>
+  <FloralSection flora="full" label="Share a photo" butterfly={{ kind: 'tiger-swallowtail', tilt: [34, 14] }} floor={['floor-log', 'floor-chanterelles']}>
     <SectionHeading eyebrow="join in" title="Share a photo" lead="A photo of us, or of you with us." />
     <PaperCard class="guest-card" sprigs="top">
       <form class="guest-form" data-photo-form data-endpoint={site.guestEndpoint}>

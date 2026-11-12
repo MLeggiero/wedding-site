@@ -10,7 +10,7 @@ import {
   svgDocument, baseDocument, swayDocument, swayView, type Arrangement,
 } from './flora';
 import { heroBack, heroFront, archBack, archFront } from './hero-art';
-import { floorMorels, floorLog, floorChanterelles, butterflyWingsArt as wings, butterflyBodyArt as body } from './woodland';
+import { floorMorels, floorLog, floorChanterelles, butterflyWingsArt as wings, butterflyBodyArt as body, fritillaryClosedWingsArt, fritillaryClosedBodyArt } from './woodland';
 import { withBase } from './url';
 
 const builders = {
@@ -37,6 +37,8 @@ const builders = {
   'luna-moth-body': () => body('luna-moth'),
   'gulf-fritillary-wings': () => wings('gulf-fritillary'),
   'gulf-fritillary-body': () => body('gulf-fritillary'),
+  'gulf-fritillary-closed-wings': fritillaryClosedWingsArt,
+  'gulf-fritillary-closed-body': fritillaryClosedBodyArt,
 } satisfies Record<string, () => Arrangement>;
 
 export type ArtName = keyof typeof builders;

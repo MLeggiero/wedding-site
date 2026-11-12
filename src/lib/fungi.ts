@@ -88,8 +88,9 @@ export function morel(H: number, pen: number, seed = 1, lean = 0): string {
       for (let i = 0; i <= 4; i++) poly.push(at(tb + wob(k + 1, va + ((vb - va) * i) / 4), va + 0.025 + ((vb - va - 0.05) * i) / 4));
       for (let i = 4; i >= 0; i--) poly.push(at(ta + ((tb - ta) * i) / 4 + wob(k, vb - 0.02), vb - 0.025));
       for (let i = 4; i >= 0; i--) poly.push(at(ta + wob(k, va + ((vb - va) * i) / 4), va + 0.025 + ((vb - va - 0.05) * i) / 4));
-      const shade = (th[k] + th[k + 1]) / 2;
-      pits += hatch([poly], { angle: 62, gap: H * (shade > 0.3 ? 0.018 : 0.026), seed: seed * 7 + k * 13 + j });
+      // strokes turn with the cap's curve, closer on the shaded side
+      const mid = (th[k] + th[k + 1]) / 2;
+      pits += hatch([poly], { angle: 76 + mid * 18, gap: H * (mid > 0.3 ? 0.024 : 0.032), seed: seed * 7 + k * 13 + j });
     }
   }
   pl.lines(pits, 0.3).lines(ridges, 0.5);
@@ -114,11 +115,12 @@ export function chanterelle(H: number, pen: number, seed = 1, tilt = 0): string 
   // silhouette: the stem flaring up into the funnel, then round the back of the rim
   const back: Pt[] = [];
   for (let i = 0; i <= 12; i++) back.push(rim(Math.PI + (i / 12) * Math.PI));
-  const sw = 0.1 * H;
+  // a stout stem that widens all the way up into the cap
+  const sw = 0.12 * H;
   const silhouette: Pt[] = [
-    [-sw * 0.95, 0], [-sw, -0.18 * H], [-sw * 1.15, -0.36 * H], [-0.2 * H, -0.56 * H + tilt * H * 0.3], [-0.34 * H, -0.7 * H + tilt * H * 0.6],
+    [-sw * 0.95, 0], [-sw * 1.02, -0.14 * H], [-sw * 1.25, -0.3 * H], [-0.23 * H, -0.5 * H + tilt * H * 0.3], [-0.35 * H, -0.67 * H + tilt * H * 0.6],
     ...back,
-    [0.34 * H, -0.7 * H - tilt * H * 0.6], [0.2 * H, -0.56 * H - tilt * H * 0.3], [sw * 1.15, -0.36 * H], [sw, -0.18 * H], [sw * 0.95, 0], [0, 0.015 * H],
+    [0.35 * H, -0.67 * H - tilt * H * 0.6], [0.23 * H, -0.5 * H - tilt * H * 0.3], [sw * 1.25, -0.3 * H], [sw * 1.02, -0.14 * H], [sw * 0.95, 0], [0, 0.015 * H],
   ];
   pl.shape(spline(silhouette, true), 0.85);
   // the near edge of the cap, rolled under, drawn as a lip with a second line inside it
@@ -138,7 +140,7 @@ export function chanterelle(H: number, pen: number, seed = 1, tilt = 0): string 
   pl.lines(spline(hollow), 0.34);
   // forked ridges from the lip down into the stem
   let ridges = '';
-  const foot: Pt = [0, -0.34 * H];
+  const foot: Pt = [0, -0.28 * H];
   for (let i = 1; i < 12; i++) {
     const a = (i / 12) * Math.PI;
     const p = add(lip[Math.round((i / 12) * 14)], [0, H * 0.03]);
@@ -152,7 +154,7 @@ export function chanterelle(H: number, pen: number, seed = 1, tilt = 0): string 
   }
   pl.lines(ridges, 0.34);
   // shade the far side of the underside and the stem
-  const under: Pt[] = [...lip, [sw * 1.1, -0.36 * H], [-sw * 1.1, -0.36 * H]];
+  const under: Pt[] = [...lip, [sw * 1.2, -0.3 * H], [-sw * 1.2, -0.3 * H]];
   pl.lines(hatch([under, [[0.06 * H, -H], [H, -H], [H, 0], [0.06 * H, 0]]], { angle: 70, gap: H * 0.028, seed }), 0.3);
   pl.lines(hatch([splinePts(silhouette, true, 6), [[sw * 0.2, -0.4 * H], [H, -0.4 * H], [H, 0], [sw * 0.2, 0]]], { angle: 84, gap: H * 0.03, seed: seed + 1 }), 0.3);
   void r;
@@ -171,7 +173,7 @@ function turkeyTail(Rf: number, pen: number, seed: number, spread = 150): string
     for (let i = 0; i <= 12; i++) {
       const a = ((a0 + (i / 12) * spread) * Math.PI) / 180;
       const wav = 1 + (k > 0.95 ? 0.05 * Math.sin(i * 1.9 + seed) : 0.02 * Math.sin(i * 1.3 + seed + k * 4));
-      pts.push([Math.cos(a) * Rf * k * wav, Math.sin(a) * Rf * k * wav * 0.82]);
+      pts.push([Math.cos(a) * Rf * k * wav, Math.sin(a) * Rf * k * wav * 0.55]);
     }
     return pts;
   };
@@ -240,8 +242,11 @@ export function mossyLog(L: number, D: number, pen: number, seed = 1): string {
   }
   pl.lines(moss, 0.3);
   // turkey tail in overlapping tiers on the side of the log, toward the cut end
+  // in tiers: the upper shelves first, the lower ones overlapping them
   const brackets: [number, number, number, number][] = [
-    [0.58, 0.62, 0.42, -6], [0.68, 0.5, 0.5, 4], [0.77, 0.66, 0.46, -2], [0.64, 0.8, 0.38, 8], [0.74, 0.86, 0.4, -10], [0.83, 0.42, 0.36, 12],
+    [0.62, 0.78, 0.36, -4], [0.73, 0.8, 0.4, 6], [0.82, 0.74, 0.32, 10],
+    [0.57, 0.58, 0.42, -8], [0.68, 0.6, 0.5, 2], [0.79, 0.55, 0.44, 8],
+    [0.64, 0.4, 0.36, -2], [0.74, 0.38, 0.4, 5],
   ];
   for (const [fx, fy, size, rot] of brackets) {
     pl.add(`<g transform="translate(${(fx * L).toFixed(1)} ${(-fy * D).toFixed(1)}) rotate(${rot})">${turkeyTail(D * size * 1.25, pen, seed + Math.round(fx * 100), 140 + r() * 30)}</g>`);

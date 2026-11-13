@@ -4,7 +4,10 @@
 // each page can have its own mix at the foot without redrawing the plants.
 // Butterflies are drawn in two parts, wings and body, so the wings can open
 // and close (Butterfly.astro).
-import { place, rng, leaf } from './engrave';
+//
+// Each mushroom and insect has a simpler version for when its drawing is
+// shown small (a phone), with fewer lines set further apart (`lod`).
+import { place, rng, leaf, lod } from './engrave';
 import { morel, chanterelle, mossyLog } from './fungi';
 import { butterflyWings, butterflyBody, fritillaryClosedWings, fritillaryClosedBody, bumblebee, ladyBeetle, BUTTERFLY_REACH, type ButterflyKind } from './insects';
 import { PEN, type Arrangement } from './flora';
@@ -38,13 +41,13 @@ export function floorMorels(): Arrangement {
   const p = PEN;
   const parts = [
     litter(300, 446, 701),
-    place(morel(80, p, 703, 0.02), 380, H - 6),
+    place(lod(morel(80, p, 703, 0.02), morel(80, p, 703, 0.02, true)), 380, H - 6),
     fallenLeaf(336, 76, 706),
-    place(morel(56, p, 702, -0.06), 356, H + 1),
-    place(morel(42, p, 704, 0.07), 401, H + 1),
-    place(morel(24, p, 707, -0.03), 424, H + 1),
-    // on the upper dogwood leaf, heading for its tip
-    place(ladyBeetle(17, p, 705), 82, H - 84, 30),
+    place(lod(morel(56, p, 702, -0.06), morel(56, p, 702, -0.06, true)), 356, H + 1),
+    place(lod(morel(42, p, 704, 0.07), morel(42, p, 704, 0.07, true)), 401, H + 1),
+    place(lod(morel(24, p, 707, -0.03), morel(24, p, 707, -0.03, true)), 424, H + 1),
+    // on the upper dogwood leaf, heading for its tip (too small to draw on a phone)
+    place(lod(ladyBeetle(17, p, 705), ''), 80, H - 80, 30),
   ];
   return { ...LOW, markup: parts.join('') };
 }
@@ -53,8 +56,8 @@ export function floorMorels(): Arrangement {
 export function floorLog(): Arrangement {
   const p = PEN;
   const parts = [
-    place(mossyLog(196, 40, p, 711), 262, H),
-    place(bumblebee(30, p, 712), 300, H - 200, 28, 1, true),
+    place(lod(mossyLog(196, 40, p, 711), mossyLog(196, 40, p, 711, true)), 262, H),
+    place(lod(bumblebee(30, p, 712), bumblebee(30, p, 712, true)), 300, H - 200, 28, 1, true),
   ];
   return { ...LOW, markup: parts.join('') };
 }
@@ -64,10 +67,10 @@ export function floorChanterelles(): Arrangement {
   const p = PEN;
   const parts = [
     litter(296, 446, 721),
-    place(chanterelle(62, p, 723, 0.03), 374, H - 6),
+    place(lod(chanterelle(62, p, 723, 0.03), chanterelle(62, p, 723, 0.03, true)), 374, H - 6),
     fallenLeaf(416, 78, 725),
-    place(chanterelle(48, p, 722, -0.03), 346, H + 1),
-    place(chanterelle(38, p, 724, 0.035), 402, H + 1),
+    place(lod(chanterelle(48, p, 722, -0.03), chanterelle(48, p, 722, -0.03, true)), 346, H + 1),
+    place(lod(chanterelle(38, p, 724, 0.035), chanterelle(38, p, 724, 0.035, true)), 402, H + 1),
   ];
   return { ...LOW, markup: parts.join('') };
 }
@@ -80,12 +83,12 @@ const reach = F * BUTTERFLY_REACH;
 const bfView: [number, number, number, number] = [-reach, -reach, reach * 2, reach * 2];
 
 
-export function butterflyWingsArt(kind: ButterflyKind): Arrangement {
-  return { w: reach * 2, h: reach * 2, view: bfView, markup: butterflyWings(kind, F, PEN, 31) };
-}
-export function butterflyBodyArt(kind: ButterflyKind): Arrangement {
-  return { w: reach * 2, h: reach * 2, view: bfView, markup: butterflyBody(kind, F, PEN, 31) };
-}
+/** A butterfly drawing switches to its simpler version below this many screen pixels per unit (about 75px wide). */
+const BF_DETAIL = 0.58;
+const bf = (full: string, small: string): Arrangement => ({ w: reach * 2, h: reach * 2, view: bfView, markup: lod(full, small), detail: BF_DETAIL });
+
+export const butterflyWingsArt = (kind: ButterflyKind) => bf(butterflyWings(kind, F, PEN, 31), butterflyWings(kind, F, PEN, 31, true));
+export const butterflyBodyArt = (kind: ButterflyKind) => bf(butterflyBody(kind, F, PEN, 31), butterflyBody(kind, F, PEN, 31, true));
 /** The gulf fritillary at rest, wings closed, seen from the side. */
-export const fritillaryClosedWingsArt = (): Arrangement => ({ w: reach * 2, h: reach * 2, view: bfView, markup: fritillaryClosedWings(F, PEN, 31) });
-export const fritillaryClosedBodyArt = (): Arrangement => ({ w: reach * 2, h: reach * 2, view: bfView, markup: fritillaryClosedBody(F, PEN, 31) });
+export const fritillaryClosedWingsArt = () => bf(fritillaryClosedWings(F, PEN, 31), fritillaryClosedWings(F, PEN, 31, true));
+export const fritillaryClosedBodyArt = () => bf(fritillaryClosedBody(F, PEN, 31), fritillaryClosedBody(F, PEN, 31, true));

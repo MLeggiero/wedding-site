@@ -105,9 +105,12 @@ Cormorant Garamond for spaced capitals and italics, and EB Garamond for reading 
 ## Plant art
 
 The native plants are engraved in code: drawing tools and species (magnolia, dogwood, azalea,
-Christmas fern, jessamine, maypop, trillium) in `src/lib/engrave.ts`, arrangements in
-`src/lib/flora.ts` and `src/lib/hero-art.ts`, written to cached files under `/flora/*.svg` at
-build time (`src/lib/art.ts`).
+Christmas fern, jessamine, maypop, trillium) in `src/lib/engrave.ts`; stems that carry them
+(curving vines, twigs, each leaf and flower set where it grows) in `src/lib/stems.ts`;
+arrangements in `src/lib/flora.ts` and `src/lib/hero-art.ts`, written to cached files under
+`/flora/*.svg` at build time (`src/lib/art.ts`). Each file leaves out its shading when it is
+shown small (a media query inside the SVG measures the image), so the drawings stay light on
+phones.
 
 Native mushrooms and insects live among them, drawn the same way: morels, chanterelles and
 turkey tail on a mossy log (`src/lib/fungi.ts`); a tiger swallowtail, a gulf fritillary and its

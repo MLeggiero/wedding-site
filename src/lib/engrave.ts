@@ -8,6 +8,10 @@
 // attaches, growing toward -y unless noted). `pen` is the outline width in
 // screen pixels: the files draw every line with a non-scaling stroke, so the
 // pen weight stays the same at any size. Veins and hatching are drawn finer.
+//
+// Shading (hatching) is drawn with Plate.shade, so a drawing shown small can
+// leave it out and stay light (see the detail style in lib/flora.ts); `lod`
+// gives a part a simpler second version for small sizes.
 
 export const INK = '#61746a';
 export const PAPER = '#efede6';
@@ -191,6 +195,11 @@ export class Plate {
     if (d) this.out.push(`<path d="${d}" fill="none" stroke-width="${f(this.pen * k)}"/>`);
     return this;
   }
+  /** shading: left out when the drawing is shown small */
+  shade(d: string, k = 0.3) {
+    if (d) this.out.push(`<path class="s" d="${d}" fill="none" stroke-width="${f(this.pen * k)}"/>`);
+    return this;
+  }
   dots(pts: Pt[], r: number) {
     if (pts.length) this.out.push(`<path d="${pts.map((p) => `M${f(p[0] - r)},${f(p[1])}a${f(r)},${f(r)} 0 1 0 ${f(2 * r)},0a${f(r)},${f(r)} 0 1 0 ${f(-2 * r)},0`).join('')}" fill="${INK}" stroke="none"/>`);
     return this;
@@ -203,6 +212,9 @@ export class Plate {
     return this.out.join('');
   }
 }
+
+/** Two versions of a part: the full drawing, and a simpler one for when it is shown small. */
+export const lod = (full: string, small: string) => `<g class="hi">${full}</g>${small ? `<g class="lo">${small}</g>` : ''}`;
 
 /** Wrap engraved markup with the shared ink style (strokes keep their pen width at any size). */
 export function ink(markup: string) {
@@ -295,7 +307,7 @@ export function leaf(s: LeafSpec, pen: number): string {
   const shade = s.shade ?? 1;
   if (shade) {
     let h = '';
-    const count = Math.max(6, Math.min(32, Math.round(L / 7)));
+    const count = Math.max(5, Math.min(26, Math.round(L / 8.5)));
     for (let i = 0; i < count; i++) {
       const t = 0.06 + (i / count) * 0.88;
       const w = width(t);
@@ -305,13 +317,13 @@ export function leaf(s: LeafSpec, pen: number): string {
       const b = add(mid(t2), mul(nrm(t2), shade * w * (0.5 + r() * 0.12)));
       h += line(a, b);
     }
-    pl.lines(h, 0.3);
+    pl.shade(h, 0.3);
   }
   if (s.rolled) {
     const side = -(shade || 1);
     const pts: Pt[] = [];
     for (let t = 0.12; t <= 0.86; t += 0.06) pts.push(add(mid(t), mul(nrm(t), side * width(t) * 0.9)));
-    pl.lines(spline(pts), 0.32);
+    pl.shade(spline(pts), 0.32);
   }
   return pl.toString();
 }
@@ -344,7 +356,7 @@ export function twig(pts: Pt[], w0: number, w1: number, pen: number, seed = 1): 
     const b = lerp(a, pts[i], 0.45);
     h += line(a, b);
   }
-  pl.lines(h, 0.3);
+  pl.shade(h, 0.3);
   return pl.toString();
 }
 
@@ -435,7 +447,7 @@ export function petal(s: PetalSpec, pen: number): string {
       const b = add(mid(t + 0.05), [shade * width(t) * (0.35 + r() * 0.15), 0]);
       h += line(a, b);
     }
-    pl.lines(h, 0.28);
+    pl.shade(h, 0.28);
   }
   return pl.toString();
 }
@@ -463,7 +475,7 @@ export function magnoliaFlower(R: number, pen: number, seed = 1) {
       const a = a0 + off + i * (360 / count) + (r() - 0.5) * 16;
       pl.add(
         place(
-          petal({ L: R * size * (0.93 + r() * 0.14), W: R * wide, widest: 0.6, veins: ring === 2 ? 2 : 4, shade: i % 2 ? 1 : -1, hatch: 0.5, ruffle: 0.025, bend: (r() - 0.5) * 0.12, seed: seed * 10 + ring * 3 + i }, pen),
+          petal({ L: R * size * (0.93 + r() * 0.14), W: R * wide, widest: 0.6, veins: ring === 2 ? 2 : 3, shade: i % 2 ? 1 : -1, hatch: 0.45, ruffle: 0.025, bend: (r() - 0.5) * 0.12, seed: seed * 10 + ring * 3 + i }, pen),
           0,
           0,
           a,
@@ -474,8 +486,8 @@ export function magnoliaFlower(R: number, pen: number, seed = 1) {
   });
   // the ring of stamens, then the cone with its spiral of carpels
   let st = '';
-  for (let i = 0; i < 34; i++) {
-    const a = (i / 34) * 360 + r() * 5;
+  for (let i = 0; i < 26; i++) {
+    const a = (i / 26) * 360 + r() * 6;
     st += line(polar(R * 0.15, a), polar(R * (0.24 + r() * 0.04), a + 3));
   }
   pl.lines(st, 0.42);
@@ -502,7 +514,7 @@ export function magnoliaBud(L: number, pen: number, seed = 1) {
     const t = 0.15 + i * 0.1;
     h += line([W * (0.9 - t * 0.3), -L * t], [W * (0.45 - t * 0.2), -L * (t + 0.04)]);
   }
-  pl.lines(h, 0.28);
+  pl.shade(h, 0.28);
   // the sheath at the base
   pl.shape(spline([[0, L * 0.02], [-W * 0.7, -L * 0.06], [-W * 0.5, -L * 0.2], [0, -L * 0.14], [W * 0.5, -L * 0.2], [W * 0.7, -L * 0.06]], true), 0.8);
   void r;
@@ -560,22 +572,6 @@ export function dogwoodFlower(R: number, pen: number, seed = 1) {
   return pl.toString();
 }
 
-/** A dogwood twig: opposite leaves and blossoms, from (0,0) toward -y. */
-export function dogwoodBranch(L: number, pen: number, seed = 1) {
-  const r = rng(seed);
-  const pts: Pt[] = [];
-  for (let i = 0; i <= 5; i++) pts.push([(r() - 0.5) * L * 0.06 + i * L * 0.025, -i * (L / 5)]);
-  let s = twig(pts, L * 0.022, L * 0.008, pen, seed);
-  const flowers: string[] = [];
-  pts.slice(1).forEach(([x, y], i) => {
-    const side = i % 2 ? 1 : -1;
-    s += place(dogwoodLeaf(L * 0.36, pen, seed + i * 3, -side as 1 | -1), x, y, side * (52 + r() * 18), 1);
-    s += place(dogwoodLeaf(L * 0.32, pen, seed + i * 3 + 1, side as 1 | -1), x, y, -side * (58 + r() * 18), 1);
-    if (i === 1 || i === 3 || i === pts.length - 2) flowers.push(place(dogwoodFlower(L * 0.2, pen, seed + i * 5), x + side * L * 0.12, y - L * 0.05, r() * 60, 1));
-  });
-  return s + flowers.join('');
-}
-
 // ------------------------------------------------------------------ native azaleas
 
 /** One funnel-shaped azalea flower with its long stamens, from (0,0) (the tube's base) toward -y. */
@@ -589,18 +585,22 @@ function azaleaFlower(L: number, pen: number, seed: number) {
     const a = -150 + k * 30 + (r() - 0.5) * 10 + 90;
     pl.add(place(petal({ L: L * (0.4 + r() * 0.06), W: L * 0.13, widest: 0.6, veins: 1, shade: k < 2 ? 1 : 0, hatch: 0.35, seed: seed + k }, pen), 0, -L * 0.42, a - 90, 1));
   }
-  // five stamens and the style, long and curving up past the lobes
+  // five stamens and the style, long and curving up past the lobes (two of them left out when small)
   let st = '';
+  let fine = '';
   const dots: Pt[] = [];
-  for (let k = 0; k < 6; k++) {
-    const a = -104 + k * 6 + (r() - 0.5) * 4;
-    const len = L * (0.62 + r() * 0.16) * (k === 5 ? 1.12 : 1);
+  for (let k = 0; k < 5; k++) {
+    const a = -102 + k * 6 + (r() - 0.5) * 4;
+    const len = L * (0.55 + r() * 0.14) * (k === 4 ? 1.12 : 1);
     const end = add([0, -L * 0.42], polar(len, a));
     const c = add([0, -L * 0.42], polar(len * 0.55, a + 14 * (k < 3 ? -1 : 1)));
-    st += quad([0, -L * 0.42], c, end);
-    dots.push(end);
+    if (k % 2 && k !== 4) fine += quad([0, -L * 0.42], c, end);
+    else {
+      st += quad([0, -L * 0.42], c, end);
+      dots.push(end);
+    }
   }
-  pl.lines(st, 0.42);
+  pl.lines(st, 0.42).shade(fine, 0.42);
   pl.dots(dots, L * 0.016);
   return pl.toString();
 }
@@ -663,39 +663,12 @@ export function christmasFern(L: number, pen: number, seed = 1, curl = 0.25) {
       true,
     );
     const g = new Plate(pen).shape(shape, 0.75).lines(line([len * 0.04, 0], [len * 0.85, 0]), 0.3);
-    if (side > 0) g.lines(line([len * 0.4, w * 0.75], [len * 0.33, w * 0.2]) + line([len * 0.55, w * 0.62], [len * 0.48, w * 0.15]) + line([len * 0.7, w * 0.45], [len * 0.63, w * 0.1]), 0.25);
+    if (side > 0) g.shade(line([len * 0.4, w * 0.75], [len * 0.33, w * 0.2]) + line([len * 0.55, w * 0.62], [len * 0.48, w * 0.15]) + line([len * 0.7, w * 0.45], [len * 0.63, w * 0.1]), 0.25);
     const rotd = ang + side * (68 - 34 * t);
     pinnae.push(`<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rotd)}) scale(1 ${side})">${g}</g>`);
   }
   pl.lines(`M${P(at(0))}C${P(c[1])} ${P(c[2])} ${P(c[3])}`, 0.75);
   return pl.toString() + pinnae.join('');
-}
-
-/** Maidenhair fern: a wiry stalk opening into a fan of branches with fan-shaped leaflets. */
-export function maidenhair(R: number, pen: number, seed = 1) {
-  const r = rng(seed);
-  const pl = new Plate(pen);
-  pl.lines(quad([0, 0], [R * 0.05, -R * 0.4], [0, -R * 0.75]), 0.6);
-  const leaflets: string[] = [];
-  const branches = 5;
-  for (let b = 0; b < branches; b++) {
-    const a0 = ((-172 + (b / (branches - 1)) * 164) * Math.PI) / 180;
-    const len = R * (0.5 + r() * 0.2) * (1 - Math.abs(Math.cos(a0)) * 0.2);
-    const ex = Math.cos(a0) * len;
-    const ey = -R * 0.75 + Math.sin(a0) * len * 0.95 + Math.abs(Math.cos(a0)) * len * 0.35;
-    pl.lines(quad([0, -R * 0.75], [ex * 0.45, -R * 0.75 - len * 0.16], [ex, ey]), 0.42);
-    for (let k = 1; k <= 7; k++) {
-      const t = k / 8;
-      const px = ex * t;
-      const py = -R * 0.75 + (ey + R * 0.75) * t - Math.sin(t * Math.PI) * len * 0.11;
-      const sz = R * 0.075 * (1 - t * 0.4);
-      const side = k % 2 ? 1 : -1;
-      const fan = spline([[0, 0], [sz * 0.9, -sz * 0.5], [sz * 1.2, sz * 0.25], [sz * 0.7, sz * 0.9], [sz * 0.1, sz * 0.5]], true);
-      const g = new Plate(pen).shape(fan, 0.6).lines(line([0, 0], [sz * 0.85, sz * 0.1]) + line([0, 0], [sz * 0.6, sz * 0.55]), 0.22);
-      leaflets.push(`<g transform="translate(${f(px)} ${f(py)}) rotate(${f((a0 * 180) / Math.PI + side * 70)})">${g}</g>`);
-    }
-  }
-  return pl.toString() + leaflets.join('');
 }
 
 // ------------------------------------------------------------------ trillium
@@ -734,8 +707,8 @@ export function passionflower(R: number, pen: number, seed = 1) {
   // the corona: a ring of fine, wavy filaments over the tepals
   pl.shape(spline(Array.from({ length: 24 }, (_, k) => polar(R * 0.3, k * 15)), true), 0.4);
   let fil = '';
-  for (let i = 0; i < 64; i++) {
-    const a = (i / 64) * 360 + r() * 2;
+  for (let i = 0; i < 40; i++) {
+    const a = (i / 40) * 360 + r() * 3;
     const pts: Pt[] = [];
     const len = R * (0.62 + r() * 0.12);
     for (let k = 0; k <= 5; k++) {
@@ -746,11 +719,11 @@ export function passionflower(R: number, pen: number, seed = 1) {
   }
   pl.lines(fil, 0.26);
   let inner = '';
-  for (let i = 0; i < 40; i++) {
-    const a = (i / 40) * 360;
+  for (let i = 0; i < 24; i++) {
+    const a = (i / 24) * 360;
     inner += line(polar(R * 0.1, a), polar(R * 0.17, a + 3));
   }
-  pl.lines(inner, 0.25);
+  pl.shade(inner, 0.25);
   // the column: ovary, five anthers and three styles
   pl.shape(spline(Array.from({ length: 10 }, (_, k) => polar(R * 0.07, k * 36)), true), 0.6);
   for (let i = 0; i < 5; i++) {
@@ -788,7 +761,7 @@ export function passionLeaf(L: number, pen: number, seed = 1) {
 // ------------------------------------------------------------------ Carolina jessamine
 
 /** A jessamine trumpet in side view, from (0,0) toward -y. */
-function jessTrumpet(L: number, pen: number, seed: number) {
+export function jessTrumpet(L: number, pen: number, seed: number) {
   const r = rng(seed);
   const pl = new Plate(pen);
   const w0 = L * 0.07;
@@ -812,22 +785,6 @@ function jessTrumpet(L: number, pen: number, seed: number) {
   pl.shape(spline([[-w0 * 1.5, L * 0.04], [-w0 * 1.2, -L * 0.1], [0, -L * 0.06], [w0 * 1.2, -L * 0.1], [w0 * 1.5, L * 0.04]], true), 0.6);
   void r;
   return pl.toString();
-}
-
-/** A jessamine vine running along +x: twining stem, paired leaves and trumpets. */
-export function jessamine(L: number, pen: number, seed = 1) {
-  const r = rng(seed);
-  const pts: Pt[] = [];
-  const segs = Math.max(4, Math.round(L / 60));
-  for (let i = 0; i <= segs; i++) pts.push([(i / segs) * L, Math.sin(i * 1.4 + seed) * L * 0.025]);
-  let s = stem(pts, pen, 0.75);
-  pts.slice(1, -1).forEach(([x, y], i) => {
-    const lf = 46 + r() * 10;
-    s += place(leaf({ L: lf, W: lf * 0.2, widest: 0.42, acuminate: 0.6, veins: 3, shade: 1, stalk: 4, seed: seed * 5 + i }, pen), x, y, -55 - r() * 25, 1);
-    s += place(leaf({ L: lf * 0.9, W: lf * 0.18, widest: 0.42, acuminate: 0.6, veins: 3, shade: -1, stalk: 4, seed: seed * 5 + i + 50 }, pen), x, y, 125 + r() * 25, 1);
-    if (i % 2 === 0) s += place(jessTrumpet(62 + r() * 12, pen, seed + i), x + 4, y - 3, -30 + r() * 60, 1);
-  });
-  return s;
 }
 
 // ------------------------------------------------------------------ fillers

@@ -24,11 +24,11 @@ interface Props {
   /** what comes up at the foot of the left and right clusters */
   floor?: [Floor, Floor];
   /**
-   * A butterfly or moth resting on the plants: at the tip of the lowest dogwood
-   * leaf on the right ('leaf', the default), hanging from the last jessamine
-   * leaf on the left ('vine'), or on the maypop at the foot ('maypop', the
-   * default when the top has no plants). Spread ('open'), or at rest with its
-   * wings closed (only where it can stand: the maypop).
+   * A butterfly or moth resting on the plants: on the dogwood blossom at the
+   * tip of the twig on the right ('leaf', the default), hanging from the curled
+   * tip of the jessamine on the left ('vine'), or on the maypop at the foot
+   * ('maypop', the default when the top has no plants). Spread ('open'), or at
+   * rest with its wings closed (only where it can stand: on the maypop flower).
    */
   butterfly?: { kind: ButterflyKind; pose?: 'open' | 'closed'; perch?: Perch; tilt?: [number, number] };
   style?: string;
@@ -36,13 +36,13 @@ interface Props {
 const { class: cls, label, flora = false, corners = 'both', floor = ['floor-morels', 'floor-log'], butterfly, style } = Astro.props;
 const top = corners !== 'bottom';
 const bottom = corners !== 'top';
-// where it rests, in the cluster's own units: its head at the tip of a leaf with its wings over open
-// paper, or (wings closed) standing on the maypop's petals to drink
+// where it rests, in the cluster's own units: on a flower or leaf of a part that holds still (the
+// swaying fronds would move under it), or (wings closed) standing on the maypop flower to drink
 type Rest = { at: [number, number]; size: number; rot: number };
 const perches: Record<Perch, { art: 'corner' | 'corner-low'; open: Rest; closed?: Rest }> = {
-  leaf: { art: 'corner', open: { at: [398, 258], size: 150, rot: -28 } },
-  vine: { art: 'corner', open: { at: [487, 73], size: 140, rot: -6 } },
-  maypop: { art: 'corner-low', open: { at: [392, 296], size: 140, rot: 24 }, closed: { at: [345, 316], size: 140, rot: 0 } },
+  leaf: { art: 'corner', open: { at: [356, 172], size: 150, rot: -20 } },
+  vine: { art: 'corner', open: { at: [528, 160], size: 140, rot: 4 } },
+  maypop: { art: 'corner-low', open: { at: [372, 238], size: 140, rot: 30 }, closed: { at: [330, 276], size: 140, rot: 0 } },
 };
 const perch = butterfly ? (butterfly.perch ?? (top ? 'leaf' : 'maypop')) : null;
 const spot = butterfly && perch ? perches[perch][butterfly.pose ?? 'open'] : null;

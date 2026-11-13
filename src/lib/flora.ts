@@ -4,9 +4,10 @@
 // sprigs, leaves) are kept apart as `sway` layers, so they can move in a
 // gentle breeze while the rest of the drawing stays still.
 import {
-  place, ink, INK_STYLE, magnoliaLeaf, magnoliaFlower, magnoliaBudTwig, dogwoodLeaf, dogwoodFlower, dogwoodBranch,
-  azalea, christmasFern, trillium, passionflower, passionLeaf, tendril, jessamine, sprig, leaf,
+  place, ink, INK_STYLE, magnoliaLeaf, magnoliaFlower, magnoliaBudTwig, dogwoodLeaf, dogwoodFlower,
+  christmasFern, trillium, passionflower, passionLeaf, tendril, sprig, leaf,
 } from './engrave';
+import { jessamineVine, maypopVine, azaleaBranch, dogwoodSpray, trilliumStanding } from './stems';
 
 export interface Arrangement {
   /** the nominal box (0,0)–(w,h) that CSS sizes and anchors */
@@ -21,6 +22,8 @@ export interface Arrangement {
   view?: [number, number, number, number];
   /** parts drawn as their own layers behind the rest, each pivoting where it grows from */
   sway?: Sway[];
+  /** below this many screen pixels per drawing unit, the drawing leaves out its shading (default DETAIL) */
+  detail?: number;
 }
 
 export interface Sway {
@@ -42,70 +45,77 @@ export function sway(markup: string, x: number, y: number, rot: number, reach: n
 /** A sway layer's view: a square centred on its pivot. */
 export const swayView = (s: Sway): [number, number, number, number] => [s.at[0] - s.reach, s.at[1] - s.reach, s.reach * 2, s.reach * 2];
 
-const doc = ([x, y, w, h]: readonly number[], markup: string) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${w}" height="${h}">${INK_STYLE}${ink(markup)}</svg>`;
+/**
+ * Below this many screen pixels per drawing unit (a phone, or a small frame),
+ * a drawing leaves out its shading and uses the simpler version of any part
+ * that has one, so its lines never crowd together. Each file decides for
+ * itself from the size it is shown at (a media query inside the SVG, which
+ * measures the image, not the page).
+ */
+export const DETAIL = 0.5;
+const detailStyle = (w: number, ppu: number, markup: string) =>
+  / class="(s|hi|lo)"/.test(markup) ? `<style>.lo{display:none}@media (max-width:${Math.round(w * ppu)}px){.s,.hi{display:none}.lo{display:inline}}</style>` : '';
+
+const doc = ([x, y, w, h]: readonly number[], markup: string, ppu = DETAIL) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${w}" height="${h}">${INK_STYLE}${detailStyle(w, ppu, markup)}${ink(markup)}</svg>`;
 
 /** The whole arrangement as one still SVG document (swaying parts included, behind the rest). */
 export function svgDocument(a: Arrangement): string {
-  return doc(a.view ?? [0, 0, a.w, a.h], (a.sway ?? []).map((s) => s.markup).join('') + a.markup);
+  return doc(a.view ?? [0, 0, a.w, a.h], (a.sway ?? []).map((s) => s.markup).join('') + a.markup, a.detail);
 }
 /** Just the still part of an arrangement. */
-export const baseDocument = (a: Arrangement) => doc(a.view ?? [0, 0, a.w, a.h], a.markup);
+export const baseDocument = (a: Arrangement) => doc(a.view ?? [0, 0, a.w, a.h], a.markup, a.detail);
 /** One swaying part, in its own square view around its pivot. */
-export const swayDocument = (s: Sway) => doc(swayView(s), s.markup);
+export const swayDocument = (s: Sway, a?: Arrangement) => doc(swayView(s), s.markup, a?.detail);
 
 /** Outline weight, in screen pixels, for every drawing on the site. */
 export const PEN = 1.15;
 
 /**
  * Top-left corner of a section: a magnolia in bloom with its leaves, a dogwood
- * branch and jessamine running along the top edge, a fern hanging down the
- * left. Origin = the section's top-left corner.
+ * twig in flower reaching out from behind it, a jessamine vine trailing along
+ * the top edge, and a fern hanging down the left. Origin = the section's
+ * top-left corner.
  */
 export function corner(): Arrangement {
   const p = PEN;
-  // behind, swaying: a fern down the left edge, a sprig, the dogwood branch,
-  // jessamine along the top and magnolia leaves fanning from the corner
+  // behind, swaying: a fern down the left edge, a sprig, and magnolia leaves fanning from the corner
   const sways = [
     sway(christmasFern(330, p, 21, -0.18), 34, 30, 172, 340, 1.4),
     sway(sprig(230, p, 22, 7), 70, 40, 132, 240, 2.2),
-    sway(dogwoodBranch(330, p, 23), 40, 54, 98, 490, 0.7),
-    sway(jessamine(300, p, 24), 210, 20, 3, 320, 1.1),
     ...[118, 142, 166, 192].map((a, i) => sway(magnoliaLeaf(150 + i * 8, p, 25 + i, i % 2 ? 1 : -1), 58, 58, a, 204, 1.8)),
   ];
   const parts = [
+    // the jessamine trails off along the top edge, weaving, and curls over at its tip
+    jessamineVine([[86, 40], [190, 62], [300, 46], [410, 70], [486, 98]], p, 24, { flowers: [3, 6], out: 1, curl: 1, leaf: 46, amp: 9 }),
+    // the dogwood twig grows out from behind the magnolia, with a blossom at its tip
+    dogwoodSpray([[60, 70], [140, 140], [240, 174], [338, 182]], p, 23, { leaves: [0.38, 0.72], leaf: 96, flower: 42, side: [{ t: 0.55, side: -1 }] }),
     place(magnoliaLeaf(140, p, 31), 70, 70, 74),
-    // in front: the flower, a bud and a small sprig
     // a bud on its twig, reaching out from behind the flower at the cluster's edge
     place(magnoliaBudTwig(72, 110, p, 32, 0.1), 92, 94, 152),
     place(magnoliaFlower(84, p, 33), 92, 94),
     place(sprig(120, p, 34, 4), 40, 168, 196),
-    place(tendril(70, 1.6, p, 35), 330, 30, 12),
   ];
   return { w: 460, h: 440, view: [0, 0, 560, 470], markup: parts.join(''), sway: sways };
 }
 
 /**
- * Bottom-left corner of a section: ferns, a native azalea, trillium and a
- * maypop rising from the bottom edge. Origin = the section's bottom-left corner.
+ * Bottom-left corner of a section: a bed of native plants rising from the
+ * bottom edge, each from its own roots: ferns, a native azalea branch, a
+ * Sweet Betsy trillium and a maypop vine climbing toward the light.
+ * Origin = the section's bottom-left corner.
  */
 export function cornerLow(): Arrangement {
   const p = PEN;
   const H = 460;
-  // behind, swaying: two ferns, a sprig and a maypop leaf rising from the bottom edge
-  const sways = [
-    sway(christmasFern(340, p, 41, 0.22), 46, H, 8, 350, 1.4),
-    sway(christmasFern(280, p, 42, 0.3), 120, H, 46, 290, 1.8),
-    sway(sprig(220, p, 43, 6), 210, H, 70, 274, 2.2),
-    sway(passionLeaf(110, p, 44), 270, H - 10, 58, 144, 2.6),
-  ];
+  // behind, swaying: a clump of two ferns at the edge
+  const sways = [sway(christmasFern(340, p, 41, 0.22), 46, H, 8, 350, 1.4), sway(christmasFern(250, p, 42, -0.2), 14, H, -8, 260, 1.8)];
   const parts = [
-    place(tendril(80, 1.8, p, 45), 300, H - 70, -20),
-    place(azalea(92, p, 46), 96, H - 120, 8),
-    ...[30, 64].map((a, i) => place(dogwoodLeaf(120, p, 47 + i, i ? 1 : -1), 40, H - 10, a)),
-    place(trillium(54, p, 49), 196, H - 62),
-    place(passionflower(52, p, 50), 330, H - 120),
-    place(dogwoodFlower(36, p, 51), 40, H - 210),
+    ...[30, 64].map((a, i) => place(dogwoodLeaf(100, p, 47 + i, i ? 1 : -1), 40, H - 10, a)),
+    azaleaBranch([[84, H], [92, H - 76], [106, H - 146]], 78, p, 46),
+    place(trilliumStanding(150, p, 49), 192, H),
+    // the maypop climbs toward the middle of the page, its leaves on the open side
+    maypopVine([[262, H], [266, H - 86], [292, H - 168], [346, H - 244]], p, 50, { flowers: [1], flower: 46, leaf: 92, node: 84, first: 1, bare: [1] }),
   ];
   return { w: 420, h: H, view: [0, -40, 470, H + 40], markup: parts.join(''), sway: sways };
 }
@@ -116,8 +126,7 @@ export function vine(): Arrangement {
   const H = 760;
   const sways = [sway(sprig(200, p, 62, 6), 90, H - 380, 26, 234, 2.2)];
   const parts = [
-    place(jessamine(640, p, 61), 70, H, -86),
-    place(tendril(70, 1.5, p, 63), 70, H - 520, -40),
+    jessamineVine([[70, H], [86, H - 200], [64, H - 400], [92, H - 600], [80, H - 680]], p, 61, { flowers: [2, 5, 8], out: 1, curl: -1, leaf: 52, amp: 12 }),
     place(passionflower(44, p, 64), 120, H - 600),
   ];
   return { w: 200, h: H, view: [-40, -40, 280, H + 60], markup: parts.join(''), sway: sways };

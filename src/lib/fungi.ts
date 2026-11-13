@@ -21,7 +21,7 @@ function table(rows: [number, number][], t: number) {
  * A yellow morel (Morchella americana), up in Georgia woods in April: a
  * honeycombed cap on a short pale stem. `lean` tips the cap sideways.
  */
-export function morel(H: number, pen: number, seed = 1, lean = 0): string {
+export function morel(H: number, pen: number, seed = 1, lean = 0, small = false): string {
   const r = rng(seed);
   const pl = new Plate(pen);
   // the stem: short, stout, a little swollen at the foot, with a granular skin
@@ -31,9 +31,9 @@ export function morel(H: number, pen: number, seed = 1, lean = 0): string {
   const stemPts: Pt[] = [[-s0, 0], [-s0 * 1.08, -top * 0.35], [-s1, -top * 1.08], [s1, -top * 1.08], [s0 * 1.05, -top * 0.4], [s0, 0], [0, H * 0.015]];
   pl.shape(spline(stemPts, true), 0.8);
   const stemPoly = splinePts(stemPts, true, 6);
-  pl.lines(hatch([stemPoly, [[s1 * 0.2, 0], [H, 0], [H, -top], [s1 * 0.2, -top]]], { angle: 84, gap: H * 0.03, seed }), 0.3);
+  pl.lines(hatch([stemPoly, [[s1 * 0.2, 0], [H, 0], [H, -top], [s1 * 0.2, -top]]], { angle: 84, gap: Math.max(H * 0.04, small ? 6 : 3), seed }), 0.3);
   let grain = '';
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < (small ? 3 : 10); i++) {
     const p: Pt = [(r() - 0.6) * s0 * 1.4, -r() * top * 0.95];
     grain += line(p, add(p, [H * 0.008, -H * 0.012]));
   }
@@ -47,7 +47,8 @@ export function morel(H: number, pen: number, seed = 1, lean = 0): string {
   const left = Array.from({ length: 8 }, (_, i) => at(-Math.PI / 2, (7 - i) / 8));
   pl.shape(spline([...right, ...left, [0, y0 + H * 0.02]], true), 0.85);
   // ridges running up the cap, and short cross-ridges between them: the honeycomb
-  const K = 6;
+  // drawn small, fewer ridges, set far enough apart to stay open
+  const K = small ? Math.max(2, Math.min(4, Math.round((H * 0.41) / 11))) : 6;
   const th = Array.from({ length: K + 1 }, (_, k) => -Math.PI / 2 + (k / K) * Math.PI + (k > 0 && k < K ? (r() - 0.5) * 0.18 : 0));
   const wob = (k: number, v: number) => Math.sin(v * 9 + k * 2.1 + seed) * 0.06;
   const rows = th.map(() => {
@@ -55,7 +56,7 @@ export function morel(H: number, pen: number, seed = 1, lean = 0): string {
     let v = 0.06 + r() * 0.1;
     while (v < 0.9) {
       cuts.push(v);
-      v += 0.13 + r() * 0.08;
+      v += Math.max(0.13 + r() * 0.08, small ? 13 / (H * 0.72) : 0);
     }
     cuts.push(1);
     return cuts;
@@ -90,7 +91,7 @@ export function morel(H: number, pen: number, seed = 1, lean = 0): string {
       for (let i = 4; i >= 0; i--) poly.push(at(ta + wob(k, va + ((vb - va) * i) / 4), va + 0.025 + ((vb - va - 0.05) * i) / 4));
       // strokes turn with the cap's curve, closer on the shaded side
       const mid = (th[k] + th[k + 1]) / 2;
-      pits += hatch([poly], { angle: 76 + mid * 18, gap: H * (mid > 0.3 ? 0.024 : 0.032), seed: seed * 7 + k * 13 + j });
+      if (!small) pits += hatch([poly], { angle: 76 + mid * 18, gap: Math.max(H * (mid > 0.3 ? 0.03 : 0.04), 2.6), seed: seed * 7 + k * 13 + j });
     }
   }
   pl.lines(pits, 0.3).lines(ridges, 0.5);
@@ -104,7 +105,7 @@ export function morel(H: number, pen: number, seed = 1, lean = 0): string {
  * funnel, with forked ridges (not true gills) running down into the stem.
  * `tilt` cants the cap.
  */
-export function chanterelle(H: number, pen: number, seed = 1, tilt = 0): string {
+export function chanterelle(H: number, pen: number, seed = 1, tilt = 0, small = false): string {
   const r = rng(seed);
   const pl = new Plate(pen);
   const cy = -0.8 * H;
@@ -141,22 +142,24 @@ export function chanterelle(H: number, pen: number, seed = 1, tilt = 0): string 
   // forked ridges from the lip down into the stem
   let ridges = '';
   const foot: Pt = [0, -0.28 * H];
-  for (let i = 1; i < 12; i++) {
-    const a = (i / 12) * Math.PI;
-    const p = add(lip[Math.round((i / 12) * 14)], [0, H * 0.03]);
+  const nr = small ? 6 : 12;
+  for (let i = 1; i < nr; i++) {
+    const a = (i / nr) * Math.PI;
+    const p = add(lip[Math.round((i / nr) * 14)], [0, H * 0.03]);
     const end = add(foot, [Math.cos(a) * sw * 0.8, 0]);
     const mid = lerp(p, end, 0.4);
     ridges += quad(p, add(mid, [Math.cos(a) * H * 0.05, -H * 0.03]), end);
-    if (i % 2) {
-      const q = add(lerp(lip[Math.round((i / 12) * 14)], lip[Math.min(14, Math.round((i / 12) * 14) + 1)], 0.5), [0, H * 0.03]);
+    if (i % 2 && !small) {
+      const q = add(lerp(lip[Math.round((i / nr) * 14)], lip[Math.min(14, Math.round((i / nr) * 14) + 1)], 0.5), [0, H * 0.03]);
       ridges += quad(q, lerp(q, mid, 0.6), lerp(p, mid, 0.7));
     }
   }
   pl.lines(ridges, 0.34);
   // shade the far side of the underside and the stem
   const under: Pt[] = [...lip, [sw * 1.2, -0.3 * H], [-sw * 1.2, -0.3 * H]];
-  pl.lines(hatch([under, [[0.06 * H, -H], [H, -H], [H, 0], [0.06 * H, 0]]], { angle: 70, gap: H * 0.028, seed }), 0.3);
-  pl.lines(hatch([splinePts(silhouette, true, 6), [[sw * 0.2, -0.4 * H], [H, -0.4 * H], [H, 0], [sw * 0.2, 0]]], { angle: 84, gap: H * 0.03, seed: seed + 1 }), 0.3);
+  const g = small ? 7 : Math.max(H * 0.04, 2.8);
+  pl.lines(hatch([under, [[0.06 * H, -H], [H, -H], [H, 0], [0.06 * H, 0]]], { angle: 70, gap: g, seed }), 0.3);
+  pl.lines(hatch([splinePts(silhouette, true, 6), [[sw * 0.2, -0.4 * H], [H, -0.4 * H], [H, 0], [sw * 0.2, 0]]], { angle: 84, gap: g, seed: seed + 1 }), 0.3);
   void r;
   return pl.toString();
 }
@@ -164,7 +167,7 @@ export function chanterelle(H: number, pen: number, seed = 1, tilt = 0): string 
 // ------------------------------------------------------------------ turkey tail on a fallen log
 
 /** One turkey-tail bracket: a fan with banded zones and a wavy edge, from (0,0) toward -y. */
-function turkeyTail(Rf: number, pen: number, seed: number, spread = 150): string {
+function turkeyTail(Rf: number, pen: number, seed: number, spread = 150, small = false): string {
   const r = rng(seed);
   const pl = new Plate(pen);
   const a0 = -90 - spread / 2;
@@ -179,18 +182,23 @@ function turkeyTail(Rf: number, pen: number, seed: number, spread = 150): string
   };
   const rim = edge(1);
   pl.shape(spline([[0, Rf * 0.05], ...rim], true), 0.75);
-  // concentric zones; every other band is dark
-  const ks = [0.86, 0.72, 0.6, 0.47, 0.34];
+  // concentric zones; every other band is velvety, drawn with short strokes across it
+  const ks = small ? [0.66, 0.36] : [0.84, 0.66, 0.5, 0.34];
   let zones = '';
   for (const k of ks) zones += spline(edge(k));
   pl.lines(zones, 0.32);
-  let dark = '';
-  for (let i = 0; i < ks.length - 1; i += 2) {
-    const outer = edge(ks[i]);
-    const inner = edge(ks[i + 1]).reverse();
-    dark += hatch([[...outer, ...inner]], { angle: 80 + r() * 20, gap: Rf * 0.07, seed: seed + i });
+  if (!small) {
+    let velvet = '';
+    for (const [k0, k1] of [[1, 0.84], [0.66, 0.5]]) {
+      const n = Math.max(4, Math.round((Rf * ((k0 + k1) / 2) * spread * Math.PI) / 180 / 3.2));
+      for (let i = 1; i < n; i++) {
+        const a = ((-90 - spread / 2 + (i / n) * spread + (r() - 0.5) * 3) * Math.PI) / 180;
+        const at = (k: number): Pt => [Math.cos(a) * Rf * k, Math.sin(a) * Rf * k * 0.55];
+        velvet += line(at(k0 - 0.03), at(k1 + 0.03));
+      }
+    }
+    pl.lines(velvet, 0.28);
   }
-  pl.lines(dark, 0.3);
   return pl.toString();
 }
 
@@ -199,7 +207,7 @@ function turkeyTail(Rf: number, pen: number, seed: number, spread = 150): string
  * moss along the top, turkey tail growing in tiers from its side and a cut
  * end showing its rings.
  */
-export function mossyLog(L: number, D: number, pen: number, seed = 1): string {
+export function mossyLog(L: number, D: number, pen: number, seed = 1, small = false): string {
   const r = rng(seed);
   const pl = new Plate(pen);
   const top = -D;
@@ -213,8 +221,9 @@ export function mossyLog(L: number, D: number, pen: number, seed = 1): string {
   pl.shape(spline(body, true), 0.85);
   // bark furrows along the length, and shade along the underside
   let furrows = '';
-  for (let i = 0; i < 6; i++) {
-    const y = top + D * (0.18 + i * 0.13);
+  const nf = small ? 3 : 5;
+  for (let i = 0; i < nf; i++) {
+    const y = top + D * (0.2 + i * (0.62 / (nf - 1)));
     const x0 = D * 0.15 + r() * L * 0.2;
     const x1 = L - D * 0.3 - r() * L * 0.1;
     const pts: Pt[] = [];
@@ -222,19 +231,20 @@ export function mossyLog(L: number, D: number, pen: number, seed = 1): string {
     furrows += spline(pts);
   }
   pl.lines(furrows, 0.36);
-  pl.lines(hatch([splinePts(body, true, 6), [[0, -D * 0.38], [L, -D * 0.38], [L, D], [0, D]]], { angle: 10, gap: D * 0.07, seed }), 0.28);
+  pl.lines(hatch([splinePts(body, true, 6), [[0, -D * 0.34], [L, -D * 0.34], [L, D], [0, D]]], { angle: 10, gap: small ? 7.5 : D * 0.1, seed }), 0.28);
   // the cut end: an ellipse with growth rings and a crack
   const endC: Pt = [endX, -D / 2];
   pl.shape(spline(ellipsePts(endC, D * 0.2, D * 0.5, 0, 16), true), 0.8);
   let rings = '';
-  for (const k of [0.78, 0.56, 0.36, 0.17]) rings += spline(ellipsePts(add(endC, [D * 0.01, D * 0.02 * (1 - k)]), D * 0.2 * k, D * 0.5 * k, 0, 14), true);
+  for (const k of small ? [0.6, 0.25] : [0.76, 0.52, 0.28]) rings += spline(ellipsePts(add(endC, [D * 0.01, D * 0.02 * (1 - k)]), D * 0.2 * k, D * 0.5 * k, 0, 14), true);
   pl.lines(rings + line(add(endC, [0, -D * 0.05]), add(endC, [D * 0.12, -D * 0.4])), 0.32);
   // moss along the top: little upright tufts
   let moss = '';
-  for (let i = 0; i < 26; i++) {
-    const x = D * 0.1 + (i / 26) * (L - D * 0.3) + r() * D * 0.1;
+  const tufts = small ? 11 : 22;
+  for (let i = 0; i < tufts; i++) {
+    const x = D * 0.1 + (i / tufts) * (L - D * 0.3) + r() * D * 0.1;
     const y = top + D * 0.03;
-    for (let k = 0; k < 3; k++) {
+    for (let k = 0; k < (small ? 2 : 3); k++) {
       const a = -90 + (k - 1) * 22 + (r() - 0.5) * 16;
       const len = D * (0.06 + r() * 0.07);
       moss += line([x + k * D * 0.02, y], add([x + k * D * 0.02, y], [Math.cos((a * Math.PI) / 180) * len, Math.sin((a * Math.PI) / 180) * len]));
@@ -243,13 +253,16 @@ export function mossyLog(L: number, D: number, pen: number, seed = 1): string {
   pl.lines(moss, 0.3);
   // turkey tail in overlapping tiers on the side of the log, toward the cut end
   // in tiers: the upper shelves first, the lower ones overlapping them
-  const brackets: [number, number, number, number][] = [
-    [0.62, 0.78, 0.36, -4], [0.73, 0.8, 0.4, 6], [0.82, 0.74, 0.32, 10],
-    [0.57, 0.58, 0.42, -8], [0.68, 0.6, 0.5, 2], [0.79, 0.55, 0.44, 8],
-    [0.64, 0.4, 0.36, -2], [0.74, 0.38, 0.4, 5],
-  ];
+  // drawn small: three larger shelves instead of eight
+  const brackets: [number, number, number, number][] = small
+    ? [[0.62, 0.72, 0.5, -4], [0.76, 0.66, 0.56, 6], [0.69, 0.42, 0.5, 0]]
+    : [
+        [0.62, 0.78, 0.36, -4], [0.73, 0.8, 0.4, 6], [0.82, 0.74, 0.32, 10],
+        [0.57, 0.58, 0.42, -8], [0.68, 0.6, 0.5, 2], [0.79, 0.55, 0.44, 8],
+        [0.64, 0.4, 0.36, -2], [0.74, 0.38, 0.4, 5],
+      ];
   for (const [fx, fy, size, rot] of brackets) {
-    pl.add(`<g transform="translate(${(fx * L).toFixed(1)} ${(-fy * D).toFixed(1)}) rotate(${rot})">${turkeyTail(D * size * 1.25, pen, seed + Math.round(fx * 100), 140 + r() * 30)}</g>`);
+    pl.add(`<g transform="translate(${(fx * L).toFixed(1)} ${(-fy * D).toFixed(1)}) rotate(${rot})">${turkeyTail(D * size * 1.25, pen, seed + Math.round(fx * 100), 140 + r() * 30, small)}</g>`);
   }
   return pl.toString();
 }

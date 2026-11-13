@@ -96,13 +96,15 @@ All self-hosted through Fontsource (OFL), so the site makes no Google Fonts requ
 **Botanical art** is engraved in code, so it's crisp at any size:
 
 - `src/lib/engrave.ts`: the drawing tools (leaves, petals, stems, hatching) and the species
-- `src/lib/flora.ts` and `src/lib/hero-art.ts`: the arrangements
+- `src/lib/stems.ts`: how the plants grow: a jessamine vine that weaves along a path and curls at its tip, a maypop climbing with tendrils, an azalea branch, a dogwood twig, a standing trillium; every leaf and flower is set on its stem and turned to follow it
+- `src/lib/flora.ts` and `src/lib/hero-art.ts`: the arrangements. Each spray grows from one place: the hanging corners from the page corner, the beds at the foot from the ground, the frames' sprays from the frame's corner, and the jessamine over each arch from behind its magnolia
 - `src/lib/fungi.ts` and `src/lib/insects.ts`: native mushrooms and insects, drawn the same way; `src/lib/woodland.ts` sets them among the plants
 - At build time, `src/lib/art.ts` writes each arrangement to a cached file in `/flora/*.svg`, so pages stay small and the plants load once for the whole site. The pen keeps the same weight on screen at every size.
+- **Detail by size:** shading is drawn as its own class of line, and each file leaves it out when it is shown small (below half a screen pixel per drawing unit; a media query inside the SVG measures the image itself). Mushrooms, bugs and butterflies also carry a simpler version for small sizes, with fewer lines set further apart, so nothing turns into a smudge on a phone.
 
 Every plant is native to the southeastern US:
 
-- **Flowers and shrubs:** Southern magnolia, flowering dogwood, Piedmont and flame azaleas, Sweet Betsy trillium.
+- **Flowers and shrubs:** Southern magnolia, flowering dogwood, Piedmont and flame azaleas, Sweet Betsy trillium (standing in the beds at the foot of each page).
 - **Vines:** Carolina jessamine, maypop.
 - **Ferns:** Christmas fern.
 - **No tropicals.**
@@ -110,8 +112,8 @@ Every plant is native to the southeastern US:
 And among them, native mushrooms and insects (Ally's idea), each where it would really be:
 
 - **Mushrooms, at the foot of every page:** yellow morels (up in Georgia woods in April), chanterelles, and turkey tail on a mossy fallen log. Each page has its own mix, and the two sides differ.
-- **On the plants:** a common eastern bumblebee at the maypop and the azalea, a native convergent lady beetle on a dogwood leaf, and a gulf fritillary caterpillar on the maypop, its host plant.
-- **One butterfly or moth per page,** perched at the edge of a cluster or on a photo frame: an eastern tiger swallowtail (Georgia's state butterfly), a luna moth or a gulf fritillary with its wings spread, seen at a slant, or the gulf fritillary at rest with its wings closed, showing its silver-spotted underside (standing on a jessamine flower, or drinking at a maypop). Every so often it slowly moves its wings; with reduced motion it stays still.
+- **On the plants:** a common eastern bumblebee at the maypop, a native convergent lady beetle on a dogwood leaf (desktop only: on a phone it would be a speck), and a gulf fritillary caterpillar on the maypop, its host plant.
+- **One butterfly or moth per page,** perched on a flower or leaf that holds still: an eastern tiger swallowtail (Georgia's state butterfly) on a native azalea, a luna moth on a magnolia or hanging from the jessamine, a gulf fritillary on a dogwood blossom, or the fritillary at rest with its wings closed, showing its silver-spotted underside (standing on a jessamine flower, or drinking at a maypop). Every so often it slowly moves its wings; with reduced motion it stays still.
 
 ### 3.5 Motion
 
@@ -657,6 +659,7 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [x] Official robot models in the room, moving on their real joints
 - [x] Redesign as a botanical-engraving invitation: sage on ivory, engraved native plants, the Secret Registry by day, the walking duck
 - [x] Native mushrooms and insects among the plants, one resting butterfly or moth per page (graded 93; 91 on style and coherence alone)
+- [x] Plants regrown on stems (curving vines, connected sprays), and drawings that drop their shading when shown small (graded 92)
 - [ ] Later: the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two

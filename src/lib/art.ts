@@ -63,7 +63,7 @@ export function artFiles(): { file: string; body: () => string }[] {
     return [
       { file: name, body: () => svgDocument(a) },
       ...(sways.length && a.markup ? [{ file: `${name}--base`, body: () => baseDocument(a) }] : []),
-      ...sways.map((s, i) => ({ file: `${name}--sway-${i}`, body: () => swayDocument(s) })),
+      ...sways.map((s, i) => ({ file: `${name}--sway-${i}`, body: () => swayDocument(s, a) })),
     ];
   });
 }

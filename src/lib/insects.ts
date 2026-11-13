@@ -30,7 +30,7 @@ interface Species {
   fore: Wing;
   hind: Wing;
   /** the dark parts of the pattern, inside each wing */
-  pattern: (fore: Pt[], hind: Pt[], F: number, pen: number, seed: number) => { fore: string; hind: string };
+  pattern: (fore: Pt[], hind: Pt[], F: number, pen: number, seed: number, small: boolean) => { fore: string; hind: string };
   body: { abdomen: number; girth: number; antenna: 'club' | 'feather'; fur?: boolean };
   /** vein weight (fritillaries have dark veins) */
   veins?: number;
@@ -86,14 +86,16 @@ function lunules(w: Wing, F: number, inset: number, count: number, size: number,
   });
 }
 /** The dark parts of a pattern: close hatching, no darker than the plants' own shading. */
-function black(within: Pt[][], F: number, angle: number, seed: number, holes: Pt[][] = []) {
-  return hatch(within, { angle, gap: GAP * F * 0.85, holes, seed });
+function black(within: Pt[][], gap: number, angle: number, seed: number, holes: Pt[][] = []) {
+  return hatch(within, { angle, gap, holes, seed });
 }
+/** Hatching gap for a drawing of forewing length F: drawn small, the lines stand further apart. */
+const gapFor = (F: number, small: boolean) => F * (small ? 0.085 : GAP * 0.85);
 const ring = (pen: number, c: Pt, rx: number, ry: number, deg = 0, k = 0.45) => new Plate(pen).shape(spline(ellipsePts(c, rx, ry, deg, 12), true), k).toString();
 
 const GAP = 0.05; // hatching gap, in forewing lengths
 
-function wingMarkup(w: Wing, F: number, pen: number, inner: string, veinK: number, seed: number): string {
+function wingMarkup(w: Wing, F: number, pen: number, inner: string, veinK: number, seed: number, small = false): string {
   const r = rng(seed);
   const { pts } = outlinePts(w, F);
   const pl = new Plate(pen).shape(spline(pts, true), 0.9);
@@ -104,6 +106,7 @@ function wingMarkup(w: Wing, F: number, pen: number, inner: string, veinK: numbe
   let v = '';
   const n = w.veinEnds.length;
   w.veinEnds.forEach((at, i) => {
+    if (small && i % 2) return;
     const end = onOutline(w, F, at);
     const t = n === 1 ? 0.5 : i / (n - 1);
     const from = t < 0.3 ? lerp(cb, cf, 0.5 + t * 1.6) : t < 0.75 ? lerp(cf, cd, (t - 0.3) / 0.45) : lerp(cd, cb, (t - 0.75) * 1.4);
@@ -130,7 +133,9 @@ const SPECIES: Record<ButterflyKind, Species> = {
       veinEnds: [3.6, 4.6, 5.6, 6.6, 7.6, 10.5, 14.8, 16.5],
       scallop: 0.022,
     },
-    pattern: (fore, hind, F, pen, seed) => {
+    pattern: (fore, hind, F, pen, seed, small) => {
+      const g = gapFor(F, small);
+      const lu = (holes: Pt[][]) => (small ? [] : holes);
       const k = (pts: Pt[]) => scale(pts, F);
       const sp = SPECIES['tiger-swallowtail'];
       // four stripes from the leading edge, the inner two running right across the wing
@@ -140,11 +145,11 @@ const SPECIES: Record<ButterflyKind, Species> = {
         k([[0.52, -0.5], [0.6, -0.55], [0.59, -0.16], [0.53, -0.14]]),
         k([[0.7, -0.62], [0.76, -0.65], [0.76, -0.38], [0.71, -0.36]]),
       ];
-      const fh = stripes.map((s, i) => black([fore, s], F, 58, seed + i * 3)).join('') + black([fore, marginBand(sp.fore, F, 0.15)], F, 58, seed + 20, lunules(sp.fore, F, 0.085, 8, 0.03));
+      const fh = stripes.map((s, i) => black([fore, s], g, 58, seed + i * 3)).join('') + black([fore, marginBand(sp.fore, F, 0.15)], g, 58, seed + 20, lu(lunules(sp.fore, F, 0.085, 8, 0.03)));
       const hh =
-        black([hind, marginBand(sp.hind, F, 0.19)], F, 64, seed + 30, lunules(sp.hind, F, 0.075, 6, 0.036, 0.04, 0.9)) +
-        black([hind, k([[0.17, -0.08], [0.27, -0.08], [0.32, 0.66], [0.2, 0.66]])], F, 64, seed + 40) +
-        black([hind, k([[0.44, 0.66], [0.58, 0.66], [0.58, 1], [0.44, 1]])], F, 64, seed + 50);
+        black([hind, marginBand(sp.hind, F, 0.19)], g, 64, seed + 30, lu(lunules(sp.hind, F, 0.075, 6, 0.036, 0.04, 0.9))) +
+        black([hind, k([[0.17, -0.08], [0.27, -0.08], [0.32, 0.66], [0.2, 0.66]])], g, 64, seed + 40) +
+        black([hind, k([[0.44, 0.66], [0.58, 0.66], [0.58, 1], [0.44, 1]])], g, 64, seed + 50);
       return {
         fore: new Plate(pen).lines(fh, 0.3).toString(),
         hind: new Plate(pen).lines(hh, 0.3).toString() + ring(pen, k([[0.38, 0.62]])[0], F * 0.036, F * 0.028),
@@ -168,13 +173,15 @@ const SPECIES: Record<ButterflyKind, Species> = {
       veinEnds: [3, 3.8, 4.6, 5.4, 6.2, 7, 7.8, 9.5],
       scallop: 0.014,
     },
-    pattern: (fore, hind, F, pen, seed) => {
+    pattern: (fore, hind, F, pen, seed, small) => {
+      const g = gapFor(F, small);
+      const lu = (holes: Pt[][]) => (small ? [] : holes);
       const k = (pts: Pt[]) => scale(pts, F);
       const sp = SPECIES['gulf-fritillary'];
-      const base = (poly: Pt[], s: number) => hatch([poly, k([[0, -0.2], [0.17, -0.2], [0.17, 0.4], [0, 0.4]])], { angle: 30, gap: GAP * F * 1.2, seed: s });
-      const tip = black([fore, k([[0.74, -0.62], [1.1, -0.62], [1.1, -0.28], [0.8, -0.3]])], F, 58, seed + 1, [ellipsePts(k([[0.87, -0.46]])[0], F * 0.032, F * 0.02, -25, 12), ellipsePts(k([[0.79, -0.41]])[0], F * 0.026, F * 0.017, -25, 12)]);
-      const fBand = hatch([fore, marginBand(sp.fore, F, 0.045)], { angle: 58, gap: GAP * F, seed: seed + 2 });
-      const hBand = black([hind, marginBand(sp.hind, F, 0.12)], F, 62, seed + 3, lunules(sp.hind, F, 0.065, 6, 0.032, 0.04, 0.96));
+      const base = (poly: Pt[], s: number) => hatch([poly, k([[0, -0.2], [0.17, -0.2], [0.17, 0.4], [0, 0.4]])], { angle: 30, gap: g * 1.4, seed: s });
+      const tip = black([fore, k([[0.74, -0.62], [1.1, -0.62], [1.1, -0.28], [0.8, -0.3]])], g, 58, seed + 1, lu([ellipsePts(k([[0.87, -0.46]])[0], F * 0.032, F * 0.02, -25, 12), ellipsePts(k([[0.79, -0.41]])[0], F * 0.026, F * 0.017, -25, 12)]));
+      const fBand = small ? '' : hatch([fore, marginBand(sp.fore, F, 0.045)], { angle: 58, gap: g * 1.2, seed: seed + 2 });
+      const hBand = black([hind, marginBand(sp.hind, F, 0.12)], g, 62, seed + 3, lu(lunules(sp.hind, F, 0.065, 6, 0.032, 0.04, 0.96)));
       const spots = k([[0.27, -0.12], [0.36, -0.18], [0.38, -0.07]]);
       return {
         fore:
@@ -202,20 +209,22 @@ const SPECIES: Record<ButterflyKind, Species> = {
       cell: [[0.07, 0.03], [0.35, 0.16], [0.36, 0.34]],
       veinEnds: [3.3, 4.2, 5.1, 6, 7, 10.5, 16, 17.5],
     },
-    pattern: (fore, hind, F, pen, seed) => {
+    pattern: (fore, hind, F, pen, seed, small) => {
+      const g = gapFor(F, small);
+      const lu = (holes: Pt[][]) => (small ? [] : holes);
       const k = (pts: Pt[]) => scale(pts, F);
       const sp = SPECIES['luna-moth'];
       // the dark leading edge of the forewing
-      const costa = hatch([fore, k([[0, -0.11], [0.84, -0.74], [0.82, -0.6], [0.04, -0.03]])], { angle: 70, gap: GAP * F * 0.75, seed }) + hatch([fore, k([[0, -0.11], [0.84, -0.74], [0.82, -0.6], [0.04, -0.03]])], { angle: 130, gap: GAP * F, seed: seed + 1 });
+      const costa = hatch([fore, k([[0, -0.11], [0.84, -0.74], [0.82, -0.6], [0.04, -0.03]])], { angle: 70, gap: g * 0.9, seed }) + (small ? '' : hatch([fore, k([[0, -0.11], [0.84, -0.74], [0.82, -0.6], [0.04, -0.03]])], { angle: 130, gap: g * 1.2, seed: seed + 1 }));
       // eyespots: a ring with a dark crescent and a clear middle
       const eye = (c: Pt, rx: number, ry: number, deg: number, s: number) => {
         const out = ellipsePts(c, rx, ry, deg, 16);
         const clear = ellipsePts(add(c, [rx * 0.15, -ry * 0.12]), rx * 0.52, ry * 0.5, deg, 14);
-        return new Plate(pen).shape(spline(out, true), 0.55).lines(black([out], F, deg + 75, s, [clear]), 0.3).lines(spline(clear, true), 0.3).toString();
+        return new Plate(pen).shape(spline(out, true), 0.55).lines(black([out], g * 0.8, deg + 75, s, [clear]), 0.3).lines(spline(clear, true), 0.3).toString();
       };
       // a fine line just inside the outer margin, and soft shading at the furred wing roots
       const inside = (w: Wing) => spline(alongMargin(w, F, 0.075, 8));
-      const root = (poly: Pt[], s: number) => hatch([poly, k([[0, -0.2], [0.2, -0.2], [0.2, 0.3], [0, 0.3]])], { angle: 20, gap: GAP * F * 1.3, seed: s });
+      const root = (poly: Pt[], s: number) => (small ? '' : hatch([poly, k([[0, -0.2], [0.2, -0.2], [0.2, 0.3], [0, 0.3]])], { angle: 20, gap: g * 1.5, seed: s }));
       return {
         fore: new Plate(pen).lines(costa, 0.3).lines(inside(sp.fore), 0.32).lines(root(fore, seed + 3), 0.26).toString() + eye(k([[0.42, -0.21]])[0], F * 0.07, F * 0.05, -30, seed + 4),
         hind: new Plate(pen).lines(inside(sp.hind), 0.32).lines(root(hind, seed + 5), 0.26).toString() + eye(k([[0.37, 0.31]])[0], F * 0.085, F * 0.068, 20, seed + 6),
@@ -230,16 +239,16 @@ const SPECIES: Record<ButterflyKind, Species> = {
 export const BUTTERFLY_REACH = 1.24;
 
 /** The four wings, spread (forewing length F). The far side is a little foreshortened, as if seen at a slant. */
-export function butterflyWings(kind: ButterflyKind, F: number, pen: number, seed = 1): string {
+export function butterflyWings(kind: ButterflyKind, F: number, pen: number, seed = 1, small = false): string {
   const sp = SPECIES[kind];
   const veinK = sp.veins ?? 0.4;
-  const pat = sp.pattern(outlinePts(sp.fore, F).poly, outlinePts(sp.hind, F).poly, F, pen, seed);
-  const side = wingMarkup(sp.hind, F, pen, pat.hind, veinK, seed + 20) + wingMarkup(sp.fore, F, pen, pat.fore, veinK, seed + 30);
+  const pat = sp.pattern(outlinePts(sp.fore, F).poly, outlinePts(sp.hind, F).poly, F, pen, seed, small);
+  const side = wingMarkup(sp.hind, F, pen, pat.hind, veinK, seed + 20, small) + wingMarkup(sp.fore, F, pen, pat.fore, veinK, seed + 30, small);
   return side + `<g transform="scale(-0.9 1) rotate(-2)">${side}</g>`;
 }
 
 /** The body: abdomen, thorax, head with its eyes, and antennae (forewing length F). */
-export function butterflyBody(kind: ButterflyKind, F: number, pen: number, seed = 1): string {
+export function butterflyBody(kind: ButterflyKind, F: number, pen: number, seed = 1, small = false): string {
   const { abdomen, girth, antenna, fur } = SPECIES[kind].body;
   const r = rng(seed);
   const pl = new Plate(pen);
@@ -249,28 +258,29 @@ export function butterflyBody(kind: ButterflyKind, F: number, pen: number, seed 
   const abdPts: Pt[] = [[0, a0 - w * 0.4], [w, a0 + aL * 0.12], [w * 0.95, a0 + aL * 0.5], [w * 0.55, a0 + aL * 0.86], [0, a0 + aL], [-w * 0.55, a0 + aL * 0.86], [-w * 0.95, a0 + aL * 0.5], [-w, a0 + aL * 0.12]];
   pl.shape(spline(abdPts, true), 0.75);
   let seg = '';
-  for (let i = 1; i < 7; i++) {
+  for (let i = 1; i < 7; i += small ? 2 : 1) {
     const y = a0 + aL * (0.1 + i * 0.12);
     const hw = w * (i < 4 ? 0.95 : 0.95 - (i - 3) * 0.13);
     seg += quad([-hw * 0.9, y - w * 0.15], [0, y + w * 0.25], [hw * 0.9, y - w * 0.15]);
   }
   pl.lines(seg, 0.3);
-  pl.lines(hatch([splinePts(abdPts, true, 6), [[w * 0.15, 0], [F, 0], [F, F], [w * 0.15, F]]], { angle: 80, gap: F * 0.03, seed }), 0.28);
+  if (!small) pl.lines(hatch([splinePts(abdPts, true, 6), [[w * 0.15, 0], [F, 0], [F, F], [w * 0.15, F]]], { angle: 80, gap: F * 0.04, seed }), 0.28);
   // thorax
   const tw = w * 1.45;
   const th = ellipsePts([0, -0.04 * F], tw, 0.12 * F, 0, 16);
   pl.shape(spline(th, true), 0.75);
   if (fur) {
     let fz = '';
-    for (let i = 0; i < 22; i++) {
-      const a = (i / 22) * Math.PI * 2;
+    const nf = small ? 10 : 22;
+    for (let i = 0; i < nf; i++) {
+      const a = (i / nf) * Math.PI * 2;
       const p: Pt = [Math.cos(a) * tw, -0.04 * F + Math.sin(a) * 0.12 * F];
       const len = F * (0.02 + r() * 0.015);
       fz += line(p, add(p, [Math.cos(a) * len, Math.sin(a) * len]));
     }
     pl.lines(fz, 0.3);
   }
-  pl.lines(hatch([th, [[tw * 0.15, -F], [F, -F], [F, F], [tw * 0.15, F]]], { angle: 75, gap: F * 0.028, seed: seed + 1 }), 0.28);
+  if (!small) pl.lines(hatch([th, [[tw * 0.15, -F], [F, -F], [F, F], [tw * 0.15, F]]], { angle: 75, gap: F * 0.04, seed: seed + 1 }), 0.28);
   // head, with the eyes bulging at its sides, and the palps
   const hy = -0.19 * F;
   const hr = 0.045 * F * Math.min(1.25, girth);
@@ -296,8 +306,9 @@ export function butterflyBody(kind: ButterflyKind, F: number, pen: number, seed 
       const tip: Pt = [s * 0.22 * F, -0.48 * F];
       const ctl: Pt = [s * 0.05 * F, -0.36 * F];
       a += quad(p0, ctl, tip);
-      for (let i = 1; i < 12; i++) {
-        const t = i / 12;
+      const nt = small ? 6 : 12;
+      for (let i = 1; i < nt; i++) {
+        const t = i / nt;
         const u = 1 - t;
         const p: Pt = [u * u * p0[0] + 2 * u * t * ctl[0] + t * t * tip[0], u * u * p0[1] + 2 * u * t * ctl[1] + t * t * tip[1]];
         const len = F * 0.045 * Math.sin(Math.PI * Math.min(1, t * 1.1));
@@ -320,8 +331,9 @@ export const SIDE_ROOT: Pt = [0.02, -0.04];
  * tawny ground set with long silver spots. Its four walking legs reach down
  * to y = 0.24 forewing lengths, where it stands.
  */
-export function fritillaryClosedWings(F: number, pen: number, seed = 1): string {
+export function fritillaryClosedWings(F: number, pen: number, seed = 1, small = false): string {
   const r = rng(seed);
+  const g = gapFor(F, small);
   const k = (pts: Pt[]) => scale(pts, F);
   const fore: Wing = {
     outline: [[0.02, -0.05], [-0.04, -0.28], [-0.09, -0.52], [-0.12, -0.74], [-0.1, -0.9], [-0.04, -0.95], [0.06, -0.86], [0.18, -0.7], [0.3, -0.5], [0.38, -0.32], [0.3, -0.16], [0.14, -0.06]],
@@ -341,8 +353,8 @@ export function fritillaryClosedWings(F: number, pen: number, seed = 1): string 
   // forewing: a pale base with a few black spots, the tip tawny with silver spots
   const tipSpots = k([[-0.06, -0.84], [-0.02, -0.73], [0.07, -0.79]]).map((c) => ellipsePts(c, F * 0.035, F * 0.016, -70, 12));
   const foreInner =
-    new Plate(pen).lines(black([fp, k([[-0.3, -1.1], [0.4, -1.1], [0.4, -0.62], [-0.3, -0.66]])], F, 64, seed, tipSpots), 0.3).toString() +
-    tipSpots.map((sp) => new Plate(pen).lines(spline(sp, true), 0.3).toString()).join('') +
+    new Plate(pen).lines(black([fp, k([[-0.3, -1.1], [0.4, -1.1], [0.4, -0.62], [-0.3, -0.66]])], g, 64, seed, small ? [] : tipSpots), 0.3).toString() +
+    (small ? '' : tipSpots.map((sp) => new Plate(pen).lines(spline(sp, true), 0.3).toString()).join('')) +
     new Plate(pen).dots(k([[0.06, -0.45], [0.14, -0.37], [0.01, -0.3], [0.17, -0.52]]), F * 0.017).toString();
   // hindwing: long silver spots laid along the veins, radiating from the root
   const root: Pt = [0.04, -0.03];
@@ -351,17 +363,17 @@ export function fritillaryClosedWings(F: number, pen: number, seed = 1): string 
     [0.16, -0.24, 0.9], [0.26, -0.31, 1], [0.37, -0.29, 1], [0.47, -0.19, 0.9],
     [0.21, -0.13, 0.9], [0.33, -0.13, 1], [0.44, -0.06, 0.8], [0.1, -0.17, 0.7], [0.53, -0.1, 0.7],
   ];
-  const holes = spots.map(([x, y, sz]) => {
+  const holes = spots.filter((_, i) => !small || i % 2 === 0).map(([x, y, sz]) => {
     const deg = (Math.atan2(y - root[1], x - root[0]) * 180) / Math.PI + (r() - 0.5) * 10;
-    return ellipsePts([x * F, y * F], F * 0.05 * sz, F * 0.019 * sz, deg, 14);
+    return ellipsePts([x * F, y * F], F * 0.05 * sz * (small ? 1.3 : 1), F * 0.019 * sz * (small ? 1.4 : 1), deg, 14);
   });
   const hindInner =
-    new Plate(pen).lines(black([hp], F, 66, seed + 1, holes), 0.3).toString() + holes.map((h) => new Plate(pen).lines(spline(h, true), 0.3).toString()).join('');
-  return wingMarkup(fore, F, pen, foreInner, 0.36, seed + 20) + wingMarkup(hind, F, pen, hindInner, 0.36, seed + 30);
+    new Plate(pen).lines(black([hp], g, 66, seed + 1, holes), 0.3).toString() + holes.map((h) => new Plate(pen).lines(spline(h, true), 0.3).toString()).join('');
+  return wingMarkup(fore, F, pen, foreInner, 0.36, seed + 20, small) + wingMarkup(hind, F, pen, hindInner, 0.36, seed + 30, small);
 }
 
 /** The body for fritillaryClosedWings: head with its large eye, a clubbed antenna, thorax, abdomen and legs. */
-export function fritillaryClosedBody(F: number, pen: number, seed = 1): string {
+export function fritillaryClosedBody(F: number, pen: number, seed = 1, small = false): string {
   const r = rng(seed);
   const k = (pts: Pt[]) => scale(pts, F);
   const pl = new Plate(pen);
@@ -377,7 +389,7 @@ export function fritillaryClosedBody(F: number, pen: number, seed = 1): string {
     seg += quad(k([[x, 0.005 + x * 0.12]])[0], k([[x + 0.012, 0.045 + x * 0.1]])[0], k([[x, 0.085 + x * 0.06]])[0]);
   }
   pl.lines(seg, 0.28);
-  pl.lines(hatch([splinePts(abd, true, 6), k([[-1, 0.06], [1, 0.06], [1, 1], [-1, 1]])], { angle: 8, gap: F * 0.03, seed }), 0.26);
+  if (!small) pl.lines(hatch([splinePts(abd, true, 6), k([[-1, 0.06], [1, 0.06], [1, 1], [-1, 1]])], { angle: 8, gap: F * 0.04, seed }), 0.26);
   // the thorax, furred
   const th = ellipsePts([-0.02 * F, 0.015 * F], 0.085 * F, 0.072 * F, 0, 16);
   pl.shape(spline(th, true), 0.7);
@@ -395,7 +407,7 @@ export function fritillaryClosedBody(F: number, pen: number, seed = 1): string {
   pl.shape(spline(k([[-0.17, 0.05], [-0.23, 0.07], [-0.24, 0.085], [-0.18, 0.08]]), true), 0.45);
   pl.shape(spline(ellipsePts(hd, 0.055 * F, 0.05 * F, 0, 12), true), 0.65);
   const eye = ellipsePts(add(hd, [-0.012 * F, -0.004 * F]), 0.036 * F, 0.034 * F, 0, 12);
-  pl.lines(spline(eye, true), 0.4).lines(hatch([eye], { angle: 60, gap: F * 0.016, seed: seed + 2 }), 0.28);
+  pl.lines(spline(eye, true), 0.4).lines(hatch([eye], { angle: 60, gap: F * (small ? 0.03 : 0.02), seed: seed + 2 }), 0.28);
   return pl.toString();
 }
 
@@ -406,18 +418,19 @@ export function fritillaryClosedBody(F: number, pen: number, seed = 1): string {
  * centred on its thorax: a furred body, the tail dark, clear wings raised a
  * little over its back, and legs reaching down to grip a flower.
  */
-export function bumblebee(L: number, pen: number, seed = 1): string {
+export function bumblebee(L: number, pen: number, seed = 1, small = false): string {
   const r = rng(seed);
   const pl = new Plate(pen);
   // legs first, behind the body
   let legs = '';
   legs += quad([-L * 0.18, L * 0.1], [-L * 0.3, L * 0.22], [-L * 0.36, L * 0.32]);
-  legs += quad([-L * 0.08, L * 0.13], [-L * 0.08, L * 0.25], [-L * 0.14, L * 0.36]);
+  if (!small) legs += quad([-L * 0.08, L * 0.13], [-L * 0.08, L * 0.25], [-L * 0.14, L * 0.36]);
   legs += quad([L * 0.02, L * 0.12], [L * 0.16, L * 0.26], [L * 0.12, L * 0.38]);
   pl.lines(legs, 0.55);
   // the pollen basket on the hind leg
-  pl.shape(spline(ellipsePts([L * 0.14, L * 0.28], L * 0.045, L * 0.07, 20, 8), true), 0.5);
+  if (!small) pl.shape(spline(ellipsePts([L * 0.14, L * 0.28], L * 0.045, L * 0.07, 20, 8), true), 0.5);
   const furry = (c: Pt, rx: number, ry: number, deg: number, n: number) => {
+    if (small) return new Plate(pen).shape(spline(ellipsePts(c, rx, ry, deg, 14), true), 0.6).toString();
     const g = new Plate(pen).fill(spline(ellipsePts(c, rx * 1.04, ry * 1.04, deg, 16), true));
     let hair = '';
     for (let i = 0; i < n; i++) {
@@ -430,36 +443,37 @@ export function bumblebee(L: number, pen: number, seed = 1): string {
   };
   // abdomen: a pale band behind the thorax, then black to the tail
   const ab: Pt = [L * 0.2, L * 0.05];
-  pl.add(furry(ab, L * 0.26, L * 0.19, 12, 34));
+  pl.add(furry(ab, L * 0.26, L * 0.19, 12, 22));
   const abPoly = ellipsePts(ab, L * 0.25, L * 0.18, 12, 20);
-  pl.lines(black([abPoly, [[L * 0.1, -L], [L, -L], [L, L], [L * 0.1, L]]], L * 0.9, 70, seed), 0.3);
+  pl.lines(black([abPoly, [[L * 0.1, -L], [L, -L], [L, L], [L * 0.1, L]]], small ? L * 0.13 : L * 0.065, 70, seed), 0.3);
   pl.lines(quad([L * 0.08, -L * 0.12], [L * 0.04, L * 0.04], [L * 0.1, L * 0.21]), 0.35);
   // thorax: pale and furred; head: dark, with a large eye
-  pl.add(furry([-L * 0.12, -L * 0.02], L * 0.17, L * 0.16, 0, 26));
-  pl.lines(hatch([ellipsePts([-L * 0.12, -L * 0.02], L * 0.15, L * 0.14, 0, 16), [[-L * 0.1, 0], [L, 0], [L, L], [-L * 0.1, L]]], { angle: 60, gap: L * 0.05, seed: seed + 3 }), 0.28);
+  pl.add(furry([-L * 0.12, -L * 0.02], L * 0.17, L * 0.16, 0, 16));
+  if (!small) pl.lines(hatch([ellipsePts([-L * 0.12, -L * 0.02], L * 0.15, L * 0.14, 0, 16), [[-L * 0.1, 0], [L, 0], [L, L], [-L * 0.1, L]]], { angle: 60, gap: L * 0.075, seed: seed + 3 }), 0.28);
   const hd: Pt = [-L * 0.35, L * 0.04];
   pl.shape(spline(ellipsePts(hd, L * 0.1, L * 0.12, -10, 12), true), 0.6);
-  pl.lines(black([ellipsePts(hd, L * 0.09, L * 0.11, -10, 14)], L * 0.9, 80, seed + 5), 0.3);
+  if (!small) pl.lines(black([ellipsePts(hd, L * 0.09, L * 0.11, -10, 14)], L * 0.065, 80, seed + 5), 0.3);
   pl.lines(spline(ellipsePts(add(hd, [L * 0.025, -L * 0.02]), L * 0.035, L * 0.065, -10, 10), true), 0.3);
   // antenna, elbowed
   pl.lines(line(add(hd, [-L * 0.02, -L * 0.1]), add(hd, [-L * 0.04, -L * 0.22])) + line(add(hd, [-L * 0.04, -L * 0.22]), add(hd, [-L * 0.14, -L * 0.28])), 0.45);
-  // wings: clear, so only their edges and veins show
+  // wings: clear, so only their edges (and, drawn large, their veins) show
   const wing = (len: number, w: number, deg: number) => {
     const pts: Pt[] = [[0, 0], [len * 0.3, -w * 0.9], [len * 0.75, -w], [len, -w * 0.45], [len * 0.8, w * 0.15], [len * 0.35, w * 0.25]];
-    const g = new Plate(pen).lines(spline(pts, true), 0.5).lines(quad([len * 0.05, -w * 0.1], [len * 0.4, -w * 0.6], [len * 0.7, -w * 0.55]) + quad([len * 0.2, w * 0.05], [len * 0.45, -w * 0.15], [len * 0.62, -w * 0.5]), 0.28);
+    const g = new Plate(pen).lines(spline(pts, true), 0.5);
+    if (!small) g.lines(quad([len * 0.05, -w * 0.1], [len * 0.4, -w * 0.6], [len * 0.7, -w * 0.55]) + quad([len * 0.2, w * 0.05], [len * 0.45, -w * 0.15], [len * 0.62, -w * 0.5]), 0.28);
     return `<g transform="translate(${(-L * 0.12).toFixed(1)} ${(-L * 0.15).toFixed(1)}) rotate(${deg})">${g}</g>`;
   };
-  pl.add(wing(L * 0.56, L * 0.1, -9) + wing(L * 0.46, L * 0.085, 3));
+  pl.add(wing(L * 0.56, L * 0.1, -9) + (small ? '' : wing(L * 0.46, L * 0.085, 3)));
   return pl.toString();
 }
 
 // ------------------------------------------------------------------ gulf fritillary caterpillar
 
 /** The caterpillar of the gulf fritillary, which feeds on maypop: from its tail at (0,0) to its head along +x. */
-export function fritillaryCaterpillar(L: number, pen: number, seed = 1): string {
+export function fritillaryCaterpillar(L: number, pen: number, seed = 1, small = false): string {
   const r = rng(seed);
   const pl = new Plate(pen);
-  const n = 11;
+  const n = small ? 6 : 11;
   const w = L * 0.065;
   const spine = (t: number): Pt => [L * t, -Math.sin(t * Math.PI) * L * 0.05];
   const top: Pt[] = [];
@@ -481,7 +495,8 @@ export function fritillaryCaterpillar(L: number, pen: number, seed = 1): string 
   pl.shape(spline(body, true), 0.75);
   // the dark stripe along its side, and the folds between segments
   const stripe = [...top.map((p, i) => add(p, [0, w * (0.55 + 0.1 * Math.sin(i))])), ...top.slice().reverse().map((p) => add(p, [0, w * 1.15]))];
-  pl.lines(black([body, stripe], L * 0.7, 75, seed), 0.3);
+  if (small) pl.lines(spline(top.map((p) => add(p, [0, w * 0.85]))), 0.35);
+  else pl.lines(black([body, stripe], L * 0.05, 75, seed), 0.3);
   let folds = '';
   for (let i = 1; i < n; i++) {
     const p = spine(i / n);
@@ -491,21 +506,21 @@ export function fritillaryCaterpillar(L: number, pen: number, seed = 1): string 
   // branched black spines along its back
   let sp = '';
   for (let i = 1; i < n; i++) {
-    for (const off of [-0.3, 0.3]) {
+    for (const off of small ? [0] : [-0.3, 0.3]) {
       const t = (i + off * 0.3) / n;
       const p = add(spine(t), [0, -w * 0.9]);
       const a = -90 + off * 40 + (r() - 0.5) * 16;
       const len = L * (0.06 + r() * 0.02);
       const tip = add(p, [Math.cos((a * Math.PI) / 180) * len, Math.sin((a * Math.PI) / 180) * len]);
       const mid = lerp(p, tip, 0.55);
-      sp += line(p, tip) + line(mid, add(mid, [len * 0.22, -len * 0.12])) + line(mid, add(mid, [-len * 0.22, -len * 0.12]));
+      sp += line(p, tip) + (small ? '' : line(mid, add(mid, [len * 0.22, -len * 0.12])) + line(mid, add(mid, [-len * 0.22, -len * 0.12])));
     }
   }
   pl.lines(sp, 0.42);
   // the head, dark
   const hd = add(spine(1), [L * 0.025, w * 0.1]);
   pl.shape(spline(ellipsePts(hd, L * 0.04, w * 0.9, 0, 10), true), 0.6);
-  pl.lines(black([ellipsePts(hd, L * 0.036, w * 0.8, 0, 12)], L * 0.7, 80, seed + 2), 0.3);
+  if (!small) pl.lines(black([ellipsePts(hd, L * 0.036, w * 0.8, 0, 12)], L * 0.045, 80, seed + 2), 0.3);
   return pl.toString();
 }
 
@@ -531,7 +546,7 @@ export function ladyBeetle(L: number, pen: number, seed = 1): string {
   const pron = spline([[-L * 0.25, -L * 0.22], [-L * 0.2, -L * 0.36], [0, -L * 0.4], [L * 0.2, -L * 0.36], [L * 0.25, -L * 0.22], [0, -L * 0.25]], true);
   pl.shape(pron, 0.7);
   const pronPts = splinePts([[-L * 0.23, -L * 0.23], [-L * 0.18, -L * 0.34], [0, -L * 0.37], [L * 0.18, -L * 0.34], [L * 0.23, -L * 0.23], [0, -L * 0.26]], true, 6);
-  pl.lines(hatch([pronPts], { angle: 80, gap: L * 0.035, holes: [ellipsePts([-L * 0.07, -L * 0.3], L * 0.06, L * 0.018, 30, 10), ellipsePts([L * 0.07, -L * 0.3], L * 0.06, L * 0.018, -30, 10)], seed }), 0.3);
+  pl.lines(hatch([pronPts], { angle: 80, gap: L * 0.07, holes: [ellipsePts([-L * 0.07, -L * 0.3], L * 0.06, L * 0.018, 30, 10), ellipsePts([L * 0.07, -L * 0.3], L * 0.06, L * 0.018, -30, 10)], seed }), 0.3);
   // head
   pl.shape(spline(ellipsePts([0, -L * 0.43], L * 0.11, L * 0.06, 0, 10), true), 0.65);
   pl.dots([[-L * 0.07, -L * 0.44], [L * 0.07, -L * 0.44]], L * 0.025);

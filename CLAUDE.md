@@ -26,6 +26,8 @@ Read `docs/PLAN.md` for the full plan. These rules come from the couple and over
 
 - **A botanical-engraving invitation.** Fine sage line drawings on ivory paper, like a letterpress wedding invitation: flat line art (no gradients, glows or drop shadows), abundant and layered around every section, but refined rather than cartoony.
 - **Plants: southeastern US natives only, and lots of them.** For example: Southern magnolia, flowering dogwood, native azaleas (Piedmont, flame), Carolina jessamine, coral honeysuckle, oakleaf hydrangea, mountain laurel, redbud, passionflower (maypop), trillium, wild columbine, Christmas/cinnamon/maidenhair ferns, Spanish moss, dwarf palmetto. No tropicals (no monstera, no tropical palms).
+- **Plants grow the way they do.** Vines curve and weave and end in a curl; every flower and leaf grows on a stem that leads somewhere; no floating clumps.
+- **Light line work.** Keep shading sparse so drawings never look busy, especially on phones (drawings drop their shading when shown small).
 - **Mushrooms and bugs too, natives only.** Each where it would really be: mushrooms at the ground line, butterflies, bees and beetles on the plants. Keep it light: one butterfly or moth per page.
 - **Not Christmassy.** No red-and-green pairing, no pine green with red or gold-glitter accents, no string lights. Spring in a Southern garden, not the holidays.
 - **Fancy fonts.** A thin script for names and titles, spaced capitals for labels and dates, lowercase italics for small lines.

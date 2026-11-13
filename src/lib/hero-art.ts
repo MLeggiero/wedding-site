@@ -43,7 +43,7 @@ const heroFrontArt = (p: number) =>
   [
     rules(p),
     // the jessamine grows from behind the magnolia and runs over the arch, its trumpets facing out
-    jessamineVine(onArch(326, 214, 238, 262, 286, 310, 330), p, 521, { flowers: [2, 5, 8], out: -1, curl: 1, leaf: 42, amp: 7, wave: 150 }),
+    jessamineVine(onArch(332, 214, 238, 262, 286, 310, 330), p, 521, { flowers: [2, 5, 8], out: -1, curl: -1, leaf: 38, amp: 6, wave: 150 }),
     keystone(p),
     // the magnolia in bloom, with a bud on its twig rising out of the cluster
     place(magnoliaBudTwig(92, 150, p, 522, -0.12), 236, 330, -32),
@@ -80,7 +80,7 @@ const archBackSway = (p: number) => [
 const archFrontArt = (p: number) =>
   [
     rules(p),
-    jessamineVine(onArch(322, 216, 240, 264, 288, 312, 328), p, 611, { flowers: [2, 6], out: -1, curl: 1, leaf: 40, amp: 7, wave: 150 }),
+    jessamineVine(onArch(328, 216, 240, 264, 288, 312, 328), p, 611, { flowers: [2, 6], out: -1, curl: -1, leaf: 36, amp: 6, wave: 150 }),
     keystone(p),
     place(magnoliaBudTwig(78, 118, p, 614, 0.1), 236, 346, -14),
     place(magnoliaFlower(90, p, 613), 236, 346),

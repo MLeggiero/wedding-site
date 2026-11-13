@@ -2,53 +2,80 @@
 # category: Wander | Eat | Coffee | Drink | Music | Saturday | Shop
 # map: optional Google Maps search text (defaults to "<name>, Athens, GA")
 # Entries appear in id order within each category, so keep the two-digit prefixes.
+# No UGA landmarks: we're Georgia Tech grads.
 
-- id: 01-the-arch
-  name: The Arch
+# ---- downtown shops (vintage, vinyl, books and local makers)
+- id: 01-wuxtry
+  name: Wuxtry Records
+  category: Shop
+  area: East Clayton Street
+  note: New and used vinyl since 1976. Peter Buck was behind the counter when he met Michael Stipe.
+  map: Wuxtry Records, 197 E Clayton St, Athens, GA
+
+- id: 02-dynamite
+  name: Dynamite
+  category: Shop
+  area: North Jackson Street
+  note: A packed little vintage shop of retro tees, sweaters and ’70s dresses.
+  map: Dynamite Clothing, 143 N Jackson St, Athens, GA
+
+- id: 03-community
+  name: Community
+  category: Shop
+  area: North Jackson Street
+  note: Local designers, reworked vintage and handmade gifts.
+  map: Community, 260 N Jackson St, Athens, GA
+
+- id: 04-archer
+  name: Archer Paper Goods
+  category: Shop
+  area: Clayton Street
+  note: Stationery, prints and small gifts.
+
+- id: 05-avid
+  name: Avid Bookshop
+  category: Shop
+  area: Prince Avenue
+  note: A much-loved independent bookshop with great staff picks.
+  map: Avid Bookshop, Prince Avenue, Athens, GA
+
+# ---- wander
+- id: 06-downtown
+  name: Downtown on foot
   category: Wander
-  area: Downtown
-  note: UGA’s Victorian cast-iron gateway on Broad Street.
-  map: The Arch, University of Georgia, Athens, GA
+  area: Clayton, Washington and College
+  note: A few blocks of 1800s brick storefronts, painted signs and record shops.
+  map: Clayton Street and College Avenue, Athens, GA
 
-- id: 02-north-campus
-  name: North Campus
+- id: 07-morton-theatre
+  name: Morton Theatre
   category: Wander
-  area: University of Georgia
-  note: Oak-shaded quads and columned old buildings. A lovely morning stroll.
-  map: North Campus, University of Georgia, Athens, GA
+  area: West Washington Street
+  note: A 1910 vaudeville theatre built by Black businessman Pink Morton, and still a working stage.
+  map: Morton Theatre, Athens, GA
 
-- id: 03-founders-memorial-garden
-  name: Founders Memorial Garden
-  category: Wander
-  area: University of Georgia
-  note: A quiet historic garden on campus, honoring the founders of America’s first garden club.
-
-- id: 04-georgia-museum-of-art
-  name: Georgia Museum of Art
-  category: Wander
-  area: East Campus
-  note: The official art museum of the state of Georgia, with free admission.
-
-- id: 05-botanical-garden-trails
+- id: 08-botanical-garden-trails
   name: State Botanical Garden trails
   category: Wander
-  area: South Milledge Ave
+  area: South Milledge Avenue
   note: Woodland and river trails around our wedding venue, worth a wander while you’re in town.
   map: State Botanical Garden of Georgia, Athens, GA
 
-- id: 06-georgia-theatre
+# ---- music
+- id: 09-georgia-theatre
   name: Georgia Theatre
   category: Music
   area: Downtown
   note: A historic downtown music hall with a rooftop bar.
 
-- id: 07-forty-watt
+- id: 10-forty-watt
   name: 40 Watt Club
   category: Music
   area: Downtown
   note: The legendary little club at the heart of Athens’ music history.
 
-- id: 08-farmers-market
+# ---- Saturday morning
+- id: 11-farmers-market
   name: Athens Farmers Market
   category: Saturday
   area: Bishop Park

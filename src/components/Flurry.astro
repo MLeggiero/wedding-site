@@ -1,0 +1,131 @@
+---
+// A flurry of butterflies when you arrive from another page of the site: a
+// handful of the engraved swallowtails and fritillaries rise from below the
+// screen and flutter up and away, as if you had walked into a new part of the
+// garden. It takes about three seconds, never blocks a click, and stays away
+// on a first visit, on a reload, and for anyone who prefers less motion.
+import { artUrl } from '../lib/art';
+
+const art = (['tiger-swallowtail', 'gulf-fritillary'] as const).map((k) => ({ wings: artUrl(`${k}-wings`), body: artUrl(`${k}-body`) }));
+---
+
+<div class="flurry" data-art={JSON.stringify(art)} aria-hidden="true" hidden></div>
+
+<script>
+  type Art = { wings: string; body: string };
+
+  /** True when this page was reached by following a link (or Back) from another page of this site. */
+  function arrivedFromSite(): boolean {
+    try {
+      const from = new URL(document.referrer);
+      const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+      return from.origin === location.origin && from.pathname !== location.pathname && nav?.type !== 'reload';
+    } catch {
+      return false;
+    }
+  }
+
+  async function flurry(box: HTMLElement) {
+    const art: Art[] = JSON.parse(box.dataset.art ?? '[]');
+    // give the drawings a moment to load, so no butterfly appears half drawn
+    const ready = art.flatMap((a) => [a.wings, a.body]).map((src) => {
+      const img = new Image();
+      img.src = src;
+      return img.decode().catch(() => undefined);
+    });
+    await Promise.race([Promise.all(ready), new Promise((r) => setTimeout(r, 700))]);
+
+    const W = innerWidth;
+    const H = innerHeight;
+    const narrow = W < 768;
+    const count = narrow ? 7 : 10;
+    box.hidden = false;
+    const flights: Promise<unknown>[] = [];
+    for (let i = 0; i < count; i++) {
+      const a = art[i % art.length];
+      // a few near (large) and the rest further off (smaller), all big enough to read as butterflies
+      const near = i % 3 === 0;
+      const size = (narrow ? 52 : 74) * (near ? 1.35 : 0.8 + Math.random() * 0.3);
+      const bf = document.createElement('span');
+      bf.className = 'flurry__bf';
+      bf.style.width = `${size}px`;
+      bf.style.setProperty('--flap', `${(0.22 + Math.random() * 0.12).toFixed(2)}s`);
+      for (const [cls, src] of [['flurry__wings', a.wings], ['flurry__body', a.body]]) {
+        const img = document.createElement('img');
+        img.className = cls;
+        img.src = src;
+        img.alt = '';
+        bf.append(img);
+      }
+      box.append(bf);
+
+      // from below the screen, rising and drifting across, weaving from side to side
+      const side = i % 2 ? 1 : -1;
+      const x0 = W * (0.5 + side * (0.06 + Math.random() * 0.4));
+      const y0 = H + size;
+      const x1 = x0 - side * W * (0.12 + Math.random() * 0.34);
+      const y1 = -size * 1.6 - Math.random() * H * 0.08;
+      const wobble = (narrow ? 16 : 26) + Math.random() * 22;
+      const phase = Math.random() * Math.PI * 2;
+      const steps = 10;
+      const pts = Array.from({ length: steps + 1 }, (_, k) => {
+        const t = k / steps;
+        return [x0 + (x1 - x0) * t + Math.sin(t * Math.PI * 2.4 + phase) * wobble, y0 + (y1 - y0) * t + Math.sin(t * Math.PI * 5 + phase) * 9];
+      });
+      // the body leans the way it is flying, but never far from upright
+      const frames = pts.map((p, k) => {
+        const ahead = pts[Math.min(k + 1, steps)];
+        const behind = pts[Math.max(k - 1, 0)];
+        const lean = (Math.atan2(ahead[1] - behind[1], ahead[0] - behind[0]) * 180) / Math.PI + 90;
+        return { transform: `translate(${(p[0] - size / 2).toFixed(1)}px, ${(p[1] - size / 2).toFixed(1)}px) rotate(${Math.max(-35, Math.min(35, lean)).toFixed(1)}deg)` };
+      });
+      const flight = bf.animate(frames, { duration: 2300 + Math.random() * 900, delay: Math.random() * 500, easing: 'cubic-bezier(.3, .1, .6, 1)', fill: 'both' });
+      flights.push(flight.finished.catch(() => undefined));
+    }
+    await Promise.all(flights);
+    box.replaceChildren();
+    box.hidden = true;
+  }
+
+  const box = document.querySelector<HTMLElement>('.flurry');
+  if (box && arrivedFromSite() && !matchMedia('(prefers-reduced-motion: reduce)').matches) flurry(box);
+</script>
+
+<style is:global>
+  .flurry {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .flurry[hidden] {
+    display: none;
+  }
+  .flurry__bf {
+    position: absolute;
+    top: 0;
+    left: 0;
+    aspect-ratio: 1;
+    will-change: transform;
+  }
+  .flurry__bf img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+  /* wings beating in flight: closing up over the back and opening, fast */
+  .flurry__wings {
+    animation: flurry-flap var(--flap, 0.28s) ease-in-out infinite alternate;
+  }
+  @keyframes flurry-flap {
+    from {
+      scale: 1 1;
+    }
+    to {
+      scale: 0.18 1;
+    }
+  }
+</style>

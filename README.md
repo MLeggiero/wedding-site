@@ -90,9 +90,10 @@ npm run check     # type check
 
 ## Photos
 
-The site uses just four photos: two engagement photos (#35, #20) and two of the garden's own (the
-conservatory for Travel, a redbud in bloom for the Registry). See `docs/PLAN.md` §11 and the photo
-rules in `CLAUDE.md`. Web-ready versions live in `src/assets/photos/`; their alt text, crop focus and
+The site uses just five photos: two engagement photos (#35, #20), two of the garden's own (the
+conservatory for Travel, a redbud in bloom for the Registry), and an openly licensed photo of
+downtown Athens on Travel (by GAgayle on Wikimedia Commons, CC BY-SA 3.0, cropped; credited in the
+footer). See `docs/PLAN.md` §11 and the photo rules in `CLAUDE.md`. Web-ready versions live in `src/assets/photos/`; their alt text, crop focus and
 credits are in `src/lib/photos.ts`. To swap an engagement photo, download the original from Drive and
 run `npm run photos -- /path/to/originals` (originals are never committed).
 

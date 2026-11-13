@@ -9,7 +9,9 @@ import { photo } from '../lib/photos';
 import { site } from '../config';
 
 const places = (await getCollection('places')).map((p) => p.data);
-const order = ['Wander', 'Saturday', 'Coffee', 'Eat', 'Drink', 'Music', 'Shop'] as const;
+// the shops get their own card beside a photo of downtown; the rest follow in two columns
+const shops = places.filter((p) => p.category === 'Shop');
+const order = ['Wander', 'Music', 'Saturday', 'Coffee', 'Eat', 'Drink'] as const;
 const labels: Record<string, string> = {
   Wander: 'Wander',
   Saturday: 'Saturday morning',
@@ -60,7 +62,27 @@ const tips = [
       }
     </div>
 
-    <SectionHeading level={2} size="section" title="Around Athens" lead="A few favorites." class="guide-head" />
+    <SectionHeading level={2} size="section" title="Around Athens" lead="Brick storefronts, vinyl and vintage, ten minutes from the garden." class="guide-head" />
+    <div class="downtown container">
+      <div class="downtown__photo">
+        <HeroFrame photo={photo('downtown-athens')} art="arch" mirror sizes="(min-width: 60rem) 30rem, 84vw" />
+      </div>
+      <PaperCard sprigs="two" width="fill" as="section" class="guide__group downtown__shops">
+        <h3 class="cc-kicker guide__cat">Shop downtown</h3>
+        <ul class="guide__list">
+          {shops.map((p) => (
+            <li class="place">
+              <a class="place__name" href={mapsUrl(p.map ?? `${p.name}, Athens, GA`)} target="_blank" rel="noopener">
+                {p.name}
+                <span class="visually-hidden"> (map)</span>
+              </a>
+              {p.area && <span class="place__area">{p.area}</span>}
+              <p class="place__note">{p.note}</p>
+            </li>
+          ))}
+        </ul>
+      </PaperCard>
+    </div>
     <div class="guide container">
       {
         groups.map((g) => (
@@ -131,9 +153,27 @@ const tips = [
   :global(.guide-head) {
     margin-top: clamp(4.5rem, 9vw, 6rem);
   }
+  .downtown {
+    display: grid;
+    gap: clamp(3rem, 6vw, 4rem);
+    align-items: center;
+    max-width: 62rem;
+    margin-top: 2.5rem;
+  }
+  .downtown__photo {
+    width: min(100%, 30rem);
+    margin-inline: auto;
+  }
+  .downtown :global(.downtown__shops) {
+    width: min(100%, 30rem);
+    margin-inline: auto;
+  }
+  .downtown :global(.downtown__shops .paper-card__body) {
+    padding: 1.9rem 1.8rem 1.6rem;
+  }
   .guide {
     max-width: 62rem;
-    margin-top: 2rem;
+    margin-top: clamp(3rem, 6vw, 4rem);
     margin-bottom: clamp(5rem, 10vw, 6rem);
     column-gap: 2rem;
   }
@@ -195,6 +235,14 @@ const tips = [
   @media (min-width: 60rem) {
     .trip {
       grid-template-columns: 28rem 1fr;
+    }
+    /* the photo on the right this time, its plants mirrored */
+    .downtown {
+      grid-template-columns: 1fr 30rem;
+      gap: 2rem;
+    }
+    .downtown__photo {
+      order: 2;
     }
   }
 </style>

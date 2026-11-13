@@ -14,6 +14,7 @@ import { site } from '../config';
 import { withBase } from '../lib/url';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import Flurry from '../components/Flurry.astro';
 
 interface Props {
   /** Page name; the site name is appended. Omit on the home page. */
@@ -70,5 +71,6 @@ const ogImage = new URL(withBase('/og.jpg'), Astro.site);
         </SiteFooter>
       )
     }
+    {!bare && <Flurry />}
   </body>
 </html>

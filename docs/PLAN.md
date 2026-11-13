@@ -118,6 +118,7 @@ And among them, native mushrooms and insects (Ally's idea), each where it would 
 ### 3.5 Motion
 
 - Astro view transitions give a quick cross-fade between pages.
+- **A flurry of butterflies** when you arrive from another page of the site (`Flurry.astro`): about ten engraved swallowtails and fritillaries rise from below and flutter up and away in under three seconds. Never on a first visit or a reload, never in the way of a click, and never for anyone who prefers less motion.
 - Reveal-on-scroll is a fade plus a small rise, 300ms or less.
 - The duck on the Registry page waddles back and forth; it stops for a hop when you point at it.
 - `prefers-reduced-motion` turns all of it off.
@@ -297,8 +298,8 @@ A Google Apps Script web app attached to that Sheet. It's free and needs no serv
   - Apple/Google Maps link
   - pin position
 
-  Ideas to pre-seed for you to edit: the UGA Arch (cast-iron Victorian ironwork, a nice tie-in), North Campus, the Georgia Theatre rooftop, the 40 Watt, and a Saturday-morning farmers market. Verify the market's season start.
-- **Illustrated Athens map.** An SVG in the house style showing downtown, UGA, and the route down S. Milledge Ave to the Garden. Numbered pins stay in sync with the list.
+  No UGA landmarks (you're Georgia Tech grads). Pre-seeded, for you to edit: downtown shops (Wuxtry Records, Dynamite vintage, Community, Archer Paper Goods, Avid Bookshop), downtown on foot, the Morton Theatre, the garden's trails, the Georgia Theatre, the 40 Watt and the Saturday farmers market. The shops sit in their own card beside a photo of downtown. Verify the market's season start, and that the shops are still open, before invitations go out.
+- **Illustrated Athens map.** An SVG in the house style showing downtown and the route down S. Milledge Ave to the Garden. Numbered pins stay in sync with the list.
   - No map API and no API keys.
   - Fast and private.
   - "Open in Maps" handles navigation.
@@ -533,7 +534,7 @@ checked: 2026-11-10
 
 ### Selection
 
-**Four photos on the whole site,** chosen with you.
+**Five photos on the whole site,** chosen with you (the fifth, of downtown Athens, at your request).
 
 **The rules:**
 
@@ -548,6 +549,7 @@ checked: 2026-11-10
 | Our Story, and the home "Our Story" card | **20**: Mark on one knee, sliding the ring on as Ally smiles |
 | Travel, and the home "Travel" card | The garden's photo of its glass conservatory, where the wedding is (credited in the footer) |
 | Registry, and the home "Registry" card | The garden's photo of an eastern redbud in bloom (credited in the footer) |
+| Travel, "Around Athens" | Downtown's old brick storefronts with the painted Charles Parrott & Associates sign: "Downtown Athens, GA" by GAgayle, Wikimedia Commons, CC BY-SA 3.0, cropped to leave out parked cars (credited in the footer with links to the photo and the license) |
 
 ### Pipeline
 
@@ -660,6 +662,7 @@ Today is Nov 10, 2026, and the wedding is 165 days away.
 - [x] Redesign as a botanical-engraving invitation: sage on ivory, engraved native plants, the Secret Registry by day, the walking duck
 - [x] Native mushrooms and insects among the plants, one resting butterfly or moth per page (graded 93; 91 on style and coherence alone)
 - [x] Plants regrown on stems (curving vines, connected sprays), and drawings that drop their shading when shown small (graded 92)
+- [x] A flurry of engraved butterflies when you arrive from another page; Travel shows off downtown Athens (shops, a downtown photo) with no UGA landmarks
 - [ ] Later: the live MuJoCo Microduck (§10.6)
 
 ## 16. What we need from you two

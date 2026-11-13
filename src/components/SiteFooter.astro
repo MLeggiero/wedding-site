@@ -39,7 +39,19 @@ import Divider from './Divider.astro';
       )
     }
     {site.photoCredit && <p class="site-footer__small">{site.photoCredit}</p>}
-    {photoCredits.length > 0 && <p class="site-footer__small">Garden photos: {photoCredits.join(', ')}</p>}
+    {
+      photoCredits.map((c) => (
+        <p class="site-footer__small site-footer__credit">
+          {c.what}: {c.url ? <a href={c.url}>{c.who}</a> : c.who}
+          {c.license && (
+            <>
+              , {c.licenseUrl ? <a href={c.licenseUrl}>{c.license}</a> : c.license}
+            </>
+          )}
+          {c.changes && <>, {c.changes}</>}
+        </p>
+      ))
+    }
     <slot />
   </div>
 </footer>
@@ -112,5 +124,13 @@ import Divider from './Divider.astro';
     margin-top: 0.4rem;
     font-size: 1rem;
     color: var(--soft);
+  }
+  .site-footer__credit + .site-footer__credit {
+    margin-top: 0;
+  }
+  .site-footer__credit a {
+    color: inherit;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 0.2em;
   }
 </style>

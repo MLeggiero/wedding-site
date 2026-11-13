@@ -32,12 +32,13 @@ Read `docs/PLAN.md` for the full plan. These rules come from the couple and over
 - **Not Christmassy.** No red-and-green pairing, no pine green with red or gold-glitter accents, no string lights. Spring in a Southern garden, not the holidays.
 - **Fancy fonts.** A thin script for names and titles, spaced capitals for labels and dates, lowercase italics for small lines.
 - **Few words.** Keep copy short; no long narrative.
+- **No UGA landmarks.** The couple are Georgia Tech grads: show off downtown Athens, its shops and music, not the university.
 - **Plain labels, no flourish.** Name things directly (for example "Secret Registry"); no poetic taglines.
 - **No em-dashes**, anywhere: site copy, alt text, docs, code comments and commit messages. Use a full stop, comma, colon or parentheses.
 
 ## Photos
 
-- **Only 3–4 photos** on the whole site, picked with the couple.
+- **Only a few photos** on the whole site, picked with the couple: the four of the couple and the garden, plus one of downtown Athens on Travel (the couple asked for it).
 - **Only flattering shots:**
   - natural, relaxed expressions; no silly faces or mid-expression frames
   - Ally front-facing or three-quarter, ideally waist-up
